@@ -85,6 +85,7 @@ etag master LocalChangedOn
       ProductUUID       = produuid;
       ProductMarketUUID = mrktuuid;
       MarketID          = mrktid;
+      ISOCode           = isocode;
       Status            = status;
       StartDate         = startdate;
       EndDate           = enddate;

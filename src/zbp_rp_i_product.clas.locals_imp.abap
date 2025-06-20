@@ -255,19 +255,19 @@ CLASS lhc_product_market IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD set_iso_code.
-    TRY.
-        "DATA(destination) = cl_soap_destination_provider=>create_by_url( i_url = 'http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso' ).
+    CONSTANTS service_url TYPE string VALUE `http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso`.
 
-        "The logical port should be created in T-Code 'SOAMANAGER' for the 'ZRP_SC_CO_COUNTRY_INFO_SERVICE' Consumer Proxy
-        DATA(proxy) = NEW zrp_sc_co_country_info_service( "
-          "logical_port_name = 'ZRP_LP_CO_COUNTRY_INFO_SERVICE'
-          ).
+    TRY.
+        DATA(destination) = cl_soap_destination_provider=>create_by_url( i_url = service_url ).
+
+        DATA(proxy) = NEW zrp_sc_co_country_info_service( destination = destination ).
 
         proxy->country_isocode( EXPORTING input  = VALUE #( s_country_name = 'Japan' )
                                 IMPORTING output = DATA(response) ).
 
-      CATCH cx_ai_system_fault INTO DATA(lo_ai_system_fault).
-        DATA(message) = lo_ai_system_fault->if_message~get_text( ).
+      CATCH cx_ai_system_fault
+            cx_soap_destination_error INTO DATA(exception).
+        DATA(message) = exception->if_message~get_text( ).
     ENDTRY.
   ENDMETHOD.
 
