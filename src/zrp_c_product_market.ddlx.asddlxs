@@ -1,0 +1,71 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: { typeName: 'Product Market',
+                  typeNamePlural: 'Product Markets',
+                  title: { type: #STANDARD, label: 'Product Market', value: 'MarketName' } }
+
+annotate entity ZRP_C_PRODUCT_MARKET with
+{
+  @UI.facet: [ { id: 'ProductMarkets',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 label: 'Product Markets',
+                 position: 10
+               },
+
+               { type: #LINEITEM_REFERENCE,
+                 purpose: #STANDARD,
+                 label: 'Market Orders',
+                 id: 'MarketOrderss',
+                 targetElement: 'MarketOrders',
+                 position: 20
+               }
+             ]
+
+  @UI.hidden: true
+  ProductUUID;
+  @UI.hidden: true
+  ProductMarketUUID;
+
+  @EndUserText.label: 'Market'
+  @UI.identification: [ { position: 10 } ]
+  @UI.lineItem: [ { position: 10 } ]
+  MarketID;
+
+  @EndUserText.label: 'ISO-Code'
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  ISOCode;
+
+  @EndUserText.label: 'Is Accepted?'
+  @UI.identification: [ { position: 30 },
+                        { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
+                        { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 } ]
+  @UI.lineItem: [ { position: 30 },
+                  { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
+                  { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 }  ]
+  Status;
+
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40 } ]
+  StartDate;
+
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  EndDate;
+
+  @UI.identification: [ { position: 60 } ]
+  @UI.lineItem: [ { position: 60 } ]
+  CreatedBy;
+
+  @UI.identification: [ { position: 70 } ]
+  @UI.lineItem: [ { position: 70 } ]
+  CreatedOn;
+
+  @UI.identification: [ { position: 80 } ]
+  @UI.lineItem: [ { position: 80 } ]
+  ChangedBy;
+
+  @UI.identification: [ { position: 90 } ]
+  @UI.lineItem: [ { position: 90 } ]
+  ChangedOn;
+}

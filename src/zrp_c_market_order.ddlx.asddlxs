@@ -1,0 +1,66 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: { typeName: 'Market Order',
+                  typeNamePlural: 'Market Orders',
+                  title: { type: #STANDARD, label: 'Market Order', value: 'OrderID' } }
+
+annotate entity ZRP_C_MARKET_ORDER with
+{
+  @UI.facet: [ { id: 'MarketOrders',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 label: 'Market Orders',
+                 position: 10
+               }
+             ]
+
+  @UI.hidden: true
+  ProductUUID;
+  @UI.hidden: true
+  ProductMarketUUID;
+  @UI.hidden: true
+  OrderUUID;
+
+  @UI.identification: [ { position: 10 } ]
+  @UI.lineItem: [ { position: 10 } ]
+  OrderID;
+
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  Quantity;
+
+  @UI.identification: [ { position: 30 } ]
+  @UI.lineItem: [ { position: 30 } ]
+  CalendarYear;
+
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40 } ]
+  DeliveryDate;
+
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  NetAmount;
+
+  @UI.identification: [ { position: 60 } ]
+  @UI.lineItem: [ { position: 60 } ]
+  GrossAmount;
+
+  @UI.identification: [ { position: 70 } ]
+  @UI.lineItem: [ { position: 70 } ]
+  AmountCurrency;
+
+  @UI.identification: [ { position: 80 } ]
+  @UI.lineItem: [ { position: 80 } ]
+  CreatedBy;
+
+  @UI.identification: [ { position: 90 } ]
+  @UI.lineItem: [ { position: 90 } ]
+  CreatedOn;
+
+  @UI.identification: [ { position: 100 } ]
+  @UI.lineItem: [ { position: 100 } ]
+  ChangedBy;
+
+  @UI.identification: [ { position: 110 } ]
+  @UI.lineItem: [ { position: 110 } ]
+  ChangedOn;
+}

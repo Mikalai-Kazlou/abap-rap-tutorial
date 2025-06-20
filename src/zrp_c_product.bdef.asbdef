@@ -1,0 +1,46 @@
+projection;
+strict ( 2 );
+use draft;
+use side effects;
+
+define behavior for ZRP_C_PRODUCT alias Product
+{
+  use association ProductMarkets { create; with draft; }
+
+  use create;
+  use update;
+  use delete;
+
+  field ( readonly ) PhaseID;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Prepare;
+  use action Resume;
+
+  use action copyProduct;
+}
+
+define behavior for ZRP_C_PRODUCT_MARKET alias ProductMarket
+{
+  use association Product { with draft; }
+  use association MarketOrders { create; with draft; }
+
+  use update;
+  use delete;
+
+  field ( readonly ) Status;
+
+  use action acceptMarket;
+  use action rejectMarket;
+}
+
+define behavior for ZRP_C_MARKET_ORDER alias MarketOrder
+{
+  use association Product { with draft; }
+  use association ProductMarket { with draft; }
+
+  use update;
+  use delete;
+}

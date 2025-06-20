@@ -1,0 +1,317 @@
+
+CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PRIVATE SECTION.
+    CONSTANTS:
+      BEGIN OF phases,
+        planning    TYPE zrp_d_phase-phaseid VALUE 1,
+        development TYPE zrp_d_phase-phaseid VALUE 2,
+        production  TYPE zrp_d_phase-phaseid VALUE 3,
+        phase_out   TYPE zrp_d_phase-phaseid VALUE 4,
+      END OF phases.
+
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR product RESULT result.
+
+    METHODS get_instance_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR product RESULT result.
+
+    METHODS set_initial_phase FOR DETERMINE ON SAVE
+      IMPORTING keys FOR product~setinitialphase.
+
+    METHODS validate_product_group FOR VALIDATE ON SAVE
+      IMPORTING keys FOR product~validateproductgroup.
+
+    METHODS validate_product_id FOR VALIDATE ON SAVE
+      IMPORTING keys FOR product~validateproductid.
+
+    METHODS copy_product FOR MODIFY
+      IMPORTING keys FOR ACTION product~copyproduct RESULT result.
+
+ENDCLASS.
+
+
+CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PRIVATE SECTION.
+    CONSTANTS:
+      BEGIN OF market_statuses,
+        accepted TYPE abap_bool VALUE abap_true,
+        rejected TYPE abap_bool VALUE abap_false,
+      END OF market_statuses.
+
+    METHODS get_instance_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR productmarkets RESULT result.
+
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR productmarkets RESULT result.
+
+    METHODS accept_market FOR MODIFY
+      IMPORTING keys FOR ACTION productmarkets~acceptmarket RESULT result.
+
+    METHODS reject_market FOR MODIFY
+      IMPORTING keys FOR ACTION productmarkets~rejectmarket RESULT result.
+
+    METHODS set_iso_code FOR DETERMINE ON SAVE
+      IMPORTING keys FOR productmarkets~setisocode.
+
+ENDCLASS.
+
+
+CLASS lhc_market_order DEFINITION INHERITING FROM cl_abap_behavior_handler.
+
+  PRIVATE SECTION.
+    METHODS recalculate_total_amount FOR MODIFY
+      IMPORTING keys FOR ACTION marketorders~recalculatetotalamount.
+
+    METHODS calculate_total_amount FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR marketorders~calculatetotalamount.
+
+ENDCLASS.
+
+
+CLASS lhc_product IMPLEMENTATION.
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+
+  METHOD get_instance_features.
+  ENDMETHOD.
+
+  METHOD set_initial_phase.
+    " Read relevant product instance data
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY product
+         FIELDS ( phaseid ) WITH CORRESPONDING #( keys )
+         RESULT DATA(products).
+
+    " Remove all product instance data with defined phase
+    DELETE products WHERE phaseid IS NOT INITIAL.
+    IF products IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " Set default phase
+    MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY product
+           UPDATE
+           FIELDS ( phaseid )
+           WITH VALUE #( FOR product IN products
+                         ( %tky    = product-%tky
+                           phaseid = phases-planning ) )
+           REPORTED DATA(update_reported).
+
+    reported = CORRESPONDING #( DEEP update_reported ).
+  ENDMETHOD.
+
+  METHOD validate_product_group.
+  ENDMETHOD.
+
+  METHOD validate_product_id.
+    DATA product_ids TYPE SORTED TABLE OF zrp_d_product WITH UNIQUE KEY prodid.
+
+    " Read relevant product instance data
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY product
+         FIELDS ( id ) WITH CORRESPONDING #( keys )
+         RESULT DATA(products).
+
+    " Optimization of DB select: extract distinct non-initial product IDs
+    product_ids = CORRESPONDING #( products DISCARDING DUPLICATES MAPPING prodid = id EXCEPT * ).
+    DELETE product_ids WHERE prodid IS INITIAL.
+
+    IF product_ids IS NOT INITIAL.
+      " Check if product ID exist
+      SELECT FROM zrp_d_product
+        FIELDS prodid
+        FOR ALL ENTRIES IN @product_ids
+        WHERE prodid = @product_ids-prodid
+        INTO TABLE @DATA(products_db).
+    ENDIF.
+
+    " Raise message for existing Product ID
+    LOOP AT products INTO DATA(product).
+      " Clear state messages that might exist
+      APPEND VALUE #( %tky        = product-%tky
+                      %state_area = 'validateProductID' ) TO reported-product.
+
+      IF product-id IS NOT INITIAL AND line_exists( products_db[ prodid = product-id ] ).
+        APPEND VALUE #( %tky = product-%tky ) TO failed-product.
+
+        APPEND VALUE #( %tky        = product-%tky
+                        %state_area = 'validateProductID'
+                        %element-id = if_abap_behv=>mk-on
+                        %msg        = NEW zcm_rp_messages( severity   = if_abap_behv_message=>severity-error
+                                                           textid     = zcm_rp_messages=>product_already_exists
+                                                           product_id = product-id ) ) TO reported-product.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD copy_product.
+    DATA new_products TYPE TABLE FOR CREATE zrp_i_product.
+
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY product
+         ALL FIELDS WITH CORRESPONDING #( keys )
+         RESULT DATA(products).
+
+    LOOP AT products ASSIGNING FIELD-SYMBOL(<product>).
+      <product>-id      = keys[ KEY id COMPONENTS %tky = <product>-%tky ]-%param-productid.
+      <product>-phaseid = phases-planning.
+    ENDLOOP.
+
+    new_products = CORRESPONDING #( products EXCEPT uuid createdby createdon changedby changedon ).
+
+    MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY product
+           CREATE
+           AUTO FILL CID
+           SET FIELDS WITH new_products
+           MAPPED   mapped
+           FAILED   failed
+           REPORTED reported.
+
+    READ ENTITY IN LOCAL MODE zrp_i_product
+         ALL FIELDS WITH CORRESPONDING #( mapped-product )
+         RESULT DATA(products_db)
+         FAILED failed.
+
+    result = VALUE #( FOR <product_db> IN products_db INDEX INTO index
+                      ( %cid_ref = keys[ index ]-%cid_ref
+                        %tky     = keys[ index ]-%tky
+                        %param   = CORRESPONDING #( <product_db> ) ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+
+CLASS lhc_product_market IMPLEMENTATION.
+  METHOD get_instance_features.
+    " Read the market status
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY productmarkets
+         FIELDS ( status ) WITH CORRESPONDING #( keys )
+         RESULT DATA(product_markets)
+         FAILED failed.
+
+    result =
+      VALUE #( FOR product_market IN product_markets
+               LET is_accepted = COND #( WHEN product_market-status = market_statuses-accepted
+                                         THEN if_abap_behv=>fc-o-disabled
+                                         ELSE if_abap_behv=>fc-o-enabled  )
+                   is_rejected = COND #( WHEN product_market-status = market_statuses-rejected
+                                         THEN if_abap_behv=>fc-o-disabled
+                                         ELSE if_abap_behv=>fc-o-enabled )
+               IN
+                   ( %tky                 = product_market-%tky
+                     %action-acceptmarket = is_accepted
+                     %action-rejectmarket = is_rejected ) ).
+  ENDMETHOD.
+
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+
+  METHOD accept_market.
+    " Set the new overall status
+    MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY productmarkets
+           UPDATE
+           FIELDS ( status )
+           WITH VALUE #( FOR key IN keys
+                         ( %tky   = key-%tky
+                           status = market_statuses-accepted ) )
+           FAILED failed
+           REPORTED reported.
+
+    " Fill the response table
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY productmarkets
+         ALL FIELDS WITH CORRESPONDING #( keys )
+         RESULT DATA(product_markets).
+
+    result = VALUE #( FOR product_market IN product_markets
+                      ( %tky   = product_market-%tky
+                        %param = CORRESPONDING #( product_market ) ) ).
+  ENDMETHOD.
+
+  METHOD reject_market.
+    " Set the new overall status
+    MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY productmarkets
+           UPDATE
+           FIELDS ( status )
+           WITH VALUE #( FOR key IN keys
+                         ( %tky   = key-%tky
+                           status = market_statuses-rejected ) )
+           FAILED failed
+           REPORTED reported.
+
+    " Fill the response table
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY productmarkets
+         ALL FIELDS WITH CORRESPONDING #( keys )
+         RESULT DATA(product_markets).
+
+    result = VALUE #( FOR product_market IN product_markets
+                      ( %tky   = product_market-%tky
+                        %param = CORRESPONDING #( product_market ) ) ).
+  ENDMETHOD.
+
+  METHOD set_iso_code.
+    TRY.
+        "DATA(destination) = cl_soap_destination_provider=>create_by_url( i_url = 'http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso' ).
+
+        "The logical port should be created in T-Code 'SOAMANAGER' for the 'ZRP_SC_CO_COUNTRY_INFO_SERVICE' Consumer Proxy
+        DATA(proxy) = NEW zrp_sc_co_country_info_service( "
+          "logical_port_name = 'ZRP_LP_CO_COUNTRY_INFO_SERVICE'
+          ).
+
+        proxy->country_isocode( EXPORTING input  = VALUE #( s_country_name = 'Japan' )
+                                IMPORTING output = DATA(response) ).
+
+      CATCH cx_ai_system_fault INTO DATA(lo_ai_system_fault).
+        DATA(message) = lo_ai_system_fault->if_message~get_text( ).
+    ENDTRY.
+  ENDMETHOD.
+
+ENDCLASS.
+
+
+CLASS lhc_market_order IMPLEMENTATION.
+  METHOD recalculate_total_amount.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY marketorders BY \_Product
+         FIELDS ( price pricecurrency taxrate )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(products).
+
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+         ENTITY marketorders
+         FIELDS ( quantity )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(market_orders).
+
+    LOOP AT market_orders ASSIGNING FIELD-SYMBOL(<market_order>).
+      DATA(product) = products[ KEY entity COMPONENTS uuid = <market_order>-ProductUUID ].
+
+      <market_order>-AmountCurrency = product-PriceCurrency.
+      <market_order>-NetAmount      = <market_order>-Quantity * product-Price.
+      <market_order>-GrossAmount    = <market_order>-NetAmount + ( <market_order>-NetAmount * product-TaxRate / 100 ).
+    ENDLOOP.
+
+    MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY marketorders
+           UPDATE
+           FIELDS ( netamount grossamount amountcurrency )
+           WITH CORRESPONDING #( market_orders )
+           FAILED failed
+           REPORTED reported.
+  ENDMETHOD.
+
+  METHOD calculate_total_amount.
+    MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY marketorders
+           EXECUTE recalculatetotalamount
+           FROM CORRESPONDING #( keys )
+           REPORTED DATA(execute_reported).
+
+    reported = CORRESPONDING #( DEEP execute_reported ).
+  ENDMETHOD.
+ENDCLASS.

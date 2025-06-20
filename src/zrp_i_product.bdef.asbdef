@@ -1,0 +1,142 @@
+managed implementation in class zbp_rp_i_product unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZRP_I_PRODUCT alias Product
+persistent table zrp_d_product
+draft table zrp_x_product
+lock master total etag ChangedOn
+authorization master ( instance )
+etag master LocalChangedOn
+{
+  association _ProductMarket { create; with draft; }
+
+  create;
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) UUID;
+  field ( readonly ) CreatedBy, CreatedOn, ChangedBy, ChangedOn;
+  field ( mandatory ) ID, Name, ProductGroupID, Price, PriceCurrency;
+
+  determination setInitialPhase on save { create; }
+
+  validation validateProductID on save { field ID; create; }
+  validation validateProductGroup on save { field ProductGroupID; create; }
+
+  draft determine action Prepare
+  {
+    validation validateProductID;
+    validation validateProductGroup;
+  }
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+
+  action ( features : instance ) copyProduct parameter ZRP_A_IP_COPY_PRODUCT result [1] $self;
+
+  mapping for zrp_d_product
+    {
+      UUID           = produuid;
+      ID             = prodid;
+      Name           = prodname;
+      ProductGroupID = pgid;
+      PhaseID        = phaseid;
+      Height         = height;
+      Depth          = depth;
+      Width          = width;
+      SizeUOM        = sizeuom;
+      Price          = price;
+      PriceCurrency  = pricecurrency;
+      TaxRate        = taxrate;
+      CreatedBy      = createdby;
+      CreatedOn      = createdon;
+      ChangedBy      = changedby;
+      ChangedOn      = changedon;
+      LocalChangedOn = localchangedon;
+    }
+}
+
+define behavior for ZRP_I_PRODUCT_MARKET alias ProductMarkets
+persistent table zrp_d_prod_mrkt
+draft table zrp_x_prod_mrkt
+lock dependent by _Product
+authorization dependent by _Product
+etag master LocalChangedOn
+{
+  association _Product { with draft; }
+  association _MarketOrder { create; with draft; }
+
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) ProductMarketUUID;
+  field ( readonly ) ProductUUID, ISOCode, CreatedBy, CreatedOn, ChangedBy, ChangedOn;
+
+  determination setISOCode on save { create; update; }
+
+  action ( features : instance ) acceptMarket result [1] $self;
+  action ( features : instance ) rejectMarket result [1] $self;
+
+  mapping for zrp_d_prod_mrkt
+    {
+      ProductUUID       = produuid;
+      ProductMarketUUID = mrktuuid;
+      MarketID          = mrktid;
+      Status            = status;
+      StartDate         = startdate;
+      EndDate           = enddate;
+      CreatedBy         = createdby;
+      CreatedOn         = createdon;
+      ChangedBy         = changedby;
+      ChangedOn         = changedon;
+      LocalChangedOn    = localchangedon;
+    }
+}
+
+define behavior for ZRP_I_MARKET_ORDER alias MarketOrders
+persistent table zrp_d_mrkt_order
+draft table zrp_x_mrkt_order
+lock dependent by _Product
+authorization dependent by _Product
+etag master LocalChangedOn
+{
+  association _Product { with draft; }
+  association _ProductMarket { with draft; }
+
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) OrderUUID;
+  field ( readonly ) ProductUUID, ProductMarketUUID, CreatedBy, CreatedOn, ChangedBy, ChangedOn;
+
+  internal action recalculateTotalAmount;
+
+  determination calculateTotalAmount on modify { field Quantity; }
+
+  side effects
+  {
+    field Quantity affects field NetAmount, field GrossAmount, field AmountCurrency;
+  }
+
+  mapping for zrp_d_mrkt_order
+    {
+      ProductUUID       = produuid;
+      ProductMarketUUID = mrktuuid;
+      OrderUUID         = orderuuid;
+      OrderID           = orderid;
+      Quantity          = quantity;
+      CalendarYear      = calendaryear;
+      DeliveryDate      = deliverydate;
+      NetAmount         = netamount;
+      GrossAmount       = grossamount;
+      AmountCurrency    = amountcurr;
+      CreatedBy         = createdby;
+      CreatedOn         = createdon;
+      ChangedBy         = changedby;
+      ChangedOn         = changedon;
+      LocalChangedOn    = localchangedon;
+    }
+}

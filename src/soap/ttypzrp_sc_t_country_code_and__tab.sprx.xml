@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SPRX" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROXY_HEADER>
+    <item>
+     <OBJECT>TTYP</OBJECT>
+     <OBJ_NAME>ZRP_SC_T_COUNTRY_CODE_AND__TAB</OBJ_NAME>
+     <OBJECT_M>TTYP</OBJECT_M>
+     <OBJ_NAME_M>ZRP_SC_T_COUNTRY_CODE_AND__TAB</OBJ_NAME_M>
+     <HASH_ID>4D88106F34FB5F8C0A871D25FA6614A60AC0049D</HASH_ID>
+     <ID>TableOf&lt;type&gt; tCountryCodeAndNameGroupedByContinent http://www.oorsprong.org/websamples.countryinfo http://www.oorsprong.org/websamples.countryinfo</ID>
+     <IFR_GLOBAL>X</IFR_GLOBAL>
+     <IFR_TYPE>TableOftype</IFR_TYPE>
+     <IFR_NAME>tCountryCodeAndNameGroupedByContinent</IFR_NAME>
+     <IFR_NSPCE>http://www.oorsprong.org/websamples.countryinfo</IFR_NSPCE>
+     <IFR_GNSPCE>http://www.oorsprong.org/websamples.countryinfo</IFR_GNSPCE>
+     <GEN_VERS>0005</GEN_VERS>
+     <PREFIX>ZRP_SC_</PREFIX>
+     <CATEGORY>ifmtypedef</CATEGORY>
+     <GEN_APPL>WEBSERVICES</GEN_APPL>
+    </item>
+   </PROXY_HEADER>
+   <PROXY_DATA>
+    <item>
+     <OBJECT>TTYP</OBJECT>
+     <OBJ_NAME>ZRP_SC_T_COUNTRY_CODE_AND__TAB</OBJ_NAME>
+     <OBJECT1>TTYP</OBJECT1>
+     <OBJ_NAME1>ZRP_SC_T_COUNTRY_CODE_AND__TAB</OBJ_NAME1>
+     <OBJECT2>TTYP</OBJECT2>
+     <OBJ_NAME2>ZRP_SC_T_COUNTRY_CODE_AND__TAB</OBJ_NAME2>
+     <OBJECT_R>TABL</OBJECT_R>
+     <OBJ_NAME_R>ZRP_SC_T_COUNTRY_CODE_AND_NAME</OBJ_NAME_R>
+     <ID>TableOf&lt;type&gt; tCountryCodeAndNameGroupedByContinent http://www.oorsprong.org/websamples.countryinfo http://www.oorsprong.org/websamples.countryinfo</ID>
+     <IFR_TYPE>TableOftype</IFR_TYPE>
+     <IFR_NAME>tCountryCodeAndNameGroupedByContinent</IFR_NAME>
+     <IFR_SCALE>-2</IFR_SCALE>
+     <R3_TYPE>TTYP</R3_TYPE>
+     <R3_NAME>ZRP_SC_T_COUNTRY_CODE_AND__TAB</R3_NAME>
+     <R3_TEXT>Proxy Table Type (generated)</R3_TEXT>
+     <CATEGORY>ifmtypedef</CATEGORY>
+    </item>
+   </PROXY_DATA>
+  </asx:values>
+ </asx:abap>
+</abapGit>

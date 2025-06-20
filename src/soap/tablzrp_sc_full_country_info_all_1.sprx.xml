@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SPRX" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROXY_HEADER>
+    <item>
+     <OBJECT>TABL</OBJECT>
+     <OBJ_NAME>ZRP_SC_FULL_COUNTRY_INFO_ALL_1</OBJ_NAME>
+     <OBJECT_M>TABL</OBJECT_M>
+     <OBJ_NAME_M>ZRP_SC_FULL_COUNTRY_INFO_ALL_1</OBJ_NAME_M>
+     <HASH_ID>681B25D8F12EBA167841806188FB28C1417EF0B6</HASH_ID>
+     <ID>&lt;message&gt; FullCountryInfoAllCountriesSoapRequest http://www.oorsprong.org/websamples.countryinfo http://www.oorsprong.org/websamples.countryinfo</ID>
+     <IFR_GLOBAL>X</IFR_GLOBAL>
+     <IFR_TYPE>message</IFR_TYPE>
+     <IFR_NAME>FullCountryInfoAllCountriesSoapRequest</IFR_NAME>
+     <IFR_NSPCE>http://www.oorsprong.org/websamples.countryinfo</IFR_NSPCE>
+     <IFR_GNSPCE>http://www.oorsprong.org/websamples.countryinfo</IFR_GNSPCE>
+     <GEN_VERS>0006</GEN_VERS>
+     <PREFIX>ZRP_SC_</PREFIX>
+     <CATEGORY>ifmmessage</CATEGORY>
+     <GEN_APPL>WEBSERVICES</GEN_APPL>
+     <X-ML_NSPCE>http://www.oorsprong.org/websamples.countryinfo</X-ML_NSPCE>
+     <X-ML_NAME>FullCountryInfoAllCountries</X-ML_NAME>
+    </item>
+   </PROXY_HEADER>
+   <PROXY_DATA>
+    <item>
+     <OBJECT>TABL</OBJECT>
+     <OBJ_NAME>ZRP_SC_FULL_COUNTRY_INFO_ALL_1</OBJ_NAME>
+     <OBJECT1>TABL</OBJECT1>
+     <OBJ_NAME1>ZRP_SC_FULL_COUNTRY_INFO_ALL_1</OBJ_NAME1>
+     <OBJECT2>TABL</OBJECT2>
+     <OBJ_NAME2>ZRP_SC_FULL_COUNTRY_INFO_ALL_1</OBJ_NAME2>
+     <ID>&lt;message&gt; FullCountryInfoAllCountriesSoapRequest http://www.oorsprong.org/websamples.countryinfo http://www.oorsprong.org/websamples.countryinfo</ID>
+     <IFR_TYPE>message</IFR_TYPE>
+     <IFR_NAME>FullCountryInfoAllCountriesSoapRequest</IFR_NAME>
+     <IFR_SCALE>-2</IFR_SCALE>
+     <R3_TYPE>TABL</R3_TYPE>
+     <R3_NAME>ZRP_SC_FULL_COUNTRY_INFO_ALL_1</R3_NAME>
+     <R3_TEXT>Proxy Structure (generated)</R3_TEXT>
+     <CATEGORY>ifmmessage</CATEGORY>
+    </item>
+   </PROXY_DATA>
+  </asx:values>
+ </asx:abap>
+</abapGit>

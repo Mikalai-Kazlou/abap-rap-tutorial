@@ -1,0 +1,144 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: { typeName: 'Product',
+                  typeNamePlural: 'Products',
+                  title: { type: #STANDARD, label: 'Product', value: 'Name' } }
+
+@UI.presentationVariant: [ { sortOrder: [ { by: 'ID', direction: #DESC } ] } ]
+@UI.lineItem: [{criticality: 'PhaseID'}]
+
+annotate view ZRP_C_PRODUCT with
+{
+  @UI.facet: [ { targetQualifier: 'Phase',
+                 type: #DATAPOINT_REFERENCE,
+                 purpose: #HEADER
+               },
+
+               { id: 'GeneralData',
+                 label: 'General data',
+                 purpose: #STANDARD,
+                 type: #COLLECTION,
+                 targetQualifier: 'GeneralData',
+                 position: 10
+               },
+
+                   { id: 'Product',
+                     label: 'Product',
+                     parentId: 'GeneralData',
+                     purpose: #STANDARD,
+                     type: #FIELDGROUP_REFERENCE,
+                     targetQualifier: 'Product',
+                     position: 10
+                   },
+
+                   { id: 'Price',
+                     label: 'Price',
+                     parentId: 'GeneralData',
+                     purpose: #STANDARD,
+                     type: #FIELDGROUP_REFERENCE,
+                     targetQualifier: 'Price',
+                     position: 20
+                   },
+
+                   { id: 'Dimensions',
+                     label: 'Dimensions',
+                     parentId: 'GeneralData',
+                     purpose: #STANDARD,
+                     type: #FIELDGROUP_REFERENCE,
+                     targetQualifier: 'Dimensions',
+                     position: 30
+                   },
+
+               { id: 'TechnicalData',
+                 label: 'Technical data',
+                 purpose: #STANDARD,
+                 type: #FIELDGROUP_REFERENCE,
+                 targetQualifier: 'TechnicalData',
+                 position: 20
+               },
+
+               { type: #LINEITEM_REFERENCE,
+                 purpose: #STANDARD,
+                 label: 'Product Markets',
+                 id: 'ProductMarkets',
+                 targetElement: 'ProductMarkets',
+                 position: 30
+               }
+             ]
+
+  @UI.hidden: true
+  UUID;
+
+  @EndUserText.label: 'Product'
+  @UI.fieldGroup: [ { qualifier: 'Product', position: 20 } ]
+  @UI.lineItem: [ { position: 10 },
+                  { type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' } ]
+  @UI.selectionField: [ { position: 10 } ]
+  ID;
+
+  @UI.fieldGroup: [ { qualifier: 'Product', position: 30 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  @UI.selectionField: [ { position: 20 } ]
+  Name;
+
+  @EndUserText.label: 'Product Group'
+  @UI.fieldGroup: [ { qualifier: 'Product', position: 40 } ]
+  @UI.lineItem: [ { position: 30 } ]
+  @UI.selectionField: [ { position: 30 } ]
+  ProductGroupID;
+
+  @UI.hidden: true
+  ProductGroupName;
+
+  @EndUserText.label: 'Phase'
+  @UI.dataPoint: { title: 'Phase', qualifier: 'Phase', criticality: 'PhaseID' }
+  @UI.fieldGroup: [ { qualifier: 'Product', position: 10, criticality: 'PhaseID' } ]
+  @UI.lineItem: [ { position: 40, criticality: 'PhaseID' } ]
+  @UI.selectionField: [ { position: 40 } ]
+  PhaseID;
+
+  @UI.hidden: true
+  PhaseText;
+
+  @UI.fieldGroup: [ { qualifier: 'Dimensions', position: 10 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  Height;
+
+  @UI.fieldGroup: [ { qualifier: 'Dimensions', position: 20 } ]
+  @UI.lineItem: [ { position: 60 } ]
+  Depth;
+
+  @UI.fieldGroup: [ { qualifier: 'Dimensions', position: 30 } ]
+  @UI.lineItem: [ { position: 70 } ]
+  Width;
+
+  @EndUserText.label: 'Size UoM'
+  SizeUOM;
+
+  @UI.fieldGroup: [ { qualifier: 'Price', position: 10 } ]
+  @UI.lineItem: [ { position: 90 } ]
+  @UI.selectionField: [ { position: 50 } ]
+  Price;
+
+  @UI.selectionField: [ { position: 60 } ]
+  PriceCurrency;
+
+  @UI.fieldGroup: [ { qualifier: 'Price', position: 20 } ]
+  @UI.lineItem: [ { position: 110 } ]
+  TaxRate;
+
+  @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 10 } ]
+  @UI.lineItem: [ { position: 120 } ]
+  CreatedBy;
+
+  @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 20 } ]
+  @UI.lineItem: [ { position: 130 } ]
+  CreatedOn;
+
+  @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 30 } ]
+  @UI.lineItem: [ { position: 140 } ]
+  ChangedBy;
+
+  @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 40 } ]
+  @UI.lineItem: [ { position: 150 } ]
+  ChangedOn;
+}
