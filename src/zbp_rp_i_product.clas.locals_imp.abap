@@ -84,9 +84,9 @@ CLASS lhc_product IMPLEMENTATION.
   METHOD set_initial_phase.
     " Read relevant product instance data
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY product
-         FIELDS ( phaseid ) WITH CORRESPONDING #( keys )
-         RESULT DATA(products).
+           ENTITY product
+           FIELDS ( phaseid ) WITH CORRESPONDING #( keys )
+           RESULT DATA(products).
 
     " Remove all product instance data with defined phase
     DELETE products WHERE phaseid IS NOT INITIAL.
@@ -96,12 +96,12 @@ CLASS lhc_product IMPLEMENTATION.
 
     " Set default phase
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
-           ENTITY product
-           UPDATE
-           FIELDS ( phaseid )
-           WITH VALUE #( FOR product IN products
-                         ( %tky    = product-%tky
-                           phaseid = phases-planning ) )
+             ENTITY product
+             UPDATE
+             FIELDS ( phaseid )
+               WITH VALUE #( FOR product IN products
+                             ( %tky    = product-%tky
+                               phaseid = phases-planning ) )
            REPORTED DATA(update_reported).
 
     reported = CORRESPONDING #( DEEP update_reported ).
@@ -115,9 +115,10 @@ CLASS lhc_product IMPLEMENTATION.
 
     " Read relevant product instance data
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY product
-         FIELDS ( id ) WITH CORRESPONDING #( keys )
-         RESULT DATA(products).
+           ENTITY product
+           FIELDS ( id )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(products).
 
     " Optimization of DB select: extract distinct non-initial product IDs
     product_ids = CORRESPONDING #( products DISCARDING DUPLICATES MAPPING prodid = id EXCEPT * ).
@@ -126,9 +127,9 @@ CLASS lhc_product IMPLEMENTATION.
     IF product_ids IS NOT INITIAL.
       " Check if product ID exist
       SELECT FROM zrp_d_product
-        FIELDS prodid
-        FOR ALL ENTRIES IN @product_ids
-        WHERE prodid = @product_ids-prodid
+      FIELDS prodid
+         FOR ALL ENTRIES IN @product_ids
+       WHERE prodid = @product_ids-prodid
         INTO TABLE @DATA(products_db).
     ENDIF.
 
@@ -155,9 +156,9 @@ CLASS lhc_product IMPLEMENTATION.
     DATA new_products TYPE TABLE FOR CREATE zrp_i_product.
 
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY product
-         ALL FIELDS WITH CORRESPONDING #( keys )
-         RESULT DATA(products).
+           ENTITY product
+              ALL FIELDS WITH CORRESPONDING #( keys )
+           RESULT DATA(products).
 
     LOOP AT products ASSIGNING FIELD-SYMBOL(<product>).
       <product>-id      = keys[ KEY id COMPONENTS %tky = <product>-%tky ]-%param-productid.
@@ -167,16 +168,16 @@ CLASS lhc_product IMPLEMENTATION.
     new_products = CORRESPONDING #( products EXCEPT uuid createdby createdon changedby changedon ).
 
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
-           ENTITY product
-           CREATE
-           AUTO FILL CID
-           SET FIELDS WITH new_products
-           MAPPED   mapped
-           FAILED   failed
+             ENTITY product
+             CREATE
+               AUTO FILL CID
+                SET FIELDS WITH new_products
+             MAPPED mapped
+             FAILED failed
            REPORTED reported.
 
     READ ENTITY IN LOCAL MODE zrp_i_product
-         ALL FIELDS WITH CORRESPONDING #( mapped-product )
+            ALL FIELDS WITH CORRESPONDING #( mapped-product )
          RESULT DATA(products_db)
          FAILED failed.
 
@@ -192,10 +193,11 @@ CLASS lhc_product_market IMPLEMENTATION.
   METHOD get_instance_features.
     " Read the market status
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY productmarkets
-         FIELDS ( status ) WITH CORRESPONDING #( keys )
-         RESULT DATA(product_markets)
-         FAILED failed.
+           ENTITY productmarkets
+           FIELDS ( status )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(product_markets)
+           FAILED failed.
 
     result =
       VALUE #( FOR product_market IN product_markets
@@ -205,7 +207,7 @@ CLASS lhc_product_market IMPLEMENTATION.
                    is_rejected = COND #( WHEN product_market-status = market_statuses-rejected
                                          THEN if_abap_behv=>fc-o-disabled
                                          ELSE if_abap_behv=>fc-o-enabled )
-               IN
+                IN
                    ( %tky                 = product_market-%tky
                      %action-acceptmarket = is_accepted
                      %action-rejectmarket = is_rejected ) ).
@@ -217,20 +219,20 @@ CLASS lhc_product_market IMPLEMENTATION.
   METHOD accept_market.
     " Set the new overall status
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
-           ENTITY productmarkets
-           UPDATE
-           FIELDS ( status )
-           WITH VALUE #( FOR key IN keys
-                         ( %tky   = key-%tky
-                           status = market_statuses-accepted ) )
-           FAILED failed
+             ENTITY productmarkets
+             UPDATE
+             FIELDS ( status )
+               WITH VALUE #( FOR key IN keys
+                             ( %tky   = key-%tky
+                               status = market_statuses-accepted ) )
+             FAILED failed
            REPORTED reported.
 
     " Fill the response table
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY productmarkets
-         ALL FIELDS WITH CORRESPONDING #( keys )
-         RESULT DATA(product_markets).
+           ENTITY productmarkets
+              ALL FIELDS WITH CORRESPONDING #( keys )
+           RESULT DATA(product_markets).
 
     result = VALUE #( FOR product_market IN product_markets
                       ( %tky   = product_market-%tky
@@ -240,20 +242,20 @@ CLASS lhc_product_market IMPLEMENTATION.
   METHOD reject_market.
     " Set the new overall status
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
-           ENTITY productmarkets
-           UPDATE
-           FIELDS ( status )
-           WITH VALUE #( FOR key IN keys
-                         ( %tky   = key-%tky
-                           status = market_statuses-rejected ) )
-           FAILED failed
+             ENTITY productmarkets
+             UPDATE
+             FIELDS ( status )
+               WITH VALUE #( FOR key IN keys
+                             ( %tky   = key-%tky
+                               status = market_statuses-rejected ) )
+             FAILED failed
            REPORTED reported.
 
     " Fill the response table
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY productmarkets
-         ALL FIELDS WITH CORRESPONDING #( keys )
-         RESULT DATA(product_markets).
+           ENTITY productmarkets
+              ALL FIELDS WITH CORRESPONDING #( keys )
+           RESULT DATA(product_markets).
 
     result = VALUE #( FOR product_market IN product_markets
                       ( %tky   = product_market-%tky
@@ -265,10 +267,10 @@ CLASS lhc_product_market IMPLEMENTATION.
     DATA product_markets_update TYPE TABLE FOR UPDATE zrp_i_product_market.
 
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY ProductMarkets
-         FIELDS ( MarketID )
-         WITH CORRESPONDING #( keys )
-         RESULT DATA(product_markets).
+           ENTITY ProductMarkets
+           FIELDS ( MarketID )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(product_markets).
 
     market_range = VALUE #( FOR <product_market> IN product_markets ( sign = 'I' option = 'EQ' low = <product_market>-MarketID ) ).
     DELETE ADJACENT DUPLICATES FROM market_range.
@@ -289,11 +291,11 @@ CLASS lhc_product_market IMPLEMENTATION.
     ENDLOOP.
 
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
-           ENTITY productmarkets
-           UPDATE
-           FIELDS ( ISOCode )
-           WITH product_markets_update
-           FAILED DATA(modify_failed)
+             ENTITY productmarkets
+             UPDATE
+             FIELDS ( ISOCode )
+               WITH product_markets_update
+             FAILED DATA(modify_failed)
            REPORTED DATA(modify_reported).
 
     reported = CORRESPONDING #( DEEP modify_reported ).
@@ -322,16 +324,16 @@ ENDCLASS.
 CLASS lhc_market_order IMPLEMENTATION.
   METHOD recalculate_total_amount.
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY marketorders BY \_Product
-         FIELDS ( price pricecurrency taxrate )
-         WITH CORRESPONDING #( keys )
-         RESULT DATA(products).
 
-    READ ENTITIES OF zrp_i_product IN LOCAL MODE
-         ENTITY marketorders
-         FIELDS ( quantity )
-         WITH CORRESPONDING #( keys )
-         RESULT DATA(market_orders).
+           ENTITY marketorders BY \_Product
+           FIELDS ( price pricecurrency taxrate )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(products)
+
+           ENTITY marketorders
+           FIELDS ( quantity )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(market_orders).
 
     LOOP AT market_orders ASSIGNING FIELD-SYMBOL(<market_order>).
       DATA(product) = products[ KEY entity COMPONENTS uuid = <market_order>-ProductUUID ].
@@ -342,19 +344,20 @@ CLASS lhc_market_order IMPLEMENTATION.
     ENDLOOP.
 
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
-           ENTITY marketorders
-           UPDATE
-           FIELDS ( netamount grossamount amountcurrency )
-           WITH CORRESPONDING #( market_orders )
-           FAILED failed
+             ENTITY marketorders
+             UPDATE
+             FIELDS ( netamount grossamount amountcurrency )
+               WITH CORRESPONDING #( market_orders )
+             FAILED failed
            REPORTED reported.
+
   ENDMETHOD.
 
   METHOD calculate_total_amount.
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
-           ENTITY marketorders
-           EXECUTE recalculatetotalamount
-           FROM CORRESPONDING #( keys )
+             ENTITY marketorders
+            EXECUTE recalculateTotalAmount
+               FROM CORRESPONDING #( keys )
            REPORTED DATA(execute_reported).
 
     reported = CORRESPONDING #( DEEP execute_reported ).
