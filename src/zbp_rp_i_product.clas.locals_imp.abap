@@ -9,6 +9,9 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
         phase_out   TYPE zrp_d_phase-phaseid VALUE 4,
       END OF phases.
 
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR product RESULT result.
+
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR product RESULT result.
 
@@ -43,6 +46,9 @@ CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR productmarkets RESULT result.
 
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR productmarkets RESULT result.
+
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR productmarkets RESULT result.
 
@@ -75,6 +81,9 @@ ENDCLASS.
 
 
 CLASS lhc_product IMPLEMENTATION.
+  METHOD get_global_authorizations.
+  ENDMETHOD.
+
   METHOD get_instance_authorizations.
   ENDMETHOD.
 
@@ -85,7 +94,8 @@ CLASS lhc_product IMPLEMENTATION.
     " Read relevant product instance data
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
            ENTITY product
-           FIELDS ( phaseid ) WITH CORRESPONDING #( keys )
+           FIELDS ( phaseid )
+             WITH CORRESPONDING #( keys )
            RESULT DATA(products).
 
     " Remove all product instance data with defined phase
@@ -211,6 +221,9 @@ CLASS lhc_product_market IMPLEMENTATION.
                    ( %tky                 = product_market-%tky
                      %action-acceptmarket = is_accepted
                      %action-rejectmarket = is_rejected ) ).
+  ENDMETHOD.
+
+  METHOD get_global_authorizations.
   ENDMETHOD.
 
   METHOD get_instance_authorizations.

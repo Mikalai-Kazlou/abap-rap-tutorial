@@ -6,7 +6,7 @@ define behavior for ZRP_I_PRODUCT alias Product
 persistent table zrp_d_product
 draft table zrp_x_product
 lock master total etag ChangedOn
-authorization master ( instance )
+authorization master ( global, instance )
 etag master LocalChangedOn
 {
   association _ProductMarket { create; with draft; }
@@ -21,8 +21,8 @@ etag master LocalChangedOn
 
   determination setInitialPhase on save { create; }
 
-  validation validateProductID on save { field ID; create; }
-  validation validateProductGroup on save { field ProductGroupID; create; }
+  validation validateProductID on save { create; field ID; }
+  validation validateProductGroup on save { create; field ProductGroupID; }
 
   draft determine action Prepare
   {
