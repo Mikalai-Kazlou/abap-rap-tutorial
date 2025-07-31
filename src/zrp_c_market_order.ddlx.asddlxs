@@ -5,13 +5,15 @@
 
 annotate entity ZRP_C_MARKET_ORDER with
 {
-  @UI.facet: [ { id: 'MarketOrders',
-                 purpose: #STANDARD,
-                 type: #IDENTIFICATION_REFERENCE,
-                 label: 'Market Orders',
-                 position: 10
-               }
-             ]
+  @UI.facet: [
+  
+    { id: 'MarketOrders',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Market Orders',
+      position: 10
+    }
+  ]
 
   @UI.hidden: true
   ProductUUID;

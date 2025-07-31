@@ -18,19 +18,19 @@ CLASS zrp_cl_generate_data IMPLEMENTATION.
     lt_prod_grs = VALUE #(
         ( pgid     = '1'
           pgname   = 'Microwave'
-          imageurl = 'https://png.pngtree.com/png-clipart/20190517/original/pngtree-vector-microwave-oven-icon-png-image_4015182.jpg' )
+          imageurl = 'https://dummyjson.com/image/500x500/4B9BE1/FFFFFF?text=Microwave' )
         ( pgid     = '2'
           pgname   = 'Coffee Machine'
-          imageurl = 'https://icon-library.com/images/coffee-maker-icon/coffee-maker-icon-13.jpg' )
+          imageurl = 'https://dummyjson.com/image/500x500/4B9BE1/FFFFFF?text=Coffee Machine' )
         ( pgid     = '3'
           pgname   = 'Waffle Iron'
-          imageurl = 'https://previews.123rf.com/images/anatolir/anatolir1810/anatolir181004863/110698658-waffle-maker-icon-outline-style.jpg' )
+          imageurl = 'https://dummyjson.com/image/500x500/4B9BE1/FFFFFF?text=Waffle Iron' )
         ( pgid     = '4'
           pgname   = 'Blender'
-          imageurl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRSLnFTOSs5ZV0d8pwhPzs4KANsvq1oZ7hyrg&usqp=CAU' )
+          imageurl = 'https://dummyjson.com/image/500x500/4B9BE1/FFFFFF?text=Blender' )
         ( pgid     = '5'
           pgname   = 'Cooker'
-          imageurl = 'https://st4.depositphotos.com/18657574/22404/v/1600/depositphotos_224044856-stock-illustration-stove-concept-vector-linear-icon.jpg' ) ).
+          imageurl = 'https://dummyjson.com/image/500x500/4B9BE1/FFFFFF?text=Cooker' ) ).
 
     " Delete the possible entries in the database table - in case it was already filled
     DELETE FROM zrp_d_prod_group.

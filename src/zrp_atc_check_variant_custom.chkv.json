@@ -1,0 +1,447 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Custom ATC Check variant",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "selectedChecks": [
+    {
+      "checkName": "SLIN_MAIN",
+      "parameters": [
+        {
+          "name": "StandardOrCustom",
+          "value": "1"
+        },
+        {
+          "name": "SubroutineInterfaces",
+          "value": "true"
+        },
+        {
+          "name": "FunctionInterfaces",
+          "value": "true"
+        },
+        {
+          "name": "ExternalProgramInterfaces",
+          "value": "true"
+        },
+        {
+          "name": "LoadSizes",
+          "value": "true"
+        },
+        {
+          "name": "Authorizations",
+          "value": "true"
+        },
+        {
+          "name": "GuiStatus",
+          "value": "true"
+        },
+        {
+          "name": "SetGetParameters",
+          "value": "true"
+        },
+        {
+          "name": "MessageStatements",
+          "value": "true"
+        },
+        {
+          "name": "Strings",
+          "value": "true"
+        },
+        {
+          "name": "CurrencyFields",
+          "value": "true"
+        },
+        {
+          "name": "FieldAttributes",
+          "value": "true"
+        },
+        {
+          "name": "SyntaxCheckWarnings",
+          "value": "true"
+        },
+        {
+          "name": "Internationalization",
+          "value": "true"
+        },
+        {
+          "name": "SuperfluousStatements",
+          "value": "true"
+        },
+        {
+          "name": "ProblematicStatements",
+          "value": "true"
+        },
+        {
+          "name": "StructureEnhancements",
+          "value": "true"
+        },
+        {
+          "name": "OutdatedStatements",
+          "value": "false"
+        },
+        {
+          "name": "CrossProgramChecks",
+          "value": "false"
+        },
+        {
+          "name": "ProgrammingGuidelines",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_ANALYZE_WHERE",
+      "parameters": [
+        {
+          "name": "NoWhereCondition",
+          "value": "true"
+        },
+        {
+          "name": "NoIndexInWhereCondition",
+          "value": "true"
+        },
+        {
+          "name": "NoFirstIndexFieldInWhereCondition",
+          "value": "true"
+        },
+        {
+          "name": "ClientSpecifiedWithoutMandt",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_ANALYZE_WHERE_IMUD",
+      "parameters": [
+        {
+          "name": "NoWhereCondition",
+          "value": "true"
+        },
+        {
+          "name": "NoIndexInWhereCondition",
+          "value": "true"
+        },
+        {
+          "name": "NoFirstIndexFieldInWhereCondition",
+          "value": "true"
+        },
+        {
+          "name": "ClientSpecifiedWithoutMandt",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_SELECT_EXIT",
+      "parameters": [
+        {
+          "name": "ExitInSelect",
+          "value": "true"
+        },
+        {
+          "name": "EmptySelect",
+          "value": "true"
+        },
+        {
+          "name": "UnBufferedOnly",
+          "value": "false"
+        },
+        {
+          "name": "SkipUniqueAccess",
+          "value": "false"
+        },
+        {
+          "name": "SingleEntry",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_SEQ_ACC_ITAB_NESTED",
+      "parameters": [
+        {
+          "name": "SearchLoops",
+          "value": "true"
+        },
+        {
+          "name": "SearchSelectLoops",
+          "value": "true"
+        },
+        {
+          "name": "SearchOtherLoops",
+          "value": "false"
+        },
+        {
+          "name": "ReportInnerLoopWithWhere",
+          "value": "true"
+        },
+        {
+          "name": "ReportInnerSequentialRead",
+          "value": "true"
+        },
+        {
+          "name": "ReportInnerSequentialDBModify",
+          "value": "true"
+        },
+        {
+          "name": "ReportOtherSequentialAccesses",
+          "value": "false"
+        },
+        {
+          "name": "ReportInnerSort",
+          "value": "false"
+        },
+        {
+          "name": "ReportInnerLoopWithoutWhere",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_ITAB_PERFORMANCE",
+      "parameters": [
+        {
+          "name": "CheckStandardTables",
+          "value": "true"
+        },
+        {
+          "name": "CheckSortedTables",
+          "value": "true"
+        },
+        {
+          "name": "CheckHashedTables",
+          "value": "true"
+        },
+        {
+          "name": "CheckGenericTables",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_SORT_IN_LOOP"
+    },
+    {
+      "checkName": "CI_DB_OPS_IN_LOOPS",
+      "parameters": [
+        {
+          "name": "Tables"
+        },
+        {
+          "name": "TablesCategory",
+          "value": "0"
+        },
+        {
+          "name": "CallStackDepth",
+          "value": "3"
+        },
+        {
+          "name": "BufferedReads",
+          "value": "true"
+        },
+        {
+          "name": "OnlyLocal",
+          "value": "false"
+        },
+        {
+          "name": "AnalyzeReads",
+          "value": "true"
+        },
+        {
+          "name": "AnalyzeWrites",
+          "value": "true"
+        },
+        {
+          "name": "AnalyzeExecSQL",
+          "value": "true"
+        },
+        {
+          "name": "MaxStacksNumber",
+          "value": "10"
+        },
+        {
+          "name": "EffortLocalLoop",
+          "value": "10"
+        },
+        {
+          "name": "EffortCalls",
+          "value": "20"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_SELECT_WITH_DELETE"
+    },
+    {
+      "checkName": "CI_ANALYZE_SELECT_HANA",
+      "parameters": [
+        {
+          "name": "RestrictToTables"
+        },
+        {
+          "name": "MinimumTableSizeCategory",
+          "value": "0"
+        },
+        {
+          "name": "MinimumNumberOfTableFields",
+          "value": "2"
+        },
+        {
+          "name": "PercentageOfFields",
+          "value": "20"
+        },
+        {
+          "name": "ExcludeBufferedReads",
+          "value": "true"
+        },
+        {
+          "name": "OnlyLocalProcedures",
+          "value": "true"
+        },
+        {
+          "name": "NonLocalAnalysisDepth",
+          "value": "1"
+        },
+        {
+          "name": "DoNotTransformSelects",
+          "value": "false"
+        },
+        {
+          "name": "AssignmentEffort",
+          "value": "20"
+        },
+        {
+          "name": "AssignmentColumnAccess",
+          "value": "10"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_SELECT_TAW_BYBUF"
+    },
+    {
+      "checkName": "CI_SELECT_THEN_CHECK"
+    },
+    {
+      "checkName": "CI_VALUE_PARAMETER",
+      "parameters": [
+        {
+          "name": "CheckNestedTables",
+          "value": "true"
+        },
+        {
+          "name": "CheckTables",
+          "value": "true"
+        },
+        {
+          "name": "CheckStrings",
+          "value": "true"
+        },
+        {
+          "name": "CheckLongFields",
+          "value": "true"
+        },
+        {
+          "name": "CheckReturningParameters",
+          "value": "false"
+        },
+        {
+          "name": "CheckEventParameters",
+          "value": "false"
+        },
+        {
+          "name": "CheckUnchangedImportingParameters",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_FOR_ALL_ENTRIES_HANA",
+      "parameters": [
+        {
+          "name": "RestrictToTables"
+        },
+        {
+          "name": "MinimumTableSizeCategory",
+          "value": "0"
+        },
+        {
+          "name": "ExcludeBufferedReads",
+          "value": "true"
+        },
+        {
+          "name": "OnlyLocalProcedures",
+          "value": "true"
+        },
+        {
+          "name": "NonLocalAnalysisDepth",
+          "value": "1"
+        },
+        {
+          "name": "AssignmentEffort",
+          "value": "10"
+        },
+        {
+          "name": "CallEffort",
+          "value": "10"
+        }
+      ]
+    },
+    {
+      "checkName": "CI_DDIC_TABLES",
+      "parameters": [
+        {
+          "name": "CheckTechnicalSettings",
+          "value": "true"
+        },
+        {
+          "name": "CheckTableIndices",
+          "value": "true"
+        },
+        {
+          "name": "CheckBufferingOfINDXTables",
+          "value": "false"
+        },
+        {
+          "name": "CheckClientDependencyOfViews",
+          "value": "false"
+        },
+        {
+          "name": "CheckForHANASpecifics",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "checkName": "ABAP_UNIT",
+      "parameters": [
+        {
+          "name": "MaximumRiskLevel",
+          "value": "11"
+        },
+        {
+          "name": "MaximumRuntimeCategory",
+          "value": "12"
+        },
+        {
+          "name": "RuntimeRestriction",
+          "value": "2"
+        },
+        {
+          "name": "DurationLong",
+          "value": "3600"
+        },
+        {
+          "name": "DurationMedium",
+          "value": "300"
+        },
+        {
+          "name": "DurationShort",
+          "value": "60"
+        }
+      ]
+    }
+  ]
+}

@@ -24,6 +24,7 @@ define root view entity ZRP_C_PRODUCT
       @UI.textArrangement: #TEXT_ONLY
       ProductGroupID,
       _ProductGroup.ProductGroupName as ProductGroupName,
+      _ProductGroup.ImageUrl         as ProductGroupImageUrl,
 
       @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PHASE', element: 'PhaseID' } } ]
       @ObjectModel.text.element: ['PhaseText']

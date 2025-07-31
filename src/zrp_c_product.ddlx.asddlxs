@@ -1,74 +1,93 @@
 @Metadata.layer: #CORE
 @UI.headerInfo: { typeName: 'Product',
                   typeNamePlural: 'Products',
+                  imageUrl: 'ProductGroupImageUrl',
                   title: { type: #STANDARD, label: 'Product', value: 'Name' } }
 
-@UI.presentationVariant: [ { sortOrder: [ { by: 'ID', direction: #DESC } ] } ]
+@UI.presentationVariant: [ { sortOrder: [ { by: 'ProductGroupName', direction: #ASC },
+                                          { by: 'ID', direction: #ASC } ] } ]
+
 @UI.lineItem: [{criticality: 'PhaseID'}]
 
 annotate view ZRP_C_PRODUCT with
 {
-  @UI.facet: [ { targetQualifier: 'Phase',
-                 type: #DATAPOINT_REFERENCE,
-                 purpose: #HEADER
-               },
+  @UI.facet: [
 
-               { id: 'GeneralData',
-                 label: 'General data',
-                 purpose: #STANDARD,
-                 type: #COLLECTION,
-                 targetQualifier: 'GeneralData',
-                 position: 10
-               },
+    { targetQualifier: 'Phase',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 10
+    },
+    { targetQualifier: 'ProductID',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 20
+    },
+    { targetQualifier: 'NetPrice',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 30
+    },
+    { targetQualifier: 'TaxRate',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 40
+    },
 
-                   { id: 'Product',
-                     label: 'Product',
-                     parentId: 'GeneralData',
-                     purpose: #STANDARD,
-                     type: #FIELDGROUP_REFERENCE,
-                     targetQualifier: 'Product',
-                     position: 10
-                   },
+    { id: 'GeneralData',
+      label: 'General data',
+      purpose: #STANDARD,
+      type: #COLLECTION,
+      targetQualifier: 'GeneralData',
+      position: 10
+    },
+      { id: 'Product',
+        label: 'Product',
+        parentId: 'GeneralData',
+        purpose: #STANDARD,
+        type: #FIELDGROUP_REFERENCE,
+        targetQualifier: 'Product',
+        position: 10
+      },
+      { id: 'Price',
+        label: 'Price',
+        parentId: 'GeneralData',
+        purpose: #STANDARD,
+        type: #FIELDGROUP_REFERENCE,
+        targetQualifier: 'Price',
+        position: 20
+      },
+      { id: 'Dimensions',
+        label: 'Dimensions',
+        parentId: 'GeneralData',
+        purpose: #STANDARD,
+        type: #FIELDGROUP_REFERENCE,
+        targetQualifier: 'Dimensions',
+        position: 30
+      },
 
-                   { id: 'Price',
-                     label: 'Price',
-                     parentId: 'GeneralData',
-                     purpose: #STANDARD,
-                     type: #FIELDGROUP_REFERENCE,
-                     targetQualifier: 'Price',
-                     position: 20
-                   },
+    { id: 'TechnicalData',
+      label: 'Technical data',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'TechnicalData',
+      position: 20
+    },
 
-                   { id: 'Dimensions',
-                     label: 'Dimensions',
-                     parentId: 'GeneralData',
-                     purpose: #STANDARD,
-                     type: #FIELDGROUP_REFERENCE,
-                     targetQualifier: 'Dimensions',
-                     position: 30
-                   },
-
-               { id: 'TechnicalData',
-                 label: 'Technical data',
-                 purpose: #STANDARD,
-                 type: #FIELDGROUP_REFERENCE,
-                 targetQualifier: 'TechnicalData',
-                 position: 20
-               },
-
-               { type: #LINEITEM_REFERENCE,
-                 purpose: #STANDARD,
-                 label: 'Product Markets',
-                 id: 'ProductMarkets',
-                 targetElement: 'ProductMarkets',
-                 position: 30
-               }
-             ]
+    { type: #LINEITEM_REFERENCE,
+      purpose: #STANDARD,
+      label: 'Product Markets',
+      id: 'ProductMarkets',
+      targetElement: 'ProductMarkets',
+      position: 30
+    }
+  ]
 
   @UI.hidden: true
   UUID;
 
-  @EndUserText.label: 'Product'
+  @EndUserText.label: 'Product ID'
+  @UI.dataPoint: { title: 'Product ID', qualifier: 'ProductID' }
   @UI.fieldGroup: [ { qualifier: 'Product', position: 20 } ]
   @UI.lineItem: [ { position: 10 },
                   { type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' } ]
@@ -88,6 +107,9 @@ annotate view ZRP_C_PRODUCT with
 
   @UI.hidden: true
   ProductGroupName;
+
+  @UI.hidden: true
+  ProductGroupImageUrl;
 
   @EndUserText.label: 'Phase'
   @UI.dataPoint: { title: 'Phase', qualifier: 'Phase', criticality: 'PhaseID' }
@@ -114,6 +136,7 @@ annotate view ZRP_C_PRODUCT with
   @EndUserText.label: 'Size UoM'
   SizeUOM;
 
+  @UI.dataPoint: { title: 'Net Price', qualifier: 'NetPrice' }
   @UI.fieldGroup: [ { qualifier: 'Price', position: 10 } ]
   @UI.lineItem: [ { position: 90 } ]
   @UI.selectionField: [ { position: 50 } ]
@@ -122,6 +145,7 @@ annotate view ZRP_C_PRODUCT with
   @UI.selectionField: [ { position: 60 } ]
   PriceCurrency;
 
+  @UI.dataPoint: { title: 'Tax Rate', qualifier: 'TaxRate' }
   @UI.fieldGroup: [ { qualifier: 'Price', position: 20 } ]
   @UI.lineItem: [ { position: 110 } ]
   TaxRate;

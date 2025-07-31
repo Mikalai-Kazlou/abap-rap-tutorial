@@ -5,21 +5,23 @@
 
 annotate entity ZRP_C_PRODUCT_MARKET with
 {
-  @UI.facet: [ { id: 'ProductMarkets',
-                 purpose: #STANDARD,
-                 type: #IDENTIFICATION_REFERENCE,
-                 label: 'Product Markets',
-                 position: 10
-               },
+  @UI.facet: [
 
-               { type: #LINEITEM_REFERENCE,
-                 purpose: #STANDARD,
-                 label: 'Market Orders',
-                 id: 'MarketOrderss',
-                 targetElement: 'MarketOrders',
-                 position: 20
-               }
-             ]
+    { id: 'ProductMarkets',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Product Markets',
+      position: 10
+    },
+
+    { type: #LINEITEM_REFERENCE,
+      purpose: #STANDARD,
+      label: 'Market Orders',
+      id: 'MarketOrderss',
+      targetElement: 'MarketOrders',
+      position: 20
+    }
+  ]
 
   @UI.hidden: true
   ProductUUID;

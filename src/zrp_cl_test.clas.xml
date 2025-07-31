@@ -11,6 +11,48 @@
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
    </VSEOCLASS>
+   <TPOOL>
+    <item>
+     <ID>I</ID>
+     <KEY>001</KEY>
+     <ENTRY>Hello World!</ENTRY>
+     <LENGTH>30</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>002</KEY>
+     <ENTRY>How are you?</ENTRY>
+     <LENGTH>30</LENGTH>
+    </item>
+   </TPOOL>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZRP_CL_TEST</CLSNAME>
+     <CMPNAME>GET_ATTRIBUTE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>&lt;em&gt;Get&lt;/em&gt; attribute</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZRP_CL_TEST</CLSNAME>
+     <CMPNAME>SET_ATTRIBUTE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>&lt;em&gt;Set&lt;/em&gt; attribute</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_ATTRIBUTE</CMPNAME>
+     <SCONAME>R_RESULT</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Result</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_ATTRIBUTE</CMPNAME>
+     <SCONAME>I_ATTRIBUTE</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Attribute value</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
   </asx:values>
  </asx:abap>
 </abapGit>

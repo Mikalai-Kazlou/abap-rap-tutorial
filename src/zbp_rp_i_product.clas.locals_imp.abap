@@ -21,11 +21,11 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS set_initial_phase FOR DETERMINE ON SAVE
       IMPORTING keys FOR product~setinitialphase.
 
-    METHODS validate_product_group FOR VALIDATE ON SAVE
-      IMPORTING keys FOR product~validateproductgroup.
-
     METHODS validate_product_id FOR VALIDATE ON SAVE
       IMPORTING keys FOR product~validateproductid.
+
+    METHODS validate_product_group FOR VALIDATE ON SAVE
+      IMPORTING keys FOR product~validateproductgroup.
 
     METHODS copy_product FOR MODIFY
       IMPORTING keys FOR ACTION product~copyproduct RESULT result.
@@ -117,16 +117,13 @@ CLASS lhc_product IMPLEMENTATION.
     reported = CORRESPONDING #( DEEP update_reported ).
   ENDMETHOD.
 
-  METHOD validate_product_group.
-  ENDMETHOD.
-
   METHOD validate_product_id.
     DATA product_ids TYPE SORTED TABLE OF zrp_d_product WITH UNIQUE KEY prodid.
 
     " Read relevant product instance data
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
            ENTITY product
-           FIELDS ( id )
+           FIELDS ( uuid id )
              WITH CORRESPONDING #( keys )
            RESULT DATA(products).
 
@@ -137,7 +134,7 @@ CLASS lhc_product IMPLEMENTATION.
     IF product_ids IS NOT INITIAL.
       " Check if product ID exist
       SELECT FROM zrp_d_product
-      FIELDS prodid
+      FIELDS produuid, prodid
          FOR ALL ENTRIES IN @product_ids
        WHERE prodid = @product_ids-prodid
         INTO TABLE @DATA(products_db).
@@ -149,15 +146,70 @@ CLASS lhc_product IMPLEMENTATION.
       APPEND VALUE #( %tky        = product-%tky
                       %state_area = 'validateProductID' ) TO reported-product.
 
-      IF product-id IS NOT INITIAL AND line_exists( products_db[ prodid = product-id ] ).
-        APPEND VALUE #( %tky = product-%tky ) TO failed-product.
+      IF product-id IS NOT INITIAL.
+        DATA(existing_product_uuid) = VALUE #( products_db[ prodid = product-id ]-produuid OPTIONAL ).
 
-        APPEND VALUE #( %tky        = product-%tky
-                        %state_area = 'validateProductID'
-                        %element-id = if_abap_behv=>mk-on
-                        %msg        = NEW zcm_rp_messages( severity   = if_abap_behv_message=>severity-error
-                                                           textid     = zcm_rp_messages=>product_already_exists
-                                                           product_id = product-id ) ) TO reported-product.
+        IF existing_product_uuid <> product-uuid.
+          APPEND VALUE #( %tky        = product-%tky
+                          %state_area = 'validateProductID'
+                          %element-id = if_abap_behv=>mk-on
+                          %msg        = NEW zcm_rp_messages( severity   = if_abap_behv_message=>severity-error
+                                                             textid     = zcm_rp_messages=>product_already_exists
+                                                             product_id = product-id ) ) TO reported-product.
+
+          APPEND VALUE #( %tky = product-%tky ) TO failed-product.
+        ENDIF.
+
+        CLEAR existing_product_uuid.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validate_product_group.
+    DATA product_group_ids TYPE RANGE OF zrp_pg_id.
+
+    " Read relevant product instance data
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY product
+           FIELDS ( ProductGroupID )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(products).
+
+    " Optimization of DB select: extract distinct non-initial product IDs
+    product_group_ids = VALUE #( FOR product IN products
+                                   WHERE ( ProductGroupID IS NOT INITIAL )
+                                     ( sign = 'I' option = 'EQ' low = product-ProductGroupID ) ).
+
+    IF product_group_ids IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " Check if product group ID exist
+    SELECT FROM zrp_i_product_group
+    FIELDS ProductGroupID
+     WHERE ProductGroupID IN @product_group_ids
+      INTO TABLE @DATA(product_groups_db).
+
+    " Raise message if Product Group ID is not exist
+    LOOP AT products ASSIGNING FIELD-SYMBOL(<product>).
+      " Clear state messages that might exist
+      APPEND VALUE #( %tky        = <product>-%tky
+                      %state_area = 'validateProductGroupID' ) TO reported-product.
+
+      IF <product>-ProductGroupID IS NOT INITIAL
+        AND NOT line_exists( product_groups_db[ ProductGroupID = <product>-ProductGroupID ] ).
+
+        DATA(msg) = new_message( id       = 'ZRP_MSG'
+                                 number   = '002'
+                                 severity = if_abap_behv_message=>severity-error
+                                 v1       = <product>-ProductGroupID ).
+
+        INSERT VALUE #( %tky                    = <product>-%tky
+                        %state_area             = 'validateProductGroupID'
+                        %element-productgroupid = if_abap_behv=>mk-on
+                        %msg                    = msg ) INTO TABLE reported-product.
+
+        INSERT VALUE #( %tky = <product>-%tky ) INTO TABLE failed-product.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -187,7 +239,8 @@ CLASS lhc_product IMPLEMENTATION.
            REPORTED reported.
 
     READ ENTITY IN LOCAL MODE zrp_i_product
-            ALL FIELDS WITH CORRESPONDING #( mapped-product )
+            ALL FIELDS
+           WITH CORRESPONDING #( mapped-product )
          RESULT DATA(products_db)
          FAILED failed.
 

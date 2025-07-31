@@ -3,26 +3,27 @@ strict ( 2 );
 with draft;
 extensible;
 define behavior for ZR_RP_PRODUCT alias Product
-persistent table ZRPAPRODUCT
+persistent table zrpaproduct
 extensible
-draft table ZRPDPRODUCT
+draft table zrpdproduct
 etag master Localchangedat
 lock master total etag Changedat
-authorization master( global )
+authorization master ( global )
 
 {
   field ( readonly )
-   Uuid,
-   Createdby,
-   Createdat,
-   Changedby,
-   Changedat,
-   Localchangedby,
-   Localchangedat;
+  Uuid,
+  Createdby,
+  Createdat,
+  Changedby,
+  Changedat,
+  Localchangedby,
+  Localchangedat;
 
   field ( numbering : managed )
-   Uuid;
+  Uuid;
 
+  validation checkSemanticKeys on save { field Id; }
 
   create;
   update;
@@ -32,22 +33,26 @@ authorization master( global )
   draft action Discard;
   draft action Edit;
   draft action Resume;
-  draft determine action Prepare;
 
-  mapping for ZRPAPRODUCT corresponding extensible
+  draft determine action Prepare
   {
-    Uuid = uuid;
-    Id = id;
-    Name = name;
-    Price = price;
-    Pricecurrency = pricecurrency;
-    Taxrate = taxrate;
-    Createdby = createdby;
-    Createdat = createdat;
-    Changedby = changedby;
-    Changedat = changedat;
-    Localchangedby = localchangedby;
-    Localchangedat = localchangedat;
+    validation checkSemanticKeys;
   }
+
+  mapping for zrpaproduct corresponding extensible
+    {
+      Uuid           = uuid;
+      Id             = id;
+      Name           = name;
+      Price          = price;
+      Pricecurrency  = pricecurrency;
+      Taxrate        = taxrate;
+      Createdby      = createdby;
+      Createdat      = createdat;
+      Changedby      = changedby;
+      Changedat      = changedat;
+      Localchangedby = localchangedby;
+      Localchangedat = localchangedat;
+    }
 
 }

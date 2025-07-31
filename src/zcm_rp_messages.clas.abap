@@ -29,14 +29,16 @@ CLASS zcm_rp_messages DEFINITION
         !previous  LIKE previous OPTIONAL
         product_id TYPE zrp_product_id OPTIONAL.
 
+  PRIVATE SECTION.
+
 ENDCLASS.
 
 CLASS zcm_rp_messages IMPLEMENTATION.
-
   METHOD constructor ##ADT_SUPPRESS_GENERATION.
     CALL METHOD super->constructor
       EXPORTING
         previous = previous.
+
     CLEAR me->textid.
     IF textid IS INITIAL.
       if_t100_message~t100key = if_t100_message=>default_textid.
@@ -48,5 +50,4 @@ CLASS zcm_rp_messages IMPLEMENTATION.
     me->product_id = |{ product_id ALPHA = OUT }|.
 
   ENDMETHOD.
-
 ENDCLASS.
