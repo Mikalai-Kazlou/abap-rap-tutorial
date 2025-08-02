@@ -10,13 +10,17 @@
 define view entity ZRP_I_PRODUCT_MARKET
   as select from zrp_d_prod_mrkt
 
-  association to parent ZRP_I_PRODUCT      as _Product
+  association        to parent ZRP_I_PRODUCT      as _Product
     on _Product.UUID = $projection.ProductUUID
 
-  composition [0..*] of ZRP_I_MARKET_ORDER as _MarketOrder
+  composition [0..*] of ZRP_I_MARKET_ORDER        as _MarketOrder
 
-  association to ZRP_I_MARKET              as _Market
+  association [0..1] to ZRP_I_MARKET              as _Market
     on _Market.MarketID = $projection.MarketID
+
+  association [1..1] to ZRP_I_PRODUCT_MARKET_VIRT as _VirtualFields
+    on  _VirtualFields.ProductUUID       = $projection.ProductUUID
+    and _VirtualFields.ProductMarketUUID = $projection.ProductMarketUUID
 
 {
   key produuid       as ProductUUID,
@@ -26,6 +30,7 @@ define view entity ZRP_I_PRODUCT_MARKET
       status         as Status,
       startdate      as StartDate,
       enddate        as EndDate,
+
       @Semantics.user.createdBy: true
       createdby      as CreatedBy,
       @Semantics.systemDateTime.createdAt: true
@@ -41,5 +46,6 @@ define view entity ZRP_I_PRODUCT_MARKET
       _Product,
       _MarketOrder,
 
-      _Market
+      _Market,
+      _VirtualFields
 }

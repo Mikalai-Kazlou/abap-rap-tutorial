@@ -11,7 +11,8 @@ define view entity ZRP_I_PRODUCT_GROUP
       @ObjectModel.text.element: [ 'ProductGroupName' ]
       @Search.defaultSearchElement: true
   key pgid     as ProductGroupID,
-
+      
+      @Semantics.text: true
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
       @Search.ranking: #HIGH

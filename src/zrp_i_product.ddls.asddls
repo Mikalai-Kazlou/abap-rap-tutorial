@@ -23,7 +23,9 @@ define root view entity ZRP_I_PRODUCT
   key produuid       as UUID,
       prodid         as ID,
       prodname       as Name,
+      @ObjectModel.text.association: '_ProductGroup'
       pgid           as ProductGroupID,
+      @ObjectModel.text.association: '_Phase'
       phaseid        as PhaseID,
       @Semantics.quantity.unitOfMeasure: 'SizeUOM'
       height         as Height,

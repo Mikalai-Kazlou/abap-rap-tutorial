@@ -1,6 +1,4 @@
 CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PUBLIC SECTION.
-
   PRIVATE SECTION.
     METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST requested_authorizations FOR product RESULT result.
@@ -45,12 +43,6 @@ ENDCLASS.
 
 CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
-    CONSTANTS:
-      BEGIN OF market_statuses,
-        accepted TYPE abap_bool VALUE abap_true,
-        rejected TYPE abap_bool VALUE abap_false,
-      END OF market_statuses.
-
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR productmarkets RESULT result.
 
@@ -174,7 +166,8 @@ CLASS lhc_product IMPLEMENTATION.
     IF product_ids IS NOT INITIAL.
       " Check if product ID exist
       SELECT FROM zrp_d_product
-      FIELDS produuid, prodid
+      FIELDS produuid,
+             prodid
          FOR ALL ENTRIES IN @product_ids
        WHERE prodid = @product_ids-prodid
         INTO TABLE @DATA(products_db).
@@ -445,7 +438,8 @@ CLASS lhc_product_market IMPLEMENTATION.
     DELETE ADJACENT DUPLICATES FROM market_range.
 
     SELECT FROM zrp_i_market
-    FIELDS MarketID, MarketName
+    FIELDS MarketID,
+           MarketName
      WHERE MarketID IN @market_range
       INTO TABLE @DATA(makret_names).
 

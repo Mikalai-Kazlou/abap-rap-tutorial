@@ -1,4 +1,4 @@
-CLASS zrp_cl_generate_data DEFINITION
+CLASS zrp_cl_generate_data_mstr DEFINITION
   PUBLIC FINAL
   CREATE PUBLIC.
 
@@ -7,7 +7,7 @@ CLASS zrp_cl_generate_data DEFINITION
 ENDCLASS.
 
 
-CLASS zrp_cl_generate_data IMPLEMENTATION.
+CLASS zrp_cl_generate_data_mstr IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     DATA lt_prod_grs TYPE TABLE OF zrp_d_prod_group.
     DATA lt_phases   TYPE TABLE OF zrp_d_phase.
@@ -63,43 +63,43 @@ CLASS zrp_cl_generate_data IMPLEMENTATION.
         ( mrktid   = '1'
           mrktname = 'Russia'
           langcode = 'RU'
-          imageurl = 'https://cdn.webshopapp.com/shops/94414/files/54940426/russia-flag-image-free-download.jpg' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/ru.webp' )
         ( mrktid   = '2'
           mrktname = 'Belarus'
           langcode = 'RU'
-          imageurl = 'https://cdn.countryflags.com/thumbs/belarus/flag-400.png' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/by.webp' )
         ( mrktid   = '3'
           mrktname = 'United Kingdom'
           langcode = 'EN'
-          imageurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Flag_of_the_United_Kingdom.svg/640px-Flag_of_the_United_Kingdom.svg.png' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/gb.webp' )
         ( mrktid   = '4'
           mrktname = 'France'
           langcode = 'FR'
-          imageurl = 'https://cdn.webshopapp.com/shops/94414/files/54002660/france-flag-image-free-download.jpg' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/fr.webp' )
         ( mrktid   = '5'
           mrktname = 'Germany'
           langcode = 'DE'
-          imageurl = 'https://cdn.webshopapp.com/shops/94414/files/54006402/germany-flag-image-free-download.jpg' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/de.webp' )
         ( mrktid   = '6'
           mrktname = 'Italy'
           langcode = 'IT'
-          imageurl = 'https://cdn.countryflags.com/thumbs/italy/flag-400.png' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/it.webp' )
         ( mrktid   = '7'
           mrktname = 'USA'
           langcode = 'EN'
-          imageurl = 'https://cdn.webshopapp.com/shops/94414/files/54958906/the-united-states-flag-image-free-download.jpg' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/us.webp' )
         ( mrktid   = '8'
           mrktname = 'Japan'
-          langcode = 'EN'
-          imageurl = 'https://image.freepik.com/free-vector/illustration-japan-flag_53876-27128.jpg' )
+          langcode = 'JP'
+          imageurl = 'https://flagpedia.net/data/flags/w1160/jp.webp' )
         ( mrktid   = '9'
           mrktname = 'Poland'
           langcode = 'EN'
-          imageurl = 'https://cdn.webshopapp.com/shops/94414/files/54940016/poland-flag-image-free-download.jpg' )
+          imageurl = 'https://flagpedia.net/data/flags/w1160/pl.webp' )
         ( mrktid   = '10'
           mrktname = 'Spain'
           langcode = 'ES'
-          imageurl = 'https://cdn.webshopapp.com/shops/94414/files/54940016/poland-flag-image-free-download.jpg' ) ).
+          imageurl = 'https://flagpedia.net/data/flags/w1160/es.webp' ) ).
 
     " Delete the possible entries in the database table - in case it was already filled
     DELETE FROM zrp_d_market.

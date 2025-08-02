@@ -13,12 +13,15 @@ define view entity ZRP_C_PRODUCT_MARKET
       @ObjectModel.text.element: ['MarketName']
       @UI.textArrangement: #TEXT_ONLY
       MarketID,
-      _Market.MarketName as MarketName,
+      _Market.MarketName               as MarketName,
+      _Market.ImageUrl                 as MarketImageUrl,
 
       ISOCode,
       Status,
       StartDate,
       EndDate,
+
+      _VirtualFields.StatusCriticality as StatusCriticality,
 
       CreatedBy,
       @Semantics.dateTime: true
@@ -30,6 +33,6 @@ define view entity ZRP_C_PRODUCT_MARKET
       LocalChangedOn,
 
       /* Associations */
-      _Product           as Product      : redirected to parent ZRP_C_PRODUCT,
-      _MarketOrder       as MarketOrders : redirected to composition child ZRP_C_MARKET_ORDER
+      _Product                         as Product      : redirected to parent ZRP_C_PRODUCT,
+      _MarketOrder                     as MarketOrders : redirected to composition child ZRP_C_MARKET_ORDER
 }

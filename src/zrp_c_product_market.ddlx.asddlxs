@@ -1,11 +1,28 @@
 @Metadata.layer: #CORE
 @UI.headerInfo: { typeName: 'Product Market',
                   typeNamePlural: 'Product Markets',
+                  imageUrl: 'MarketImageUrl',
                   title: { type: #STANDARD, label: 'Product Market', value: 'MarketName' } }
 
 annotate entity ZRP_C_PRODUCT_MARKET with
 {
   @UI.facet: [
+
+    { targetQualifier: 'Market',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 10
+    },
+    { targetQualifier: 'StartDate',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 20
+    },
+    { targetQualifier: 'EndDate',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 30
+    },
 
     { id: 'ProductMarkets',
       purpose: #STANDARD,
@@ -29,9 +46,13 @@ annotate entity ZRP_C_PRODUCT_MARKET with
   ProductMarketUUID;
 
   @EndUserText.label: 'Market'
+  @UI.dataPoint: { title: 'Market', qualifier: 'Market', criticality: 'StatusCriticality' }
   @UI.identification: [ { position: 10 } ]
   @UI.lineItem: [ { position: 10 } ]
   MarketID;
+
+  @UI.hidden: true
+  MarketImageUrl;
 
   @EndUserText.label: 'ISO-Code'
   @UI.identification: [ { position: 20 } ]
@@ -39,18 +60,27 @@ annotate entity ZRP_C_PRODUCT_MARKET with
   ISOCode;
 
   @EndUserText.label: 'Is Accepted?'
-  @UI.identification: [ { position: 30 },
-                        { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
-                        { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 } ]
-  @UI.lineItem: [ { position: 30 },
-                  { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
-                  { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 }  ]
+  @UI.identification: [
+    { position: 30, criticality: 'StatusCriticality' },
+    { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
+    { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 }
+  ]
+  @UI.lineItem: [
+    { position: 30, criticality: 'StatusCriticality' },
+    { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
+    { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 }
+  ]
   Status;
 
+  @UI.hidden: true
+  StatusCriticality;
+
+  @UI.dataPoint: { title: 'Start Date', qualifier: 'StartDate' }
   @UI.identification: [ { position: 40 } ]
   @UI.lineItem: [ { position: 40 } ]
   StartDate;
 
+  @UI.dataPoint: { title: 'End Date', qualifier: 'EndDate' }
   @UI.identification: [ { position: 50 } ]
   @UI.lineItem: [ { position: 50 } ]
   EndDate;
