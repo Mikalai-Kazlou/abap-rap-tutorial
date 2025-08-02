@@ -36,6 +36,12 @@ etag master LocalChangedOn
   draft action Resume;
 
   action ( features : instance ) copyProduct parameter ZRP_A_IP_COPY_PRODUCT result [1] $self;
+  action ( features : instance ) moveToNextPhase result [1] $self;
+
+  side effects
+  {
+    field ProductGroupID affects $self;
+  }
 
   mapping for zrp_d_product
     {

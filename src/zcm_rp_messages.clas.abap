@@ -20,6 +20,26 @@ CLASS zcm_rp_messages DEFINITION
         attr4 TYPE scx_attrname VALUE '',
       END OF product_already_exists .
 
+    CONSTANTS:
+      BEGIN OF movement_not_possible,
+        msgid TYPE symsgid VALUE 'ZRP_MSG',
+        msgno TYPE symsgno VALUE '003',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF movement_not_possible .
+
+    CONSTANTS:
+      BEGIN OF markets_not_found,
+        msgid TYPE symsgid VALUE 'ZRP_MSG',
+        msgno TYPE symsgno VALUE '004',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF markets_not_found .
+
     DATA product_id TYPE string READ-ONLY.
 
     METHODS constructor

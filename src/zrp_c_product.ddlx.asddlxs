@@ -114,7 +114,9 @@ annotate view ZRP_C_PRODUCT with
   @EndUserText.label: 'Phase'
   @UI.dataPoint: { title: 'Phase', qualifier: 'Phase', criticality: 'PhaseID' }
   @UI.fieldGroup: [ { qualifier: 'Product', position: 10, criticality: 'PhaseID' } ]
-  @UI.lineItem: [ { position: 40, criticality: 'PhaseID' } ]
+  @UI.identification: [ { type: #FOR_ACTION, dataAction: 'moveToNextPhase', label: 'Next Phase' } ]
+  @UI.lineItem: [ { position: 40, criticality: 'PhaseID' },
+                  { type: #FOR_ACTION, dataAction: 'moveToNextPhase', label: 'Next Phase' } ]
   @UI.selectionField: [ { position: 40 } ]
   PhaseID;
 

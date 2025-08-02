@@ -1,14 +1,7 @@
-
 CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-    CONSTANTS:
-      BEGIN OF phases,
-        planning    TYPE zrp_d_phase-phaseid VALUE 1,
-        development TYPE zrp_d_phase-phaseid VALUE 2,
-        production  TYPE zrp_d_phase-phaseid VALUE 3,
-        phase_out   TYPE zrp_d_phase-phaseid VALUE 4,
-      END OF phases.
+  PUBLIC SECTION.
 
+  PRIVATE SECTION.
     METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST requested_authorizations FOR product RESULT result.
 
@@ -30,8 +23,25 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS copy_product FOR MODIFY
       IMPORTING keys FOR ACTION product~copyproduct RESULT result.
 
-ENDCLASS.
+    METHODS move_to_next_phase FOR MODIFY
+      IMPORTING keys FOR ACTION product~movetonextphase RESULT result.
 
+    METHODS get_next_phase
+      IMPORTING VALUE(curr_phase) TYPE zrp_d_phase-phaseid
+      RETURNING VALUE(next_phase) TYPE zrp_d_phase-phaseid.
+
+    METHODS validate_next_phase
+      CHANGING products TYPE tt_product_read_result
+               reported TYPE tt_product_reported
+               failed   TYPE tt_product_failed.
+
+    METHODS is_not_valid_phase
+      IMPORTING product       TYPE ts_product_read_result
+      CHANGING  reported      TYPE tt_product_reported
+                failed        TYPE tt_product_failed
+      RETURNING VALUE(result) TYPE abap_bool.
+
+ENDCLASS.
 
 CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
@@ -40,8 +50,6 @@ CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
         accepted TYPE abap_bool VALUE abap_true,
         rejected TYPE abap_bool VALUE abap_false,
       END OF market_statuses.
-
-    CONSTANTS country_info_service_url TYPE string VALUE `http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso`.
 
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR productmarkets RESULT result.
@@ -67,9 +75,7 @@ CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
 ENDCLASS.
 
-
 CLASS lhc_market_order DEFINITION INHERITING FROM cl_abap_behavior_handler.
-
   PRIVATE SECTION.
     METHODS recalculate_total_amount FOR MODIFY
       IMPORTING keys FOR ACTION marketorders~recalculatetotalamount.
@@ -79,6 +85,40 @@ CLASS lhc_market_order DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
 ENDCLASS.
 
+INTERFACE lif_phase_validator.
+  METHODS is_not_valid
+    IMPORTING product       TYPE ts_product_read_result
+    CHANGING  reported      TYPE tt_product_reported
+              failed        TYPE tt_product_failed
+    RETURNING VALUE(result) TYPE abap_bool.
+ENDINTERFACE.
+
+CLASS lcl_phase_validator DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS get_validator
+      IMPORTING phase            TYPE zrp_d_phase-phaseid
+      RETURNING VALUE(validator) TYPE REF TO lif_phase_validator.
+ENDCLASS.
+
+CLASS lcl_phase_validator_dev DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_phase_validator.
+ENDCLASS.
+
+CLASS lcl_phase_validator_prd DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_phase_validator.
+ENDCLASS.
+
+CLASS lcl_phase_validator_out DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_phase_validator.
+ENDCLASS.
+
+CLASS lcl_phase_validator_default DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_phase_validator.
+ENDCLASS.
 
 CLASS lhc_product IMPLEMENTATION.
   METHOD get_global_authorizations.
@@ -110,8 +150,8 @@ CLASS lhc_product IMPLEMENTATION.
              UPDATE
              FIELDS ( phaseid )
                WITH VALUE #( FOR product IN products
-                             ( %tky    = product-%tky
-                               phaseid = phases-planning ) )
+                               ( %tky    = product-%tky
+                                 phaseid = phases-planning ) )
            REPORTED DATA(update_reported).
 
     reported = CORRESPONDING #( DEEP update_reported ).
@@ -245,12 +285,73 @@ CLASS lhc_product IMPLEMENTATION.
          FAILED failed.
 
     result = VALUE #( FOR <product_db> IN products_db INDEX INTO index
-                      ( %cid_ref = keys[ index ]-%cid_ref
-                        %tky     = keys[ index ]-%tky
-                        %param   = CORRESPONDING #( <product_db> ) ) ).
+                        ( %cid_ref = keys[ index ]-%cid_ref
+                          %tky     = keys[ index ]-%tky
+                          %param   = CORRESPONDING #( <product_db> ) ) ).
+  ENDMETHOD.
+
+  METHOD move_to_next_phase.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY product
+           FIELDS ( PhaseID )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(products).
+
+    validate_next_phase( CHANGING products = products
+                                  failed   = failed-product
+                                  reported = reported-product ).
+    " Set the new Phase ID
+    MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
+             ENTITY product
+             UPDATE
+             FIELDS ( PhaseID )
+               WITH VALUE #( FOR product IN products
+                               ( %tky    = product-%tky
+                                 PhaseID = get_next_phase( product-PhaseID ) ) )
+             FAILED DATA(failed_update)
+           REPORTED DATA(reported_update).
+
+    INSERT LINES OF failed_update-product   INTO TABLE failed-product.
+    INSERT LINES OF reported_update-product INTO TABLE reported-product.
+
+    " Fill the response table
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY product
+              ALL FIELDS
+             WITH CORRESPONDING #( keys )
+           RESULT products.
+
+    result = VALUE #( FOR product IN products
+                        ( %tky   = product-%tky
+                          %param = CORRESPONDING #( product ) ) ).
+  ENDMETHOD.
+
+  METHOD get_next_phase.
+    next_phase = SWITCH #( curr_phase WHEN phases-planning    THEN phases-development
+                                      WHEN phases-development THEN phases-production
+                                      WHEN phases-production  THEN phases-out
+                                      WHEN phases-out         THEN phases-planning ). "for reverse action
+  ENDMETHOD.
+
+  METHOD validate_next_phase.
+    LOOP AT products ASSIGNING FIELD-SYMBOL(<product>).
+      IF is_not_valid_phase( EXPORTING product  = <product>
+                              CHANGING reported = reported
+                                       failed   = failed ).
+        DELETE products.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD is_not_valid_phase.
+    DATA(phase) = get_next_phase( product-PhaseID ).
+
+    DATA(validator) = lcl_phase_validator=>get_validator( phase ).
+    result = validator->is_not_valid( EXPORTING product  = product
+                                       CHANGING reported = reported
+                                                failed   = failed ).
   ENDMETHOD.
 ENDCLASS.
-
 
 CLASS lhc_product_market IMPLEMENTATION.
   METHOD get_instance_features.
@@ -289,8 +390,8 @@ CLASS lhc_product_market IMPLEMENTATION.
              UPDATE
              FIELDS ( status )
                WITH VALUE #( FOR key IN keys
-                             ( %tky   = key-%tky
-                               status = market_statuses-accepted ) )
+                               ( %tky   = key-%tky
+                                 status = market_statuses-accepted ) )
              FAILED failed
            REPORTED reported.
 
@@ -301,8 +402,8 @@ CLASS lhc_product_market IMPLEMENTATION.
            RESULT DATA(product_markets).
 
     result = VALUE #( FOR product_market IN product_markets
-                      ( %tky   = product_market-%tky
-                        %param = CORRESPONDING #( product_market ) ) ).
+                        ( %tky   = product_market-%tky
+                          %param = CORRESPONDING #( product_market ) ) ).
   ENDMETHOD.
 
   METHOD reject_market.
@@ -312,8 +413,8 @@ CLASS lhc_product_market IMPLEMENTATION.
              UPDATE
              FIELDS ( status )
                WITH VALUE #( FOR key IN keys
-                             ( %tky   = key-%tky
-                               status = market_statuses-rejected ) )
+                               ( %tky   = key-%tky
+                                 status = market_statuses-rejected ) )
              FAILED failed
            REPORTED reported.
 
@@ -324,8 +425,8 @@ CLASS lhc_product_market IMPLEMENTATION.
            RESULT DATA(product_markets).
 
     result = VALUE #( FOR product_market IN product_markets
-                      ( %tky   = product_market-%tky
-                        %param = CORRESPONDING #( product_market ) ) ).
+                        ( %tky   = product_market-%tky
+                          %param = CORRESPONDING #( product_market ) ) ).
   ENDMETHOD.
 
   METHOD set_iso_code.
@@ -338,7 +439,9 @@ CLASS lhc_product_market IMPLEMENTATION.
              WITH CORRESPONDING #( keys )
            RESULT DATA(product_markets).
 
-    market_range = VALUE #( FOR <product_market> IN product_markets ( sign = 'I' option = 'EQ' low = <product_market>-MarketID ) ).
+    market_range = VALUE #( FOR <product_market> IN product_markets
+                              ( sign = 'I' option = 'EQ' low = <product_market>-MarketID ) ).
+    SORT market_range.
     DELETE ADJACENT DUPLICATES FROM market_range.
 
     SELECT FROM zrp_i_market
@@ -386,7 +489,6 @@ CLASS lhc_product_market IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 
-
 CLASS lhc_market_order IMPLEMENTATION.
   METHOD recalculate_total_amount.
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
@@ -427,5 +529,63 @@ CLASS lhc_market_order IMPLEMENTATION.
            REPORTED DATA(execute_reported).
 
     reported = CORRESPONDING #( DEEP execute_reported ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_phase_validator IMPLEMENTATION.
+  METHOD get_validator.
+    CASE phase.
+      WHEN phases-development. validator = NEW lcl_phase_validator_dev( ).
+      WHEN phases-production.  validator = NEW lcl_phase_validator_prd( ).
+      WHEN phases-out.         validator = NEW lcl_phase_validator_out( ).
+      WHEN OTHERS.             validator = NEW lcl_phase_validator_default( ).
+    ENDCASE.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_phase_validator_dev IMPLEMENTATION.
+  METHOD lif_phase_validator~is_not_valid.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY Product BY \_ProductMarket
+           FIELDS ( MarketID )
+             WITH VALUE #( ( %tky = product-%tky ) )
+           RESULT DATA(product_markets).
+
+    IF product_markets IS INITIAL.
+      INSERT VALUE #( %tky = product-%tky ) INTO TABLE failed.
+
+      INSERT VALUE #( %tky        = product-%tky
+                      %state_area = 'validateNextPhase' ) INTO TABLE reported.
+
+      INSERT VALUE #( %tky             = product-%tky
+                      %state_area      = 'validateNextPhase'
+                      %element-phaseid = if_abap_behv=>mk-on
+                      %msg             = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>movement_not_possible ) ) INTO TABLE reported.
+      INSERT VALUE #( %tky             = product-%tky
+                      %state_area      = 'validateNextPhase'
+                      %element-phaseid = if_abap_behv=>mk-on
+                      %msg             = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>markets_not_found ) ) INTO TABLE reported.
+      result = abap_true.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_phase_validator_prd IMPLEMENTATION.
+  METHOD lif_phase_validator~is_not_valid.
+    result = abap_false.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_phase_validator_out IMPLEMENTATION.
+  METHOD lif_phase_validator~is_not_valid.
+    result = abap_false.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_phase_validator_default IMPLEMENTATION.
+  METHOD lif_phase_validator~is_not_valid.
+    result = abap_false.
   ENDMETHOD.
 ENDCLASS.

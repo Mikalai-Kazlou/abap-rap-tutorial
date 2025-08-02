@@ -5,8 +5,10 @@
 @ObjectModel.resultSet.sizeCategory: #XS
 @ObjectModel.usageType: { serviceQuality: #X,
                           sizeCategory: #S,
-                          dataClass: #MIXED
-                        }
+                          dataClass: #MIXED }
+
+@UI.presentationVariant: [ { sortOrder: [ { by: 'PhaseID', direction: #ASC } ] } ]
+
 define view entity ZRP_I_PHASE
   as select from zrp_d_phase
 

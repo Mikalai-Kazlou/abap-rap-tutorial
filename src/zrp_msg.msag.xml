@@ -26,6 +26,18 @@
      <MSGNR>002</MSGNR>
      <TEXT>Product Group ID &apos;&amp;1&apos; doesn&apos;t exist</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Movement to the next phase is not possible</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>The Product must have at least one Market</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
