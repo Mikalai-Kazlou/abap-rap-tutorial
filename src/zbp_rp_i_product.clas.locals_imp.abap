@@ -66,6 +66,9 @@ CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS set_iso_code FOR DETERMINE ON SAVE
       IMPORTING keys FOR productmarkets~setisocode.
 
+    METHODS validate_market_id FOR VALIDATE ON SAVE
+      IMPORTING keys FOR productmarkets~validatemarketid.
+
     METHODS get_iso_code_external
       IMPORTING country_name    TYPE string
       RETURNING VALUE(iso_code) TYPE string.
@@ -493,6 +496,53 @@ CLASS lhc_product_market IMPLEMENTATION.
   METHOD is_market_finished.
     DATA(today) = cl_abap_context_info=>get_system_date( ).
     result = xsdbool( market-enddate <= today ).
+  ENDMETHOD.
+
+  METHOD validate_market_id.
+    DATA market_ids TYPE SORTED TABLE OF zrp_d_market WITH UNIQUE KEY mrktid.
+
+    " Read relevant product market instance data
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY ProductMarkets
+           FIELDS ( MarketID )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(markets).
+
+    " Optimization of DB select: extract distinct non-initial Product Markets IDs
+    market_ids = CORRESPONDING #( markets DISCARDING DUPLICATES MAPPING mrktid = MarketID EXCEPT * ).
+    DELETE market_ids WHERE mrktid IS INITIAL.
+
+    IF market_ids IS NOT INITIAL.
+      " Check if product market ID exist
+      SELECT FROM zrp_d_market
+      FIELDS mrktid
+         FOR ALL ENTRIES IN @market_ids
+       WHERE mrktid = @market_ids-mrktid
+        INTO TABLE @DATA(markets_db).
+    ENDIF.
+
+    " Raise message for existing Product Market ID
+    LOOP AT markets INTO DATA(market).
+      " Clear state messages that might exist
+      INSERT VALUE #( %tky        = market-%tky
+                      %state_area = 'validateMarketID' ) INTO TABLE reported-productmarkets.
+
+      IF NOT line_exists( markets_db[ mrktid = market-MarketID ] ).
+        DATA(msg) = new_message( id       = 'ZRP_MSG'
+                                 number   = '007'
+                                 severity = if_abap_behv_message=>severity-error
+                                 v1       = market-MarketID ).
+
+        INSERT VALUE #( %tky              = market-%tky
+                        %state_area       = 'validateMarketID'
+                        %element-MarketID = if_abap_behv=>mk-on
+                        %msg              = msg
+                        %path             = VALUE #( product-%is_draft = market-%tky-%is_draft
+                                                     product-uuid      = market-%tky-ProductUUID ) ) INTO TABLE reported-productmarkets.
+
+        INSERT VALUE #( %tky = market-%tky ) INTO TABLE failed-productmarkets.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 ENDCLASS.
 

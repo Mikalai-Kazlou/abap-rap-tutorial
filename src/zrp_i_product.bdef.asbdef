@@ -80,6 +80,8 @@ etag master LocalChangedOn
 
   determination setISOCode on save { create; update; }
 
+  validation validateMarketID on save { field MarketID; }
+
   update;
   delete;
 

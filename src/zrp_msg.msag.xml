@@ -24,7 +24,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZRP_MSG</ARBGB>
      <MSGNR>002</MSGNR>
-     <TEXT>Product Group ID &apos;&amp;1&apos; doesn&apos;t exist</TEXT>
+     <TEXT>Product Group ID &apos;&amp;1&apos; does not exist</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -49,6 +49,12 @@
      <ARBGB>ZRP_MSG</ARBGB>
      <MSGNR>006</MSGNR>
      <TEXT>The Product must be fully completed for all Markets (End Date &lt;= Today)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Market ID &apos;&amp;1&apos; does not exist</TEXT>
     </T100>
    </T100>
   </asx:values>

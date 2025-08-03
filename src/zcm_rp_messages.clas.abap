@@ -60,16 +60,6 @@ CLASS zcm_rp_messages DEFINITION
         attr4 TYPE scx_attrname VALUE '',
       END OF markets_not_finished .
 
-    CONSTANTS:
-      BEGIN OF final_phase,
-        msgid TYPE symsgid VALUE 'ZRP_MSG',
-        msgno TYPE symsgno VALUE '007',
-        attr1 TYPE scx_attrname VALUE '',
-        attr2 TYPE scx_attrname VALUE '',
-        attr3 TYPE scx_attrname VALUE '',
-        attr4 TYPE scx_attrname VALUE '',
-      END OF final_phase .
-
     DATA product_id TYPE string READ-ONLY.
 
     METHODS constructor
