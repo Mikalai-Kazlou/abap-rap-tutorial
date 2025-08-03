@@ -25,23 +25,28 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
       IMPORTING keys FOR ACTION product~movetonextphase RESULT result.
 
     METHODS get_next_phase
-      IMPORTING VALUE(curr_phase) TYPE zrp_d_phase-phaseid
-      RETURNING VALUE(next_phase) TYPE zrp_d_phase-phaseid.
+      IMPORTING VALUE(curr_phase) TYPE zrp_i_phase-phaseid
+      RETURNING VALUE(next_phase) TYPE zrp_i_phase-phaseid.
 
-    METHODS validate_next_phase
-      CHANGING products TYPE tt_product_read_result
-               reported TYPE tt_product_reported
-               failed   TYPE tt_product_failed.
+    METHODS set_next_phase_for_products
+      CHANGING products TYPE tt_rr_product
+               reported TYPE tt_re_product
+               failed   TYPE tt_fe_product.
 
     METHODS is_not_valid_phase
-      IMPORTING product       TYPE ts_product_read_result
-      CHANGING  reported      TYPE tt_product_reported
-                failed        TYPE tt_product_failed
+      IMPORTING product       TYPE ts_rr_product
+      CHANGING  reported      TYPE tt_re_product
+                failed        TYPE tt_fe_product
       RETURNING VALUE(result) TYPE abap_bool.
 
 ENDCLASS.
 
 CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PUBLIC SECTION.
+    CLASS-METHODS is_market_finished
+      IMPORTING market        TYPE ts_rr_market
+      RETURNING VALUE(result) TYPE abap_bool.
+
   PRIVATE SECTION.
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR productmarkets RESULT result.
@@ -79,16 +84,16 @@ ENDCLASS.
 
 INTERFACE lif_phase_validator.
   METHODS is_not_valid
-    IMPORTING product       TYPE ts_product_read_result
-    CHANGING  reported      TYPE tt_product_reported
-              failed        TYPE tt_product_failed
+    IMPORTING product       TYPE ts_rr_product
+    CHANGING  reported      TYPE tt_re_product
+              failed        TYPE tt_fe_product
     RETURNING VALUE(result) TYPE abap_bool.
 ENDINTERFACE.
 
 CLASS lcl_phase_validator DEFINITION.
   PUBLIC SECTION.
-    CLASS-METHODS get_validator
-      IMPORTING phase            TYPE zrp_d_phase-phaseid
+    CLASS-METHODS factory
+      IMPORTING phase            TYPE zrp_i_phase-phaseid
       RETURNING VALUE(validator) TYPE REF TO lif_phase_validator.
 ENDCLASS.
 
@@ -176,21 +181,21 @@ CLASS lhc_product IMPLEMENTATION.
     " Raise message for existing Product ID
     LOOP AT products INTO DATA(product).
       " Clear state messages that might exist
-      APPEND VALUE #( %tky        = product-%tky
-                      %state_area = 'validateProductID' ) TO reported-product.
+      INSERT VALUE #( %tky        = product-%tky
+                      %state_area = 'validateProductID' ) INTO TABLE reported-product.
 
       IF product-id IS NOT INITIAL.
         DATA(existing_product_uuid) = VALUE #( products_db[ prodid = product-id ]-produuid OPTIONAL ).
 
         IF existing_product_uuid <> product-uuid.
-          APPEND VALUE #( %tky        = product-%tky
+          INSERT VALUE #( %tky        = product-%tky
                           %state_area = 'validateProductID'
                           %element-id = if_abap_behv=>mk-on
                           %msg        = NEW zcm_rp_messages( severity   = if_abap_behv_message=>severity-error
                                                              textid     = zcm_rp_messages=>product_already_exists
-                                                             product_id = product-id ) ) TO reported-product.
+                                                             product_id = product-id ) ) INTO TABLE reported-product.
 
-          APPEND VALUE #( %tky = product-%tky ) TO failed-product.
+          INSERT VALUE #( %tky = product-%tky ) INTO TABLE failed-product.
         ENDIF.
 
         CLEAR existing_product_uuid.
@@ -290,9 +295,12 @@ CLASS lhc_product IMPLEMENTATION.
              WITH CORRESPONDING #( keys )
            RESULT DATA(products).
 
-    validate_next_phase( CHANGING products = products
-                                  failed   = failed-product
-                                  reported = reported-product ).
+    set_next_phase_for_products( CHANGING products = products
+                                          failed   = failed-product
+                                          reported = reported-product ).
+
+    DELETE products WHERE PhaseID IS INITIAL.
+
     " Set the new Phase ID
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
              ENTITY product
@@ -300,7 +308,7 @@ CLASS lhc_product IMPLEMENTATION.
              FIELDS ( PhaseID )
                WITH VALUE #( FOR product IN products
                                ( %tky    = product-%tky
-                                 PhaseID = get_next_phase( product-PhaseID ) ) )
+                                 PhaseID = product-PhaseID ) )
              FAILED DATA(failed_update)
            REPORTED DATA(reported_update).
 
@@ -326,20 +334,20 @@ CLASS lhc_product IMPLEMENTATION.
                                       WHEN phases-out         THEN phases-planning ). "for reverse action
   ENDMETHOD.
 
-  METHOD validate_next_phase.
+  METHOD set_next_phase_for_products.
     LOOP AT products ASSIGNING FIELD-SYMBOL(<product>).
+      <product>-PhaseID = get_next_phase( <product>-PhaseID ).
+
       IF is_not_valid_phase( EXPORTING product  = <product>
                               CHANGING reported = reported
                                        failed   = failed ).
-        DELETE products.
+        CLEAR <product>-PhaseID.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
 
   METHOD is_not_valid_phase.
-    DATA(phase) = get_next_phase( product-PhaseID ).
-
-    DATA(validator) = lcl_phase_validator=>get_validator( phase ).
+    DATA(validator) = lcl_phase_validator=>factory( product-PhaseID ).
     result = validator->is_not_valid( EXPORTING product  = product
                                        CHANGING reported = reported
                                                 failed   = failed ).
@@ -433,7 +441,7 @@ CLASS lhc_product_market IMPLEMENTATION.
            RESULT DATA(product_markets).
 
     market_range = VALUE #( FOR <product_market> IN product_markets
-                              ( sign = 'I' option = 'EQ' low = <product_market>-MarketID ) ).
+                                sign = 'I' option = 'EQ' ( low = <product_market>-MarketID ) ).
     SORT market_range.
     DELETE ADJACENT DUPLICATES FROM market_range.
 
@@ -481,6 +489,11 @@ CLASS lhc_product_market IMPLEMENTATION.
         DATA(message) = exception->if_message~get_text( ).
     ENDTRY.
   ENDMETHOD.
+
+  METHOD is_market_finished.
+    DATA(today) = cl_abap_context_info=>get_system_date( ).
+    result = xsdbool( market-enddate <= today ).
+  ENDMETHOD.
 ENDCLASS.
 
 CLASS lhc_market_order IMPLEMENTATION.
@@ -527,7 +540,7 @@ CLASS lhc_market_order IMPLEMENTATION.
 ENDCLASS.
 
 CLASS lcl_phase_validator IMPLEMENTATION.
-  METHOD get_validator.
+  METHOD factory.
     CASE phase.
       WHEN phases-development. validator = NEW lcl_phase_validator_dev( ).
       WHEN phases-production.  validator = NEW lcl_phase_validator_prd( ).
@@ -548,19 +561,14 @@ CLASS lcl_phase_validator_dev IMPLEMENTATION.
     IF product_markets IS INITIAL.
       INSERT VALUE #( %tky = product-%tky ) INTO TABLE failed.
 
-      INSERT VALUE #( %tky        = product-%tky
-                      %state_area = 'validateNextPhase' ) INTO TABLE reported.
+      INSERT LINES OF VALUE tt_re_product( %tky             = product-%tky
+                                           %state_area      = 'validateNextPhase'
+                                           %element-phaseid = if_abap_behv=>mk-on
 
-      INSERT VALUE #( %tky             = product-%tky
-                      %state_area      = 'validateNextPhase'
-                      %element-phaseid = if_abap_behv=>mk-on
-                      %msg             = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>movement_not_possible ) ) INTO TABLE reported.
-      INSERT VALUE #( %tky             = product-%tky
-                      %state_area      = 'validateNextPhase'
-                      %element-phaseid = if_abap_behv=>mk-on
-                      %msg             = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>markets_not_found ) ) INTO TABLE reported.
+                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>movement_not_possible ) )
+                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>markets_not_found     ) ) ) INTO TABLE reported.
       result = abap_true.
     ENDIF.
   ENDMETHOD.
@@ -568,18 +576,64 @@ ENDCLASS.
 
 CLASS lcl_phase_validator_prd IMPLEMENTATION.
   METHOD lif_phase_validator~is_not_valid.
-    result = abap_false.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY Product BY \_ProductMarket
+           FIELDS ( MarketID Status )
+             WITH VALUE #( ( %tky = product-%tky ) )
+           RESULT DATA(product_markets).
+
+    IF NOT line_exists( product_markets[ Status = market_statuses-accepted ] ).
+      INSERT VALUE #( %tky = product-%tky ) INTO TABLE failed.
+
+      INSERT LINES OF VALUE tt_re_product( %tky             = product-%tky
+                                           %state_area      = 'validateNextPhase'
+                                           %element-phaseid = if_abap_behv=>mk-on
+
+                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>movement_not_possible ) )
+                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>markets_not_accepted  ) ) ) INTO TABLE reported.
+      result = abap_true.
+    ENDIF.
   ENDMETHOD.
 ENDCLASS.
 
 CLASS lcl_phase_validator_out IMPLEMENTATION.
   METHOD lif_phase_validator~is_not_valid.
-    result = abap_false.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY Product BY \_ProductMarket
+           FIELDS ( MarketID EndDate )
+             WITH VALUE #( ( %tky = product-%tky ) )
+           RESULT DATA(product_markets).
+
+    LOOP AT product_markets ASSIGNING FIELD-SYMBOL(<product_market>).
+      IF NOT lhc_product_market=>is_market_finished( <product_market> ).
+        INSERT VALUE #( %tky = product-%tky ) INTO TABLE failed.
+
+        INSERT LINES OF VALUE tt_re_product( %tky             = product-%tky
+                                             %state_area      = 'validateNextPhase'
+                                             %element-phaseid = if_abap_behv=>mk-on
+
+                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>movement_not_possible ) )
+                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                              textid   = zcm_rp_messages=>markets_not_finished  ) ) ) INTO TABLE reported.
+        result = abap_true.
+        RETURN.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 ENDCLASS.
 
 CLASS lcl_phase_validator_default IMPLEMENTATION.
   METHOD lif_phase_validator~is_not_valid.
-    result = abap_false.
+    INSERT VALUE #( %tky = product-%tky ) INTO TABLE failed.
+
+    INSERT VALUE #( %tky             = product-%tky
+                    %state_area      = 'validateNextPhase'
+                    %element-phaseid = if_abap_behv=>mk-on
+                    %msg             = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-warning
+                                                            textid   = zcm_rp_messages=>movement_not_possible ) ) INTO TABLE reported.
+    result = abap_true.
   ENDMETHOD.
 ENDCLASS.

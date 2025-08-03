@@ -30,13 +30,25 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZRP_MSG</ARBGB>
      <MSGNR>003</MSGNR>
-     <TEXT>Movement to the next phase is not possible</TEXT>
+     <TEXT>Moving to the next phase is not possible</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZRP_MSG</ARBGB>
      <MSGNR>004</MSGNR>
-     <TEXT>The Product must have at least one Market</TEXT>
+     <TEXT>The Product must include at least one Market</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>The Product must include at least one accepted Market</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>The Product must be fully completed for all Markets (End Date &lt;= Today)</TEXT>
     </T100>
    </T100>
   </asx:values>
