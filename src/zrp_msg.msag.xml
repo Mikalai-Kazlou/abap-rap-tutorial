@@ -56,6 +56,24 @@
      <MSGNR>007</MSGNR>
      <TEXT>Market ID &apos;&amp;1&apos; does not exist</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Start Date must be greater than or equal to today’s date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>End Date must be greater than today’s date and Start Date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>This Market is already assigned to the Product</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

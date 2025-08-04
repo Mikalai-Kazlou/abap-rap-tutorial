@@ -29,7 +29,11 @@ etag master LocalChangedOn
   {
     validation ValidateProductID;
     validation ValidateProductGroup;
+
     validation ProductMarkets~ValidateMarketID;
+    validation ProductMarkets~ValidateStartDate;
+    validation ProductMarkets~ValidateEndDate;
+    validation ProductMarkets~CheckDuplicates;
   }
 
   draft action Edit;
@@ -76,14 +80,18 @@ authorization dependent by _Product
 etag master LocalChangedOn
 {
   association _Product { with draft; }
-  association _MarketOrder { create; with draft; }
+  association _MarketOrder { create ( features : instance ); with draft; }
 
   field ( numbering : managed, readonly ) ProductMarketUUID;
   field ( readonly ) ProductUUID, ISOCode, CreatedBy, CreatedOn, ChangedBy, ChangedOn;
+  field ( mandatory ) MarketID, StartDate;
 
   determination SetISOCode on save { create; update; }
 
   validation ValidateMarketID on save { field MarketID; }
+  validation ValidateStartDate on save { field StartDate; }
+  validation ValidateEndDate on save { field EndDate; }
+  validation CheckDuplicates on save { field MarketID; }
 
   update;
   delete;
@@ -121,6 +129,7 @@ etag master LocalChangedOn
 
   field ( numbering : managed, readonly ) OrderUUID;
   field ( readonly ) ProductUUID, ProductMarketUUID, CreatedBy, CreatedOn, ChangedBy, ChangedOn;
+  field ( mandatory ) Quantity, DeliveryDate;
 
   update;
   delete;

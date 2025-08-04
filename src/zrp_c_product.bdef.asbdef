@@ -42,6 +42,8 @@ define behavior for ZRP_C_MARKET_ORDER alias MarketOrder
   use association Product { with draft; }
   use association ProductMarket { with draft; }
 
+  field ( readonly ) OrderID, AmountCurrency, NetAmount, GrossAmount;
+
   use update;
   use delete;
 }

@@ -21,6 +21,15 @@ CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS validate_market_id FOR VALIDATE ON SAVE
       IMPORTING keys FOR productmarkets~validatemarketid.
 
+    METHODS validate_start_date FOR VALIDATE ON SAVE
+      IMPORTING keys FOR productmarkets~validatestartdate.
+
+    METHODS validate_end_date FOR VALIDATE ON SAVE
+      IMPORTING keys FOR productmarkets~validateenddate.
+
+    METHODS check_duplicates FOR VALIDATE ON SAVE
+      IMPORTING keys FOR productmarkets~checkduplicates.
+
     METHODS get_iso_code_external
       IMPORTING country_name    TYPE string
       RETURNING VALUE(iso_code) TYPE string.
@@ -42,13 +51,19 @@ CLASS lhc_product_market IMPLEMENTATION.
                LET is_accepted = COND #( WHEN product_market-status = zbp_rp_i_product_market=>market_statuses-accepted
                                          THEN if_abap_behv=>fc-o-disabled
                                          ELSE if_abap_behv=>fc-o-enabled  )
+
                    is_rejected = COND #( WHEN product_market-status = zbp_rp_i_product_market=>market_statuses-rejected
                                          THEN if_abap_behv=>fc-o-disabled
                                          ELSE if_abap_behv=>fc-o-enabled )
+
+                   is_order_available = COND #( WHEN product_market-status = zbp_rp_i_product_market=>market_statuses-accepted
+                                                THEN if_abap_behv=>fc-o-enabled
+                                                ELSE if_abap_behv=>fc-o-disabled )
                 IN
                    ( %tky                 = product_market-%tky
                      %action-acceptmarket = is_accepted
-                     %action-rejectmarket = is_rejected ) ).
+                     %action-rejectmarket = is_rejected
+                     %assoc-_MarketOrder  = is_order_available ) ).
   ENDMETHOD.
 
   METHOD get_global_authorizations.
@@ -209,4 +224,100 @@ CLASS lhc_product_market IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
+
+  METHOD validate_start_date.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY ProductMarkets
+           FIELDS ( StartDate )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(markets).
+
+    DATA(today) = cl_abap_context_info=>get_system_date( ).
+    LOOP AT markets ASSIGNING FIELD-SYMBOL(<market>).
+      INSERT VALUE #( %tky        = <market>-%tky
+                      %state_area = 'validateStartDate' ) INTO TABLE reported-productmarkets.
+
+      IF <market>-StartDate < today.
+        DATA(msg) = new_message( id       = 'ZRP_MSG'
+                                 number   = '008'
+                                 severity = if_abap_behv_message=>severity-error ).
+
+        INSERT VALUE #( %tky               = <market>-%tky
+                        %state_area        = 'validateStartDate'
+                        %element-StartDate = if_abap_behv=>mk-on
+                        %msg               = msg
+                        %path              = VALUE #( product-%is_draft = <market>-%tky-%is_draft
+                                                      product-uuid      = <market>-%tky-ProductUUID ) ) INTO TABLE reported-productmarkets.
+
+        INSERT VALUE #( %tky = <market>-%tky ) INTO TABLE failed-productmarkets.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validate_end_date.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY ProductMarkets
+           FIELDS ( StartDate EndDate )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(markets).
+
+    DATA(today) = cl_abap_context_info=>get_system_date( ).
+    LOOP AT markets ASSIGNING FIELD-SYMBOL(<market>).
+      INSERT VALUE #( %tky        = <market>-%tky
+                      %state_area = 'validateEndDate' ) INTO TABLE reported-productmarkets.
+
+      IF <market>-EndDate IS NOT INITIAL
+        AND ( <market>-EndDate <= today OR <market>-EndDate <= <market>-StartDate ).
+
+        DATA(msg) = new_message( id       = 'ZRP_MSG'
+                                 number   = '009'
+                                 severity = if_abap_behv_message=>severity-error ).
+
+        INSERT VALUE #( %tky             = <market>-%tky
+                        %state_area      = 'validateEndDate'
+                        %element-EndDate = if_abap_behv=>mk-on
+                        %msg             = msg
+                        %path            = VALUE #( product-%is_draft = <market>-%tky-%is_draft
+                                                    product-uuid      = <market>-%tky-ProductUUID ) ) INTO TABLE reported-productmarkets.
+
+        INSERT VALUE #( %tky = <market>-%tky ) INTO TABLE failed-productmarkets.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD check_duplicates.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY ProductMarkets
+           FIELDS ( MarketID )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(markets)
+
+           ENTITY Product BY \_ProductMarket
+           FIELDS ( MarketID )
+             WITH CORRESPONDING #( keys MAPPING uuid = ProductUUID )
+           RESULT DATA(markets_all).
+
+    LOOP AT markets ASSIGNING FIELD-SYMBOL(<market>).
+      INSERT VALUE #( %tky        = <market>-%tky
+                      %state_area = 'checkDuplicates' ) INTO TABLE reported-productmarkets.
+
+      DELETE markets_all WHERE %tky = <market>-%tky.
+      IF line_exists( markets_all[ MarketID = <market>-MarketID ] ).
+
+        DATA(msg) = new_message( id       = 'ZRP_MSG'
+                                 number   = '010'
+                                 severity = if_abap_behv_message=>severity-error ).
+
+        INSERT VALUE #( %tky              = <market>-%tky
+                        %state_area       = 'checkDuplicates'
+                        %element-MarketID = if_abap_behv=>mk-on
+                        %msg              = msg
+                        %path             = VALUE #( product-%is_draft = <market>-%tky-%is_draft
+                                                     product-uuid      = <market>-%tky-ProductUUID ) ) INTO TABLE reported-productmarkets.
+
+        INSERT VALUE #( %tky = <market>-%tky ) INTO TABLE failed-productmarkets.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
 ENDCLASS.
