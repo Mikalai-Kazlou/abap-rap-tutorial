@@ -41,8 +41,8 @@ etag master LocalChangedOn
   draft action Discard;
   draft action Resume;
 
-  action ( features : instance ) CopyProduct parameter ZRP_A_IP_COPY_PRODUCT result [1] $self;
-  action ( features : instance ) MoveToNextPhase result [1] $self;
+  action CopyProduct parameter ZRP_A_IP_COPY_PRODUCT result [1] $self;
+  action MoveToNextPhase result [1] $self;
 
   side effects
   {
@@ -131,16 +131,21 @@ etag master LocalChangedOn
   field ( readonly ) ProductUUID, ProductMarketUUID, CreatedBy, CreatedOn, ChangedBy, ChangedOn;
   field ( mandatory ) Quantity, DeliveryDate;
 
+  determination SetOrderID on save { create; }
+  determination SetCalendarYear on modify { field DeliveryDate; }
+  determination CalculateTotalAmount on modify { field Quantity; }
+
+  validation ValidateDeliveryDate on save { field DeliveryDate; }
+
   update;
   delete;
 
   internal action RecalculateTotalAmount;
 
-  determination CalculateTotalAmount on modify { field Quantity; }
-
   side effects
   {
     field Quantity affects field NetAmount, field GrossAmount, field AmountCurrency;
+    field DeliveryDate affects field CalendarYear;
   }
 
   mapping for zrp_d_mrkt_order

@@ -6,9 +6,6 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR product RESULT result.
 
-    METHODS get_instance_features FOR INSTANCE FEATURES
-      IMPORTING keys REQUEST requested_features FOR product RESULT result.
-
     METHODS set_initial_phase FOR DETERMINE ON SAVE
       IMPORTING keys FOR product~setinitialphase.
 
@@ -81,9 +78,6 @@ CLASS lhc_product IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_instance_authorizations.
-  ENDMETHOD.
-
-  METHOD get_instance_features.
   ENDMETHOD.
 
   METHOD set_initial_phase.

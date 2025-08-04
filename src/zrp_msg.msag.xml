@@ -74,6 +74,18 @@
      <MSGNR>010</MSGNR>
      <TEXT>This Market is already assigned to the Product</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Delivery Date must be greater than Market Start Date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Delivery Date must be less than or qual to Market End Date</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
