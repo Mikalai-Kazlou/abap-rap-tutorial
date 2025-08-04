@@ -62,13 +62,13 @@ annotate entity ZRP_C_PRODUCT_MARKET with
   @EndUserText.label: 'Is Accepted?'
   @UI.identification: [
     { position: 30, criticality: 'StatusCriticality' },
-    { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
-    { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 }
+    { type: #FOR_ACTION, dataAction: 'AcceptMarket', label: 'Accept', position: 1 },
+    { type: #FOR_ACTION, dataAction: 'RejectMarket', label: 'Reject', position: 2 }
   ]
   @UI.lineItem: [
     { position: 30, criticality: 'StatusCriticality' },
-    { type: #FOR_ACTION, dataAction: 'acceptMarket', label: 'Accept', position: 1 },
-    { type: #FOR_ACTION, dataAction: 'rejectMarket', label: 'Reject', position: 2 }
+    { type: #FOR_ACTION, dataAction: 'AcceptMarket', label: 'Accept', position: 1 },
+    { type: #FOR_ACTION, dataAction: 'RejectMarket', label: 'Reject', position: 2 }
   ]
   Status;
 

@@ -1,0 +1,5 @@
+CLASS zbp_rp_i_market_order DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zrp_i_product.
+ENDCLASS.
+
+CLASS zbp_rp_i_market_order IMPLEMENTATION.
+ENDCLASS.

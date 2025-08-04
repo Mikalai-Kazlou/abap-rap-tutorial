@@ -19,8 +19,8 @@ define behavior for ZRP_C_PRODUCT alias Product
   use action Prepare;
   use action Resume;
 
-  use action copyProduct;
-  use action moveToNextPhase;
+  use action CopyProduct;
+  use action MoveToNextPhase;
 }
 
 define behavior for ZRP_C_PRODUCT_MARKET alias ProductMarket
@@ -33,8 +33,8 @@ define behavior for ZRP_C_PRODUCT_MARKET alias ProductMarket
   use update;
   use delete;
 
-  use action acceptMarket;
-  use action rejectMarket;
+  use action AcceptMarket;
+  use action RejectMarket;
 }
 
 define behavior for ZRP_C_MARKET_ORDER alias MarketOrder

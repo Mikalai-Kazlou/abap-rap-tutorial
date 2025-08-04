@@ -1,8 +1,9 @@
-managed implementation in class zbp_rp_i_product unique;
+managed;
 strict ( 2 );
 with draft;
 
 define behavior for ZRP_I_PRODUCT alias Product
+implementation in class zbp_rp_i_product unique
 persistent table zrp_d_product
 draft table zrp_x_product
 lock master total etag ChangedOn
@@ -15,10 +16,10 @@ etag master LocalChangedOn
   field ( readonly ) CreatedBy, CreatedOn, ChangedBy, ChangedOn;
   field ( mandatory ) ID, Name, ProductGroupID, Price, PriceCurrency;
 
-  determination setInitialPhase on save { create; }
+  determination SetInitialPhase on save { create; }
 
-  validation validateProductID on save { field ID; }
-  validation validateProductGroup on save { field ProductGroupID; }
+  validation ValidateProductID on save { field ID; }
+  validation ValidateProductGroup on save { field ProductGroupID; }
 
   create;
   update;
@@ -26,8 +27,9 @@ etag master LocalChangedOn
 
   draft determine action Prepare
   {
-    validation validateProductID;
-    validation validateProductGroup;
+    validation ValidateProductID;
+    validation ValidateProductGroup;
+    validation ProductMarkets~ValidateMarketID;
   }
 
   draft action Edit;
@@ -35,8 +37,8 @@ etag master LocalChangedOn
   draft action Discard;
   draft action Resume;
 
-  action ( features : instance ) copyProduct parameter ZRP_A_IP_COPY_PRODUCT result [1] $self;
-  action ( features : instance ) moveToNextPhase result [1] $self;
+  action ( features : instance ) CopyProduct parameter ZRP_A_IP_COPY_PRODUCT result [1] $self;
+  action ( features : instance ) MoveToNextPhase result [1] $self;
 
   side effects
   {
@@ -66,6 +68,7 @@ etag master LocalChangedOn
 }
 
 define behavior for ZRP_I_PRODUCT_MARKET alias ProductMarkets
+implementation in class zbp_rp_i_product_market unique
 persistent table zrp_d_prod_mrkt
 draft table zrp_x_prod_mrkt
 lock dependent by _Product
@@ -78,15 +81,15 @@ etag master LocalChangedOn
   field ( numbering : managed, readonly ) ProductMarketUUID;
   field ( readonly ) ProductUUID, ISOCode, CreatedBy, CreatedOn, ChangedBy, ChangedOn;
 
-  determination setISOCode on save { create; update; }
+  determination SetISOCode on save { create; update; }
 
-  validation validateMarketID on save { field MarketID; }
+  validation ValidateMarketID on save { field MarketID; }
 
   update;
   delete;
 
-  action ( features : instance ) acceptMarket result [1] $self;
-  action ( features : instance ) rejectMarket result [1] $self;
+  action ( features : instance ) AcceptMarket result [1] $self;
+  action ( features : instance ) RejectMarket result [1] $self;
 
   mapping for zrp_d_prod_mrkt
     {
@@ -106,6 +109,7 @@ etag master LocalChangedOn
 }
 
 define behavior for ZRP_I_MARKET_ORDER alias MarketOrders
+implementation in class zbp_rp_i_market_order unique
 persistent table zrp_d_mrkt_order
 draft table zrp_x_mrkt_order
 lock dependent by _Product
@@ -121,9 +125,9 @@ etag master LocalChangedOn
   update;
   delete;
 
-  internal action recalculateTotalAmount;
+  internal action RecalculateTotalAmount;
 
-  determination calculateTotalAmount on modify { field Quantity; }
+  determination CalculateTotalAmount on modify { field Quantity; }
 
   side effects
   {
