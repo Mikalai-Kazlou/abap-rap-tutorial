@@ -1,6 +1,7 @@
 managed;
 strict ( 2 );
 with draft;
+extensible;
 
 define behavior for ZRP_I_PRODUCT alias Product
 implementation in class zbp_rp_i_product unique
@@ -9,6 +10,7 @@ draft table zrp_x_product
 lock master total etag ChangedOn
 authorization master ( global, instance )
 etag master LocalChangedOn
+extensible
 {
   association _ProductMarket { create; with draft; }
 
@@ -34,6 +36,8 @@ etag master LocalChangedOn
     validation ProductMarkets~ValidateStartDate;
     validation ProductMarkets~ValidateEndDate;
     validation ProductMarkets~CheckDuplicates;
+
+    validation MarketOrders~ValidateDeliveryDate;
   }
 
   draft action Edit;
@@ -49,7 +53,7 @@ etag master LocalChangedOn
     field ProductGroupID affects $self;
   }
 
-  mapping for zrp_d_product
+  mapping for zrp_d_product corresponding extensible
     {
       UUID           = produuid;
       ID             = prodid;
@@ -78,6 +82,7 @@ draft table zrp_x_prod_mrkt
 lock dependent by _Product
 authorization dependent by _Product
 etag master LocalChangedOn
+extensible
 {
   association _Product { with draft; }
   association _MarketOrder { create ( features : instance ); with draft; }
@@ -99,7 +104,7 @@ etag master LocalChangedOn
   action ( features : instance ) AcceptMarket result [1] $self;
   action ( features : instance ) RejectMarket result [1] $self;
 
-  mapping for zrp_d_prod_mrkt
+  mapping for zrp_d_prod_mrkt corresponding extensible
     {
       ProductUUID       = produuid;
       ProductMarketUUID = mrktuuid;
@@ -123,6 +128,7 @@ draft table zrp_x_mrkt_order
 lock dependent by _Product
 authorization dependent by _Product
 etag master LocalChangedOn
+extensible
 {
   association _Product { with draft; }
   association _ProductMarket { with draft; }
@@ -148,7 +154,7 @@ etag master LocalChangedOn
     field DeliveryDate affects field CalendarYear;
   }
 
-  mapping for zrp_d_mrkt_order
+  mapping for zrp_d_mrkt_order corresponding extensible
     {
       ProductUUID       = produuid;
       ProductMarketUUID = mrktuuid;

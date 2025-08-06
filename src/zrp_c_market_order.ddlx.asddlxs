@@ -6,7 +6,7 @@
 annotate entity ZRP_C_MARKET_ORDER with
 {
   @UI.facet: [
-  
+
     { id: 'MarketOrders',
       purpose: #STANDARD,
       type: #IDENTIFICATION_REFERENCE,
@@ -50,19 +50,22 @@ annotate entity ZRP_C_MARKET_ORDER with
   @UI.lineItem: [ { position: 70 } ]
   AmountCurrency;
 
-  @UI.identification: [ { position: 80 } ]
-  @UI.lineItem: [ { position: 80 } ]
+  @UI.identification: [ { position: 500 } ]
+  @UI.lineItem: [ { position: 500, importance: #LOW } ]
   CreatedBy;
 
-  @UI.identification: [ { position: 90 } ]
-  @UI.lineItem: [ { position: 90 } ]
+  @UI.identification: [ { position: 510 } ]
+  @UI.lineItem: [ { position: 510, importance: #LOW } ]
   CreatedOn;
 
-  @UI.identification: [ { position: 100 } ]
-  @UI.lineItem: [ { position: 100 } ]
+  @UI.identification: [ { position: 520 } ]
+  @UI.lineItem: [ { position: 520, importance: #LOW } ]
   ChangedBy;
 
-  @UI.identification: [ { position: 110 } ]
-  @UI.lineItem: [ { position: 110 } ]
+  @UI.identification: [ { position: 530 } ]
+  @UI.lineItem: [ { position: 530, importance: #LOW } ]
   ChangedOn;
+
+  @UI.hidden: true
+  LocalChangedOn;
 }

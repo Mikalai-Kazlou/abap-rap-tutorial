@@ -140,7 +140,7 @@ CLASS lhc_product_market IMPLEMENTATION.
       INTO TABLE @DATA(makret_names).
 
     LOOP AT product_markets INTO DATA(product_market).
-      DATA(country_name) = VALUE #( makret_names[ MarketID = product_market-MarketID ]-MarketName OPTIONAL ).
+      DATA(country_name) = VALUE #( makret_names[ MarketID = product_market-MarketID ]-MarketName DEFAULT '' ).
       DATA(iso_code) = get_iso_code_external( country_name = CONV #( country_name ) ).
 
       IF iso_code <> product_market-ISOCode.

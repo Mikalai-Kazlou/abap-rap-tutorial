@@ -140,24 +140,20 @@ CLASS lhc_market_order IMPLEMENTATION.
       DATA(product_market) = VALUE #( product_markets[ KEY id COMPONENTS %is_draft         = <market_orders>-%is_draft
                                                                          ProductUUID       = <market_orders>-ProductUUID
                                                                          ProductMarketUUID = <market_orders>-ProductMarketUUID ] OPTIONAL ).
-      DATA(msg_number) = '011'.
+      MESSAGE e011(zrp_msg) INTO DATA(msg).
       DATA(is_delivery_date_valid) = xsdbool( <market_orders>-DeliveryDate > product_market-StartDate ).
 
       IF product_market-EndDate IS NOT INITIAL.
-        msg_number = '012'.
-        is_delivery_date_valid = xsdbool( <market_orders>-DeliveryDate > product_market-StartDate
+        MESSAGE e012(zrp_msg) INTO msg.
+        is_delivery_date_valid = xsdbool( is_delivery_date_valid = abap_true
                                           AND <market_orders>-DeliveryDate <= product_market-EndDate ).
       ENDIF.
 
       IF is_delivery_date_valid = abap_false.
-        DATA(msg) = new_message( id       = 'ZRP_MSG'
-                                 number   = CONV #( msg_number )
-                                 severity = if_abap_behv_message=>severity-error ).
-
         INSERT VALUE #( %tky                  = <market_orders>-%tky
                         %state_area           = 'validateDeliveryDate'
                         %element-DeliveryDate = if_abap_behv=>mk-on
-                        %msg                  = msg
+                        %msg                  = new_message_with_text( text = msg )
                         %path                 = VALUE #( product        = CORRESPONDING #( <market_orders>-%tky MAPPING uuid = ProductUUID )
                                                          productmarkets = CORRESPONDING #( <market_orders>-%tky MAPPING productuuid       = ProductUUID
                                                                                                                         productmarketuuid = ProductMarketUUID ) )

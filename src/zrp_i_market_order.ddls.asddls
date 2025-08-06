@@ -1,7 +1,13 @@
-@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AbapCatalog.viewEnhancementCategory: [#PROJECTION_LIST]
+@AbapCatalog.extensibility: {
+  extensible: true,
+  allowNewDatasources: false,
+  dataSources: ['_Extension']
+}
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Market Orders'
 @Metadata.ignorePropagatedAnnotations: true
+
 @ObjectModel.usageType:{
     serviceQuality: #X,
     sizeCategory: #S,
@@ -10,12 +16,17 @@
 define view entity ZRP_I_MARKET_ORDER
   as select from zrp_d_mrkt_order
 
-  association to ZRP_I_PRODUCT               as _Product
-    on _Product.UUID = $projection.ProductUUID
-
-  association to parent ZRP_I_PRODUCT_MARKET as _ProductMarket
+  association        to parent ZRP_I_PRODUCT_MARKET as _ProductMarket
     on  _ProductMarket.ProductUUID       = $projection.ProductUUID
     and _ProductMarket.ProductMarketUUID = $projection.ProductMarketUUID
+
+  association [0..1] to ZRP_I_PRODUCT               as _Product
+    on _Product.UUID = $projection.ProductUUID
+
+  association [1..1] to ZRP_E_MARKET_ORDER          as _Extension
+    on  _Extension.ProductUUID       = $projection.ProductUUID
+    and _Extension.ProductMarketUUID = $projection.ProductMarketUUID
+    and _Extension.OrderUUID         = $projection.OrderUUID
 
 {
   key produuid       as ProductUUID,
@@ -43,5 +54,7 @@ define view entity ZRP_I_MARKET_ORDER
 
       /* Associations */
       _Product,
-      _ProductMarket
+      _ProductMarket,
+
+      _Extension
 }
