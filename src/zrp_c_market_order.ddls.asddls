@@ -33,5 +33,5 @@ define view entity ZRP_C_MARKET_ORDER
       _Product       as Product       : redirected to ZRP_C_PRODUCT,
       _ProductMarket as ProductMarket : redirected to parent ZRP_C_PRODUCT_MARKET,
 
-      _Extension
+      _Extension     as Extension
 }

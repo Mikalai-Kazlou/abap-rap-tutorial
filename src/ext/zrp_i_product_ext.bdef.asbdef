@@ -1,0 +1,14 @@
+extension;
+
+extend behavior for MarketOrders
+{
+  field ( readonly ) zzBusinessPartner, zzBusinessPartnerEmail, zzBusinessPartnerPhone;
+
+  mapping for zrp_d_mrkt_order
+    {
+      zzBusinessPartnerID    = zzbusinesspartnerid;
+      zzBusinessPartner      = zzbusinesspartner;
+      zzBusinessPartnerEmail = zzbusinesspartneremail;
+      zzBusinessPartnerPhone = zzbusinesspartnerphone;
+    }
+}
