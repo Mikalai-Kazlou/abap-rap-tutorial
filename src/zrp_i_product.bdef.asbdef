@@ -1,7 +1,14 @@
 managed;
 strict ( 2 );
 with draft;
-extensible;
+extensible
+{
+  with validations on save;
+  with determinations on modify;
+  with determinations on save;
+  with additional save;
+}
+
 
 define behavior for ZRP_I_PRODUCT alias Product
 implementation in class zbp_rp_i_product unique
@@ -27,7 +34,7 @@ extensible
   update;
   delete;
 
-  draft determine action Prepare
+  draft determine action Prepare extensible
   {
     validation ValidateProductID;
     validation ValidateProductGroup;
@@ -75,6 +82,7 @@ extensible
     }
 }
 
+
 define behavior for ZRP_I_PRODUCT_MARKET alias ProductMarkets
 implementation in class zbp_rp_i_product_market unique
 persistent table zrp_d_prod_mrkt
@@ -120,6 +128,7 @@ extensible
       LocalChangedOn    = localchangedon;
     }
 }
+
 
 define behavior for ZRP_I_MARKET_ORDER alias MarketOrders
 implementation in class zbp_rp_i_market_order unique

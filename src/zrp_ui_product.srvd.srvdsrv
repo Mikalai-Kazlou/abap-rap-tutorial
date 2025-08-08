@@ -1,4 +1,5 @@
 @EndUserText.label: 'Products'
+@AbapCatalog.extensibility.extensible: true
 define service ZRP_UI_PRODUCT {
   expose ZRP_C_PRODUCT        as Products;
   expose ZRP_C_PRODUCT_MARKET as ProductMarkets;

@@ -1,5 +1,5 @@
-"! <p class="shorttext synchronized" lang="en">Test class</p>
-CLASS zrp_cl_test DEFINITION
+"! <p class="shorttext synchronized" lang="en">Console application</p>
+CLASS zrp_cl_console_application DEFINITION
   PUBLIC FINAL
   CREATE PUBLIC.
 
@@ -32,7 +32,7 @@ CLASS zrp_cl_test DEFINITION
 ENDCLASS.
 
 
-CLASS zrp_cl_test IMPLEMENTATION.
+CLASS zrp_cl_console_application IMPLEMENTATION.
   METHOD class_constructor.
     name = `Undefined`.
   ENDMETHOD.
