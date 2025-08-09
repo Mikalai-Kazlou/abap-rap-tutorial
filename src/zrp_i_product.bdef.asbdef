@@ -55,11 +55,6 @@ extensible
   action CopyProduct parameter ZRP_A_IP_COPY_PRODUCT result [1] $self;
   action MoveToNextPhase result [1] $self;
 
-  side effects
-  {
-    field ProductGroupID affects $self;
-  }
-
   mapping for zrp_d_product corresponding extensible
     {
       UUID           = produuid;

@@ -4,7 +4,7 @@
 @Metadata.ignorePropagatedAnnotations: true
 
 define view entity ZRP_C_MARKET_ORDER
-  as projection on ZRP_I_MARKET_ORDER
+  as projection on ZRP_I_MARKET_ORDER as MarketOrder
 {
   key ProductUUID,
   key ProductMarketUUID,

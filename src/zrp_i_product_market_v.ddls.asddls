@@ -7,7 +7,7 @@
   sizeCategory: #S,
   dataClass: #MIXED
 }
-define view entity ZRP_I_PRODUCT_MARKET_VIRT
+define view entity ZRP_I_PRODUCT_MARKET_V
   as select from ZRP_I_PRODUCT_MARKET
 {
   key ProductUUID,

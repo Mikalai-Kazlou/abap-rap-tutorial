@@ -13,6 +13,7 @@ define view entity ZRP_C_PRODUCT_MARKET
       @ObjectModel.text.element: ['MarketName']
       @UI.textArrangement: #TEXT_ONLY
       MarketID,
+      @Semantics.text: true
       _Market.MarketName               as MarketName,
       _Market.ImageUrl                 as MarketImageUrl,
 

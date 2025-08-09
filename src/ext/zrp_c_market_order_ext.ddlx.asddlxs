@@ -13,20 +13,20 @@ annotate entity ZRP_C_MARKET_ORDER with
     }
   ]
 
+  @EndUserText.label: 'Partner'
   @UI.fieldGroup: [ { qualifier: 'BusinessPartner', position: 10 } ]
   @UI.lineItem: [ { position: 200 } ]
   zzBusinessPartnerID;
 
-  @UI.fieldGroup: [ { qualifier: 'BusinessPartner', position: 20 } ]
-  @UI.lineItem: [ { position: 210 } ]
+  @UI.hidden: true
   zzBusinessPartner;
 
   @UI.fieldGroup: [ { qualifier: 'BusinessPartner', position: 30 } ]
-  @UI.lineItem: [ { position: 220 } ]
+  @UI.lineItem: [ { position: 210 } ]
   zzBusinessPartnerEmail;
 
   @UI.fieldGroup: [ { qualifier: 'BusinessPartner', position: 40 } ]
-  @UI.lineItem: [ { position: 230 } ]
+  @UI.lineItem: [ { position: 220 } ]
   zzBusinessPartnerPhone;
 
 }

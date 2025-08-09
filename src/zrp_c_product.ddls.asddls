@@ -23,6 +23,7 @@ define root view entity ZRP_C_PRODUCT
       @ObjectModel.text.element: ['ProductGroupName']
       @UI.textArrangement: #TEXT_ONLY
       ProductGroupID,
+      @Semantics.text: true
       _ProductGroup.ProductGroupName as ProductGroupName,
       _ProductGroup.ImageUrl         as ProductGroupImageUrl,
 

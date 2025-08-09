@@ -10,6 +10,7 @@ define view entity ZRP_I_PRODUCT_GROUP
 {
       @ObjectModel.text.element: [ 'ProductGroupName' ]
       @Search.defaultSearchElement: true
+      @Search.ranking: #HIGH
   key pgid     as ProductGroupID,
       
       @Semantics.text: true
