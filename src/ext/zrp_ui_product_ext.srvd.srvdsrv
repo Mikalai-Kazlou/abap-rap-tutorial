@@ -1,0 +1,4 @@
+extend service ZRP_UI_PRODUCT with {
+  expose ZRP_I_BUSINESS_PARTNER_C   as zzBusinessPartner;
+  expose ZRP_I_TRANSLATION_LANGUAGE as zzTranslationLanguage;
+}

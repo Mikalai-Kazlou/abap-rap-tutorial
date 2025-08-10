@@ -1,3 +1,9 @@
+@AbapCatalog.viewEnhancementCategory: [#PROJECTION_LIST]
+@AbapCatalog.extensibility: {
+  extensible: true,
+  allowNewDatasources: false,
+  dataSources: ['_Extension']
+}
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Products'
 @Metadata.ignorePropagatedAnnotations: true
@@ -18,6 +24,9 @@ define root view entity ZRP_I_PRODUCT
 
   association [0..1] to ZRP_I_PHASE          as _Phase
     on $projection.PhaseID = _Phase.PhaseID
+
+  association [1..1] to ZRP_E_PRODUCT        as _Extension
+    on _Extension.UUID = $projection.UUID
 
 {
   key produuid       as UUID,
@@ -55,5 +64,7 @@ define root view entity ZRP_I_PRODUCT
       _ProductGroup,
       _Currency,
       _SizeUOM,
-      _Phase
+      _Phase,
+
+      _Extension
 }

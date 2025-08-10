@@ -6,7 +6,7 @@
 
 define root view entity ZRP_C_PRODUCT
   provider contract transactional_query
-  as projection on ZRP_I_PRODUCT
+  as projection on ZRP_I_PRODUCT as Product
 
 {
   key UUID,

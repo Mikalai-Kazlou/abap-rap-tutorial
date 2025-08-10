@@ -1,5 +1,14 @@
 extension;
 
+extend behavior for Product
+{
+  mapping for zrp_d_product
+    {
+      zzProductGroupNameTranslated = zzproductgroupnametranslated;
+      zzTranslationCode            = zztranslationcode;
+    }
+}
+
 extend behavior for MarketOrders
 {
   mapping for zrp_d_mrkt_order

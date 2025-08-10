@@ -1,0 +1,25 @@
+@Metadata.layer: #CUSTOMER
+annotate entity ZRP_C_PRODUCT with
+{
+  @UI.facet: [
+
+    { id: 'Translation',
+      label: 'Translation',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'Translation',
+      position: 15
+    }
+  ]
+
+  @EndUserText.label: 'Translation Code'
+  @UI.fieldGroup: [ { qualifier: 'Translation', position: 10 } ]
+  @UI.lineItem: [ { position: 10 } ]
+  zzTranslationCode;
+
+  @EndUserText.label: 'Product Group (Translated)'
+  @UI.fieldGroup: [ { qualifier: 'Translation', position: 30 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  zzProductGroupNameTranslated;
+
+}
