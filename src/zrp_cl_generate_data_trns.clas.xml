@@ -5,7 +5,7 @@
    <VSEOCLASS>
     <CLSNAME>ZRP_CL_GENERATE_DATA_TRNS</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Data Generation</DESCRIPT>
+    <DESCRIPT>Transactional Data Generation</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
