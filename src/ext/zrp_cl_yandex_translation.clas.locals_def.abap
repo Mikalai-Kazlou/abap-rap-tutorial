@@ -1,4 +1,5 @@
 CONSTANTS base_url TYPE string VALUE `https://dictionary.yandex.net/api/v1/dicservice.json/lookup`.
+
 CONSTANTS service_key_part1 TYPE string VALUE `dict.1.1.20250619T132603Z`.
 CONSTANTS service_key_part2 TYPE string VALUE `2f3b075ebc82de57`.
 CONSTANTS service_key_part3 TYPE string VALUE `fbb8c417f4e64730e4aa0dfda2e51aaefe1b779c`.
