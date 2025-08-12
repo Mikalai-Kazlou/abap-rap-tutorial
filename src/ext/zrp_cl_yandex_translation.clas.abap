@@ -23,7 +23,7 @@ CLASS zrp_cl_yandex_translation IMPLEMENTATION.
     DATA json TYPE ts_json.
 
     DATA(lang_code) = |{ to_lower( lang_code_from ) }-{ to_lower( lang_code_to ) }|.
-    DATA(url) = escape( val = |{ base_url }&lang={ lang_code }&text={ text }| format = cl_abap_format=>e_url ).
+    DATA(url) = escape( val = |{ base_url }?key={ service_key }&lang={ lang_code }&text={ text }| format = cl_abap_format=>e_url ).
 
     TRY.
         DATA(destination) = cl_http_destination_provider=>create_by_url( url ).
