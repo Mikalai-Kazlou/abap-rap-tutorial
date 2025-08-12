@@ -1,4 +1,4 @@
-CONSTANTS base_url TYPE string VALUE ``.
+CONSTANTS base_url TYPE string VALUE `https://dictionary.yandex.net/api/v1/dicservice.json/lookup`.
 CONSTANTS service_key TYPE string VALUE ``.
 
 TYPES:
