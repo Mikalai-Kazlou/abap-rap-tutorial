@@ -1,0 +1,5 @@
+CLASS zbp_rp_i_product_ext DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zrp_i_product.
+ENDCLASS.
+
+CLASS zbp_rp_i_product_ext IMPLEMENTATION.
+ENDCLASS.

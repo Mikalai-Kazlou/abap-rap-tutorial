@@ -3,17 +3,15 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZBP_RP_I_PRODUCT</CLSNAME>
+    <CLSNAME>ZBP_RP_I_PRODUCT_EXT</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>BI for Product</DESCRIPT>
+    <DESCRIPT>BI for ZRP_I_PRODUCT_EXT</DESCRIPT>
     <CATEGORY>06</CATEGORY>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
-    <RSTAT>K</RSTAT>
     <CLSDEFINT>ZRP_I_PRODUCT</CLSDEFINT>
-    <WITH_UNIT_TESTS>X</WITH_UNIT_TESTS>
    </VSEOCLASS>
   </asx:values>
  </asx:abap>
