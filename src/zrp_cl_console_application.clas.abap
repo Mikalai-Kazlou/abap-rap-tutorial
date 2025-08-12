@@ -39,9 +39,9 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
     "check_primitive_code( out ).
-    "check_string_functions( out ).
+    check_string_functions( out ).
     "check_abap_sql_functions( out ).
-    check_internal_tables( out ).
+    "check_internal_tables( out ).
   ENDMETHOD.
 
   METHOD get_attribute.
