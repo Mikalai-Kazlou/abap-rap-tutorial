@@ -1,11 +1,18 @@
 extension;
 
 extend behavior for Product
+implementation in class zbp_rp_i_product_ext unique
 {
+  field ( readonly ) zzProductGroupNameTranslated;
+
+  determination zzSetPGNameTranslation on save { field zzTranslationCode; }
+
+  action ( authorization : global ) zzGetPGNameTranslation;
+
   mapping for zrp_d_product
     {
-      zzProductGroupNameTranslated = zzproductgroupnametranslated;
       zzTranslationCode            = zztranslationcode;
+      zzProductGroupNameTranslated = zzproductgroupnametranslated;
     }
 }
 

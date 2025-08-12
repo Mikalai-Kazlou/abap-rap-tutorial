@@ -12,14 +12,15 @@ annotate entity ZRP_C_PRODUCT with
     }
   ]
 
+  @UI.identification: [ { type: #FOR_ACTION, dataAction: 'zzGetPGNameTranslation', label: 'Translate' } ]
+  ProductGroupID;
+
   @EndUserText.label: 'Translation Code'
   @UI.fieldGroup: [ { qualifier: 'Translation', position: 10 } ]
-  @UI.lineItem: [ { position: 10 } ]
   zzTranslationCode;
 
   @EndUserText.label: 'Product Group (Translated)'
-  @UI.fieldGroup: [ { qualifier: 'Translation', position: 30 } ]
-  @UI.lineItem: [ { position: 20 } ]
+  @UI.fieldGroup: [ { qualifier: 'Translation', position: 20 } ]
   zzProductGroupNameTranslated;
 
 }

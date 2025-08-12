@@ -86,6 +86,12 @@
      <MSGNR>012</MSGNR>
      <TEXT>Delivery Date must be less than or qual to Market End Date</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Translation on &amp;1 is &apos;&amp;2&apos;</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
