@@ -1,3 +1,6 @@
+" Yandex Dictionary API
+" https://yandex.ru/dev/tech-only/doc/dg/ru/reference/lookup
+
 CONSTANTS base_url TYPE string VALUE `https://dictionary.yandex.net/api/v1/dicservice.json/lookup`.
 
 CONSTANTS service_key_part1 TYPE string VALUE `dict.1.1.20250619T132603Z`.

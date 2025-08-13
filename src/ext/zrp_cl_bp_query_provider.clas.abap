@@ -5,9 +5,8 @@ CLASS zrp_cl_bp_query_provider DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
     INTERFACES if_rap_query_provider.
-  PRIVATE SECTION.
 
-    METHODS get_business_partner_list
+    CLASS-METHODS get_business_partner_list
       IMPORTING
         top                TYPE i OPTIONAL
         skip               TYPE i OPTIONAL
@@ -30,8 +29,7 @@ CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
             top                = 5
             is_count_requested = abap_false
           IMPORTING
-            business_data = DATA(business_data)
-            count         = DATA(count) ).
+            business_data      = DATA(business_data) ).
 
         out->write( business_data ).
 

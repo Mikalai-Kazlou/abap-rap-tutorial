@@ -17,7 +17,12 @@ implementation in class zbp_rp_i_product_ext unique
 }
 
 extend behavior for MarketOrders
+implementation in class zbp_rp_i_market_order_ext unique
 {
+  field ( readonly ) zzBusinessPartner, zzBusinessPartnerEmail, zzBusinessPartnerPhone;
+
+  determination zzSetBusinessPartnerData on save { field zzBusinessPartnerID; }
+
   mapping for zrp_d_mrkt_order
     {
       zzBusinessPartnerID    = zzbusinesspartnerid;
