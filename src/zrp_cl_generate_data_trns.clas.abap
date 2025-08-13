@@ -5,8 +5,10 @@ CLASS zrp_cl_generate_data_trns DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
 
+    METHODS constructor.
+
+  PRIVATE SECTION.
     CONSTANTS scg_client       TYPE c LENGTH 3   VALUE '100'.
-    CONSTANTS scg_phase_id     TYPE zrp_phase_id VALUE 4.
     CONSTANTS scg_currency_usd TYPE waers_curc   VALUE 'USD'.
 
     CONSTANTS: BEGIN OF scg_tables,
@@ -21,18 +23,15 @@ CLASS zrp_cl_generate_data_trns DEFINITION
                  get_orders   TYPE string VALUE 'GET_ORDERS',
                END OF   scg_filling_methods.
 
-    CONSTANTS: BEGIN OF scg_types_mt_mappint,
+    CONSTANTS: BEGIN OF scg_types_mt_mapping,
                  tt_products TYPE tabname VALUE 'MT_PRODUCTS',
                  tt_markets  TYPE tabname VALUE 'MT_MARKETS',
                  tt_orders   TYPE tabname VALUE 'MT_ORDERS',
-               END OF  scg_types_mt_mappint.
+               END OF  scg_types_mt_mapping.
 
     CONSTANTS scg_sec_in_day  TYPE i VALUE 86400.
     CONSTANTS scg_sec_in_year TYPE i VALUE 31536000.
 
-    METHODS constructor.
-
-  PRIVATE SECTION.
     TYPES tt_products TYPE STANDARD TABLE OF zrp_d_product WITH DEFAULT KEY.
     TYPES tt_markets  TYPE STANDARD TABLE OF zrp_d_prod_mrkt WITH DEFAULT KEY.
     TYPES tt_orders   TYPE STANDARD TABLE OF zrp_d_mrkt_order WITH DEFAULT KEY.
@@ -40,6 +39,7 @@ CLASS zrp_cl_generate_data_trns DEFINITION
     DATA mt_products       TYPE tt_products.
     DATA mt_markets        TYPE tt_markets.
     DATA mt_orders         TYPE tt_orders.
+    DATA mv_phase_id       TYPE zrp_phase_id.
     DATA mv_base_date_time TYPE timestampl.
     DATA mo_rnd            TYPE REF TO cl_abap_random.
 
@@ -80,16 +80,26 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
                               cl_abap_structdescr=>describe_by_data( scg_filling_methods )
                             )->components.
 
-    LOOP AT lt_methods ASSIGNING FIELD-SYMBOL(<fs_methods>).
-      ASSIGN COMPONENT <fs_methods>-name OF STRUCTURE scg_filling_methods TO FIELD-SYMBOL(<fs_method_name>).
+    DELETE FROM zrp_d_product.
+    DELETE FROM zrp_d_prod_mrkt.
+    DELETE FROM zrp_d_mrkt_order.
+    COMMIT WORK AND WAIT.
 
-      CALL METHOD (<fs_method_name>)
-        RECEIVING rt_result = lr_table.
+    DO 4 TIMES.
+      mv_phase_id = sy-index.
 
-      ASSIGN lr_table->* TO FIELD-SYMBOL(<fs_table>).
+      LOOP AT lt_methods ASSIGNING FIELD-SYMBOL(<fs_methods>).
+        ASSIGN COMPONENT <fs_methods>-name OF STRUCTURE scg_filling_methods TO FIELD-SYMBOL(<fs_method_name>).
 
-      insert_to_db_table( <fs_table> ).
-    ENDLOOP.
+        CALL METHOD (<fs_method_name>)
+          RECEIVING
+            rt_result = lr_table.
+
+        ASSIGN lr_table->* TO FIELD-SYMBOL(<fs_table>).
+
+        insert_to_db_table( <fs_table> ).
+      ENDLOOP.
+    ENDDO.
   ENDMETHOD.
 
   METHOD get_products.
@@ -118,7 +128,7 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
       DATA(lv_price)  = mo_rnd->intinrange( low  = 1
                                             high = 3  ) * 100.
 
-      DATA(lv_product_id) = |{ <fs_prod_group>-pgid }4-{ <fs_prod_group>-pgname(1) }|.
+      DATA(lv_product_id) = |{ <fs_prod_group>-pgid }{ mv_phase_id }-{ <fs_prod_group>-pgname(1) }|.
 
       lt_products =
         VALUE #( BASE lt_products
@@ -127,7 +137,7 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
                    prodid         = lv_product_id
                    prodname       = |{ <fs_prod_group>-pgname } { lv_product_id }|
                    pgid           = <fs_prod_group>-pgid
-                   phaseid        = scg_phase_id
+                   phaseid        = mv_phase_id
                    height         = lv_height
                    depth          = lv_depth
                    width          = lv_width
@@ -256,11 +266,12 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
                                createdon    = lv_creation_date_time
                                changedby    = sy-uname
                                changedon    = lv_creation_date_time
-*                               zz_busspartner_zpo = '100000001'
-*                               zz_busspartnername_zpo = 'Becker Berlin'
-*                               zz_busspartneremail_zpo = 'customer-dagmar.schulze@beckerberlin.de'
-*                               zz_busspartnerphone_zpo = '3088530'
-                               ) ).
+
+                               zzbusinesspartnerid    = '100000001'
+                               zzbusinesspartner      = 'Becker Berlin'
+                               zzbusinesspartneremail = 'customer-dagmar.schulze@beckerberlin.de'
+                               zzbusinesspartnerphone = '3088530'
+                             ) ).
       ENDDO.
     ENDLOOP.
 
@@ -284,7 +295,6 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    "DELETE FROM (<fs_table_name>).
     INSERT (<fs_table_name>) FROM TABLE @<fs_table>.
     COMMIT WORK AND WAIT.
   ENDMETHOD.
@@ -303,10 +313,10 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
 
     DATA(lv_type_name) = cl_abap_tabledescr=>describe_by_data_ref( ir_table )->get_relative_name( ).
     DATA(lt_scg_mt_tabs_comp) = CAST cl_abap_structdescr(
-                                       cl_abap_structdescr=>describe_by_data( scg_types_mt_mappint )
+                                       cl_abap_structdescr=>describe_by_data( scg_types_mt_mapping )
                                      )->components.
 
-    ASSIGN COMPONENT lv_type_name OF STRUCTURE scg_types_mt_mappint TO FIELD-SYMBOL(<fs_mt_tab_name>).
+    ASSIGN COMPONENT lv_type_name OF STRUCTURE scg_types_mt_mapping TO FIELD-SYMBOL(<fs_mt_tab_name>).
 
     ASSIGN ir_table->* TO <fs_table>.
     ASSIGN (<fs_mt_tab_name>) TO FIELD-SYMBOL(<fs_target_table>).

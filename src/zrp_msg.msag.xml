@@ -92,6 +92,12 @@
      <MSGNR>013</MSGNR>
      <TEXT>Translation on &amp;1 is &apos;&amp;2&apos;</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Business Partner ID &apos;&amp;1&apos; is invalid</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

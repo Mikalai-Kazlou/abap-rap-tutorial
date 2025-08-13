@@ -23,6 +23,10 @@ implementation in class zbp_rp_i_market_order_ext unique
 
   determination zzSetBusinessPartnerData on save { field zzBusinessPartnerID; }
 
+  validation zzValidateBusinessPartnerID on save { field zzBusinessPartnerID; }
+
+  determine action ( authorization : global ) zzValidateBPID { validation zzValidateBusinessPartnerID; }
+
   mapping for zrp_d_mrkt_order
     {
       zzBusinessPartnerID    = zzbusinesspartnerid;
