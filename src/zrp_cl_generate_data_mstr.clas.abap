@@ -6,7 +6,6 @@ CLASS zrp_cl_generate_data_mstr DEFINITION
     INTERFACES if_oo_adt_classrun.
 ENDCLASS.
 
-
 CLASS zrp_cl_generate_data_mstr IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     DATA lt_prod_grs TYPE TABLE OF zrp_d_prod_group.
@@ -43,10 +42,10 @@ CLASS zrp_cl_generate_data_mstr IMPLEMENTATION.
     out->write( 'Product Groups data inserted successfully!' ).
 
     " PHASES
-    lt_phases = VALUE #( ( phaseid  = '1' phase = 'PLAN' )
-                         ( phaseid  = '2' phase = 'DEV' )
-                         ( phaseid  = '3' phase = 'PROD' )
-                         ( phaseid  = '4' phase = 'OUT' ) ).
+    lt_phases = VALUE #( ( phaseid = '1' phase = 'PLAN' )
+                         ( phaseid = '2' phase = 'DEV' )
+                         ( phaseid = '3' phase = 'PROD' )
+                         ( phaseid = '4' phase = 'OUT' ) ).
 
     " Delete the possible entries in the database table - in case it was already filled
     DELETE FROM zrp_d_phase.

@@ -20,56 +20,7 @@ CLASS zrp_cl_bp_query_provider DEFINITION
 
 ENDCLASS.
 
-
 CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-    TRY.
-        get_business_partner_list(
-          EXPORTING
-            top                = 5
-            is_count_requested = abap_false
-          IMPORTING
-            business_data      = DATA(business_data) ).
-
-        out->write( business_data ).
-
-      CATCH cx_root INTO DATA(exception).
-        DATA(msg) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).
-        out->write( msg ).
-    ENDTRY.
-  ENDMETHOD.
-
-  METHOD if_rap_query_provider~select.
-    TRY.
-        DATA BPs TYPE TABLE OF zrp_i_business_partner_c.
-
-        DATA(top)  = io_request->get_paging( )->get_page_size( ).
-        DATA(skip) = io_request->get_paging( )->get_offset( ).
-
-        DATA(filter_conditions) = io_request->get_filter( )->get_as_ranges( ).
-        DATA(sort_elements)     = io_request->get_sort_elements( ).
-
-        get_business_partner_list(
-          EXPORTING top                = CONV #( top )
-                    skip               = CONV #( skip )
-                    filter_conditions  = filter_conditions
-                    sort_elements      = sort_elements
-                    is_data_requested  = io_request->is_data_requested( )
-                    is_count_requested = io_request->is_total_numb_of_rec_requested(  )
-          IMPORTING business_data      = DATA(business_data)
-                    count              = DATA(count) ).
-
-        IF io_request->is_total_numb_of_rec_requested(  ).
-          io_response->set_total_number_of_records( count ).
-        ENDIF.
-        IF io_request->is_data_requested(  ).
-          io_response->set_data( business_data ).
-        ENDIF.
-      CATCH cx_root INTO DATA(exception).
-        DATA(exception_message) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).
-    ENDTRY.
-  ENDMETHOD.
-
   METHOD get_business_partner_list.
     DATA proxy_model_key  TYPE /iwbep/if_cp_runtime_types=>ty_s_proxy_model_key.
     DATA filter TYPE REF TO /iwbep/if_cp_filter_node.
@@ -87,10 +38,9 @@ CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
                                    proxy_model_version = '0001'
                                    repository_id       = 'DEFAULT' ).
 
-        DATA(client_proxy) = /iwbep/cl_cp_factory_remote=>create_v2_remote_proxy(
-                                                            is_proxy_model_key       = proxy_model_key
-                                                            io_http_client           = http_client
-                                                            iv_relative_service_root = sc_service_root ).
+        DATA(client_proxy) = /iwbep/cl_cp_factory_remote=>create_v2_remote_proxy( is_proxy_model_key       = proxy_model_key
+                                                                                  io_http_client           = http_client
+                                                                                  iv_relative_service_root = sc_service_root ).
 
         DATA(request) = client_proxy->create_resource_for_entity_set( 'SEPM_I_BUSINESS_PARTNER_E' )->create_request_for_read( ).
 
@@ -148,7 +98,55 @@ CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
         " TODO: variable is assigned but never used (ABAP cleaner)
         DATA(msg) = lo_error->get_text( ).
     ENDTRY.
-
   ENDMETHOD.
 
+  METHOD if_oo_adt_classrun~main.
+    TRY.
+        get_business_partner_list(
+          EXPORTING
+            top                = 5
+            is_count_requested = abap_false
+          IMPORTING
+            business_data      = DATA(business_data) ).
+
+        out->write( business_data ).
+
+      CATCH cx_root INTO DATA(exception).
+        DATA(msg) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).
+        out->write( msg ).
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD if_rap_query_provider~select.
+    TRY.
+        DATA BPs TYPE TABLE OF zrp_i_business_partner_c.
+
+        DATA(top)  = io_request->get_paging( )->get_page_size( ).
+        DATA(skip) = io_request->get_paging( )->get_offset( ).
+
+        DATA(filter_conditions) = io_request->get_filter( )->get_as_ranges( ).
+        DATA(sort_elements)     = io_request->get_sort_elements( ).
+
+        get_business_partner_list(
+          EXPORTING
+            top                = CONV #( top )
+            skip               = CONV #( skip )
+            filter_conditions  = filter_conditions
+            sort_elements      = sort_elements
+            is_data_requested  = io_request->is_data_requested( )
+            is_count_requested = io_request->is_total_numb_of_rec_requested( )
+          IMPORTING
+            business_data      = DATA(business_data)
+            count              = DATA(count) ).
+
+        IF io_request->is_total_numb_of_rec_requested(  ).
+          io_response->set_total_number_of_records( count ).
+        ENDIF.
+        IF io_request->is_data_requested(  ).
+          io_response->set_data( business_data ).
+        ENDIF.
+      CATCH cx_root INTO DATA(exception).
+        DATA(exception_message) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).
+    ENDTRY.
+  ENDMETHOD.
 ENDCLASS.

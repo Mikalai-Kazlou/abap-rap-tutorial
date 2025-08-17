@@ -90,9 +90,9 @@ CLASS lhc_market_orders IMPLEMENTATION.
     DELETE bp_ids WHERE zzBusinessPartnerID IS INITIAL.
 
     IF bp_ids IS NOT INITIAL.
-      filter_conditions = VALUE #( ( name = 'BUSINESS_PARTNER'
+      filter_conditions = VALUE #( ( name  = 'BUSINESS_PARTNER'
                                      range = VALUE #( FOR bp_id IN bp_ids
-                                                        ( sign = 'I' option = 'EQ' low = bp_id-zzBusinessPartnerID ) ) ) ).
+                                                    ( sign = 'I' option = 'EQ' low = bp_id-zzBusinessPartnerID ) ) ) ).
 
       sort_elements = VALUE #( ( element_name = 'BUSINESS_PARTNER' ) ).
 

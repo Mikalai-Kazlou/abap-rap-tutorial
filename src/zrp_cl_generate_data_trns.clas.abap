@@ -63,7 +63,6 @@ CLASS zrp_cl_generate_data_trns DEFINITION
 
 ENDCLASS.
 
-
 CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
   METHOD constructor.
     GET TIME STAMP FIELD DATA(lv_current_date_time).
@@ -71,91 +70,6 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
 
     mv_base_date_time = cl_abap_tstmp=>add( tstmp = lv_current_date_time
                                             secs  = scg_sec_in_year * 3 * -1 ).
-  ENDMETHOD.
-
-  METHOD if_oo_adt_classrun~main.
-    DATA lr_table TYPE REF TO data.
-
-    DATA(lt_methods) = CAST cl_abap_structdescr(
-                              cl_abap_structdescr=>describe_by_data( scg_filling_methods )
-                            )->components.
-
-    DELETE FROM zrp_d_product.
-    DELETE FROM zrp_d_prod_mrkt.
-    DELETE FROM zrp_d_mrkt_order.
-    COMMIT WORK AND WAIT.
-
-    DO 4 TIMES.
-      mv_phase_id = sy-index.
-
-      LOOP AT lt_methods ASSIGNING FIELD-SYMBOL(<fs_methods>).
-        ASSIGN COMPONENT <fs_methods>-name OF STRUCTURE scg_filling_methods TO FIELD-SYMBOL(<fs_method_name>).
-
-        CALL METHOD (<fs_method_name>)
-          RECEIVING
-            rt_result = lr_table.
-
-        ASSIGN lr_table->* TO FIELD-SYMBOL(<fs_table>).
-
-        insert_to_db_table( <fs_table> ).
-      ENDLOOP.
-    ENDDO.
-  ENDMETHOD.
-
-  METHOD get_products.
-    DATA lt_products      TYPE tt_products.
-    DATA lv_creation_date TYPE timestampl.
-
-    SELECT * FROM zrp_d_prod_group INTO TABLE @DATA(lt_prod_group).
-
-    IF lt_prod_group IS INITIAL.
-      RETURN.
-    ENDIF.
-
-    LOOP AT lt_prod_group ASSIGNING FIELD-SYMBOL(<fs_prod_group>).
-      DATA(lv_sec_creation_shift) = mo_rnd->intinrange( low  = 1
-                                                        high = 5 ) * scg_sec_in_day.
-
-      lv_creation_date = cl_abap_tstmp=>add( tstmp = mv_base_date_time
-                                             secs  = lv_sec_creation_shift ).
-
-      DATA(lv_height) = mo_rnd->intinrange( low  = 5
-                                            high = 10 ) * 100.
-      DATA(lv_width)  = mo_rnd->intinrange( low  = 1
-                                            high = 5  ) * 100.
-      DATA(lv_depth)  = mo_rnd->intinrange( low  = 7
-                                            high = 10 ) * 100.
-      DATA(lv_price)  = mo_rnd->intinrange( low  = 1
-                                            high = 3  ) * 100.
-
-      DATA(lv_product_id) = |{ <fs_prod_group>-pgid }{ mv_phase_id }-{ <fs_prod_group>-pgname(1) }|.
-
-      lt_products =
-        VALUE #( BASE lt_products
-                 ( mandt          = scg_client
-                   produuid       = get_uuid( )
-                   prodid         = lv_product_id
-                   prodname       = |{ <fs_prod_group>-pgname } { lv_product_id }|
-                   pgid           = <fs_prod_group>-pgid
-                   phaseid        = mv_phase_id
-                   height         = lv_height
-                   depth          = lv_depth
-                   width          = lv_width
-                   sizeuom        = 'CM'
-                   price          = lv_price
-                   pricecurrency  = scg_currency_usd
-                   taxrate        = 18
-                   createdby      = sy-uname
-                   createdon      = lv_creation_date
-                   changedby      = sy-uname
-                   changedon      = lv_creation_date
-                   localchangedon = lv_creation_date ) ).
-    ENDLOOP.
-
-    DATA(lr_products) = NEW tt_products( lt_products ).
-    set_mt_tables( lr_products ).
-
-    rt_result = lr_products.
   ENDMETHOD.
 
   METHOD get_markets.
@@ -169,8 +83,8 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
     LOOP AT lt_country ASSIGNING FIELD-SYMBOL(<fs_market>) FROM 1 TO 3.
       DATA(lv_index_start) = mo_rnd->intinrange( low  = 1
                                                  high = 2 ).
-      DATA(lv_index_end)   = mo_rnd->intinrange( low  = 3
-                                                 high = 4 ).
+      DATA(lv_index_end) = mo_rnd->intinrange( low  = 3
+                                               high = 4 ).
       DATA(lv_market_uuid) = get_uuid( ).
 
       LOOP AT mt_products ASSIGNING FIELD-SYMBOL(<fs_product>) FROM lv_index_start TO lv_index_end.
@@ -251,27 +165,27 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
         ENDTRY.
 
         lt_orders = VALUE #( BASE lt_orders
-                             ( mandt        = scg_client
-                               produuid     = <fs_market>-produuid
-                               mrktuuid     = <fs_market>-mrktuuid
-                               orderuuid    = get_uuid( )
-                               orderid      = sy-index
-                               quantity     = lv_items_quan
-                               calendaryear = lv_delivery_date(4)
-                               deliverydate = lv_delivery_date
-                               netamount    = lv_netamount
-                               grossamount  = lv_grossamount
-                               amountcurr   = scg_currency_usd
-                               createdby    = sy-uname
-                               createdon    = lv_creation_date_time
-                               changedby    = sy-uname
-                               changedon    = lv_creation_date_time
+                             ( mandt                  = scg_client
+                               produuid               = <fs_market>-produuid
+                               mrktuuid               = <fs_market>-mrktuuid
+                               orderuuid              = get_uuid( )
+                               orderid                = sy-index
+                               quantity               = lv_items_quan
+                               calendaryear           = lv_delivery_date(4)
+                               deliverydate           = lv_delivery_date
+                               netamount              = lv_netamount
+                               grossamount            = lv_grossamount
+                               amountcurr             = scg_currency_usd
+                               createdby              = sy-uname
+                               createdon              = lv_creation_date_time
+                               changedby              = sy-uname
+                               changedon              = lv_creation_date_time
 
                                zzbusinesspartnerid    = '100000001'
                                zzbusinesspartner      = 'Becker Berlin'
                                zzbusinesspartneremail = 'customer-dagmar.schulze@beckerberlin.de'
                                zzbusinesspartnerphone = '3088530'
-                             ) ).
+                           ) ).
       ENDDO.
     ENDLOOP.
 
@@ -279,6 +193,99 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
     set_mt_tables( lr_orders ).
 
     rt_result = lr_orders.
+  ENDMETHOD.
+
+
+  METHOD get_products.
+    DATA lt_products      TYPE tt_products.
+    DATA lv_creation_date TYPE timestampl.
+
+    SELECT * FROM zrp_d_prod_group INTO TABLE @DATA(lt_prod_group).
+
+    IF lt_prod_group IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    LOOP AT lt_prod_group ASSIGNING FIELD-SYMBOL(<fs_prod_group>).
+      DATA(lv_sec_creation_shift) = mo_rnd->intinrange( low  = 1
+                                                        high = 5 ) * scg_sec_in_day.
+
+      lv_creation_date = cl_abap_tstmp=>add( tstmp = mv_base_date_time
+                                             secs  = lv_sec_creation_shift ).
+
+      DATA(lv_height) = mo_rnd->intinrange( low  = 5
+                                            high = 10 ) * 100.
+      DATA(lv_width)  = mo_rnd->intinrange( low  = 1
+                                            high = 5  ) * 100.
+      DATA(lv_depth)  = mo_rnd->intinrange( low  = 7
+                                            high = 10 ) * 100.
+      DATA(lv_price)  = mo_rnd->intinrange( low  = 1
+                                            high = 3  ) * 100.
+
+      DATA(lv_product_id) = |{ <fs_prod_group>-pgid }{ mv_phase_id }-{ <fs_prod_group>-pgname(1) }|.
+
+      lt_products =
+        VALUE #( BASE lt_products
+                 ( mandt          = scg_client
+                   produuid       = get_uuid( )
+                   prodid         = lv_product_id
+                   prodname       = |{ <fs_prod_group>-pgname } { lv_product_id }|
+                   pgid           = <fs_prod_group>-pgid
+                   phaseid        = mv_phase_id
+                   height         = lv_height
+                   depth          = lv_depth
+                   width          = lv_width
+                   sizeuom        = 'CM'
+                   price          = lv_price
+                   pricecurrency  = scg_currency_usd
+                   taxrate        = 18
+                   createdby      = sy-uname
+                   createdon      = lv_creation_date
+                   changedby      = sy-uname
+                   changedon      = lv_creation_date
+                   localchangedon = lv_creation_date ) ).
+    ENDLOOP.
+
+    DATA(lr_products) = NEW tt_products( lt_products ).
+    set_mt_tables( lr_products ).
+
+    rt_result = lr_products.
+  ENDMETHOD.
+
+  METHOD get_uuid.
+    TRY.
+        rv_uuid = cl_system_uuid=>if_system_uuid_static~create_uuid_x16( ).
+      CATCH cx_uuid_error.
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD if_oo_adt_classrun~main.
+    DATA lr_table TYPE REF TO data.
+
+    DATA(lt_methods) = CAST cl_abap_structdescr(
+                              cl_abap_structdescr=>describe_by_data( scg_filling_methods )
+                            )->components.
+
+    DELETE FROM zrp_d_product.
+    DELETE FROM zrp_d_prod_mrkt.
+    DELETE FROM zrp_d_mrkt_order.
+    COMMIT WORK AND WAIT.
+
+    DO 4 TIMES.
+      mv_phase_id = sy-index.
+
+      LOOP AT lt_methods ASSIGNING FIELD-SYMBOL(<fs_methods>).
+        ASSIGN COMPONENT <fs_methods>-name OF STRUCTURE scg_filling_methods TO FIELD-SYMBOL(<fs_method_name>).
+
+        CALL METHOD (<fs_method_name>)
+          RECEIVING
+            rt_result = lr_table.
+
+        ASSIGN lr_table->* TO FIELD-SYMBOL(<fs_table>).
+
+        insert_to_db_table( <fs_table> ).
+      ENDLOOP.
+    ENDDO.
   ENDMETHOD.
 
   METHOD insert_to_db_table.
@@ -297,13 +304,6 @@ CLASS zrp_cl_generate_data_trns IMPLEMENTATION.
 
     INSERT (<fs_table_name>) FROM TABLE @<fs_table>.
     COMMIT WORK AND WAIT.
-  ENDMETHOD.
-
-  METHOD get_uuid.
-    TRY.
-        rv_uuid = cl_system_uuid=>if_system_uuid_static~create_uuid_x16( ).
-      CATCH cx_uuid_error.
-    ENDTRY.
   ENDMETHOD.
 
   METHOD set_mt_tables.
