@@ -100,8 +100,8 @@ CLASS lhc_product IMPLEMENTATION.
              UPDATE
              FIELDS ( phaseid )
                WITH VALUE #( FOR product IN products
-                               ( %tky    = product-%tky
-                                 phaseid = phases-planning ) )
+                             ( %tky    = product-%tky
+                               phaseid = phases-planning ) )
            REPORTED DATA(update_reported).
 
     reported = CORRESPONDING #( DEEP update_reported ).
@@ -140,7 +140,9 @@ CLASS lhc_product IMPLEMENTATION.
       IF product-id IS NOT INITIAL.
         DATA(existing_product_uuid) = VALUE #( products_db[ prodid = product-id ]-produuid OPTIONAL ).
 
-        IF existing_product_uuid <> product-uuid.
+        IF existing_product_uuid IS NOT INITIAL
+          AND existing_product_uuid <> product-uuid.
+
           INSERT VALUE #( %tky        = product-%tky
                           %state_area = 'validateProductID'
                           %element-id = if_abap_behv=>mk-on
@@ -168,8 +170,8 @@ CLASS lhc_product IMPLEMENTATION.
 
     " Optimization of DB select: extract distinct non-initial product IDs
     product_group_ids = VALUE #( FOR product IN products
-                                   WHERE ( ProductGroupID IS NOT INITIAL )
-                                     ( sign = 'I' option = 'EQ' low = product-ProductGroupID ) ).
+                                 WHERE ( ProductGroupID IS NOT INITIAL )
+                                       ( sign = 'I' option = 'EQ' low = product-ProductGroupID ) ).
 
     IF product_group_ids IS INITIAL.
       RETURN.
@@ -206,7 +208,7 @@ CLASS lhc_product IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD copy_product.
-    DATA new_products TYPE TABLE FOR CREATE zrp_i_product.
+    DATA new_products TYPE TABLE FOR CREATE zrp_i_product\\product.
 
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
            ENTITY product
@@ -214,11 +216,17 @@ CLASS lhc_product IMPLEMENTATION.
            RESULT DATA(products).
 
     LOOP AT products ASSIGNING FIELD-SYMBOL(<product>).
-      <product>-id      = keys[ KEY id COMPONENTS %tky = <product>-%tky ]-%param-productid.
-      <product>-phaseid = phases-planning.
-    ENDLOOP.
+      INSERT CORRESPONDING #( <product> EXCEPT uuid
+                                               CreatedBy
+                                               CreatedOn
+                                               ChangedBy
+                                               ChangedOn
+                                               LocalChangedOn ) INTO TABLE new_products ASSIGNING FIELD-SYMBOL(<new_product>).
 
-    new_products = CORRESPONDING #( products EXCEPT uuid createdby createdon changedby changedon ).
+      <new_product>-id        = keys[ KEY id COMPONENTS %tky = <product>-%tky ]-%param-productid.
+      <new_product>-%is_draft = if_abap_behv=>mk-on.
+      <new_product>-phaseid   = phases-planning.
+    ENDLOOP.
 
     MODIFY ENTITIES OF zrp_i_product IN LOCAL MODE
              ENTITY product
@@ -232,13 +240,12 @@ CLASS lhc_product IMPLEMENTATION.
     READ ENTITY IN LOCAL MODE zrp_i_product
             ALL FIELDS
            WITH CORRESPONDING #( mapped-product )
-         RESULT DATA(products_db)
-         FAILED failed.
+         RESULT DATA(products_mapped).
 
-    result = VALUE #( FOR <product_db> IN products_db INDEX INTO index
-                        ( %cid_ref = keys[ index ]-%cid_ref
-                          %tky     = keys[ index ]-%tky
-                          %param   = CORRESPONDING #( <product_db> ) ) ).
+    result = VALUE #( FOR <product_mapped> IN products_mapped INDEX INTO index
+                      ( %cid_ref = keys[ index ]-%cid_ref
+                        %tky     = keys[ index ]-%tky
+                        %param   = CORRESPONDING #( <product_mapped> ) ) ).
   ENDMETHOD.
 
   METHOD move_to_next_phase.
@@ -260,8 +267,8 @@ CLASS lhc_product IMPLEMENTATION.
              UPDATE
              FIELDS ( PhaseID )
                WITH VALUE #( FOR product IN products
-                               ( %tky    = product-%tky
-                                 PhaseID = product-PhaseID ) )
+                             ( %tky    = product-%tky
+                               PhaseID = product-PhaseID ) )
              FAILED DATA(failed_update)
            REPORTED DATA(reported_update).
 
@@ -276,8 +283,8 @@ CLASS lhc_product IMPLEMENTATION.
            RESULT products.
 
     result = VALUE #( FOR product IN products
-                        ( %tky   = product-%tky
-                          %param = CORRESPONDING #( product ) ) ).
+                      ( %tky   = product-%tky
+                        %param = CORRESPONDING #( product ) ) ).
   ENDMETHOD.
 
   METHOD get_next_phase.
@@ -302,7 +309,7 @@ CLASS lhc_product IMPLEMENTATION.
   METHOD is_not_valid_phase.
     DATA(validator) = lcl_phase_validator=>factory( product-PhaseID ).
     result = validator->is_not_valid( EXPORTING product  = product
-                                       CHANGING reported = reported
+                                      CHANGING  reported = reported
                                                 failed   = failed ).
   ENDMETHOD.
 ENDCLASS.
@@ -333,10 +340,10 @@ CLASS lcl_phase_validator_dev IMPLEMENTATION.
                                            %state_area      = 'validateNextPhase'
                                            %element-phaseid = if_abap_behv=>mk-on
 
-                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>movement_not_possible ) )
-                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>markets_not_found     ) ) ) INTO TABLE reported.
+                                           ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                                         textid   = zcm_rp_messages=>movement_not_possible ) )
+                                           ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                                         textid   = zcm_rp_messages=>markets_not_found ) ) ) INTO TABLE reported.
       result = abap_true.
     ENDIF.
   ENDMETHOD.
@@ -357,10 +364,10 @@ CLASS lcl_phase_validator_prd IMPLEMENTATION.
                                            %state_area      = 'validateNextPhase'
                                            %element-phaseid = if_abap_behv=>mk-on
 
-                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>movement_not_possible ) )
-                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>markets_not_accepted  ) ) ) INTO TABLE reported.
+                                           ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                                         textid   = zcm_rp_messages=>movement_not_possible ) )
+                                           ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                                         textid   = zcm_rp_messages=>markets_not_accepted ) ) ) INTO TABLE reported.
       result = abap_true.
     ENDIF.
   ENDMETHOD.
@@ -382,10 +389,10 @@ CLASS lcl_phase_validator_out IMPLEMENTATION.
                                              %state_area      = 'validateNextPhase'
                                              %element-phaseid = if_abap_behv=>mk-on
 
-                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>movement_not_possible ) )
-                                ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
-                                                              textid   = zcm_rp_messages=>markets_not_finished  ) ) ) INTO TABLE reported.
+                                             ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                                           textid   = zcm_rp_messages=>movement_not_possible ) )
+                                             ( %msg = NEW zcm_rp_messages( severity = if_abap_behv_message=>severity-error
+                                                                           textid   = zcm_rp_messages=>markets_not_finished ) ) ) INTO TABLE reported.
         result = abap_true.
         RETURN.
       ENDIF.

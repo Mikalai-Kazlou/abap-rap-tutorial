@@ -32,25 +32,69 @@ CLASS zrp_cl_console_application DEFINITION
 ENDCLASS.
 
 
-CLASS zrp_cl_console_application IMPLEMENTATION.
-  METHOD class_constructor.
-    name = `Undefined`.
+
+CLASS ZRP_CL_CONSOLE_APPLICATION IMPLEMENTATION.
+
+
+  METHOD check_abap_sql_functions.
+    DATA source_currency TYPE c LENGTH 5 VALUE 'EUR'.
+    DATA target_currency TYPE c LENGTH 5 VALUE 'USD'.
+
+    DATA(today) = cl_abap_context_info=>get_system_date( ).
+
+    SELECT SINGLE
+      FROM zrp_i_product
+    FIELDS currency_conversion(
+             amount             = CAST( 1000 AS DEC( 15, 2 ) ),
+             source_currency    = @source_currency,
+             target_currency    = @target_currency,
+             exchange_rate_date = @today,
+             on_error           = @sql_currency_conversion=>c_on_error-set_to_null ) AS price,
+
+             left(      'Text', 1 )    AS left,
+             substring( 'Text', 1, 1 ) AS substring,
+
+             @( substring( val = 'Text' off = 0 len = 1 ) ) AS substring_abap
+
+      INTO @DATA(converted_price).
+
+    out->write( converted_price ).
   ENDMETHOD.
 
-  METHOD if_oo_adt_classrun~main.
-    "check_primitive_code( out ).
-    check_string_functions( out ).
-    "check_abap_sql_functions( out ).
-    "check_internal_tables( out ).
+
+  METHOD check_internal_tables.
+    TYPES: BEGIN OF ts_table,
+             col1 TYPE c LENGTH 5,
+             col2 TYPE n LENGTH 5,
+             col3 TYPE i,
+           END OF ts_table.
+    TYPES: tt_table TYPE STANDARD TABLE OF ts_table WITH NON-UNIQUE KEY col1.
+
+    DATA itab TYPE tt_table.
+    DATA itab_reduce TYPE tt_table.
+    DATA itab_keys TYPE SORTED TABLE OF ts_table WITH NON-UNIQUE KEY col1 col2
+                                                 WITH NON-UNIQUE SORTED KEY sk_sorted COMPONENTS col2.
+
+    itab = VALUE #( ( col1 = '1' col2 = '11' col3 = 1 )
+                    ( col1 = '2' col2 = '22' col3 = 2 )
+                    ( col1 = '4' col2 = '44' col3 = 4 )
+                    ( col1 = '4' col2 = '44' col3 = 4 )
+                    ( col1 = '2' col2 = '22' col3 = 3 ) ).
+    SORT itab.
+    DELETE ADJACENT DUPLICATES FROM itab. "COMPARING ALL FIELDS.
+    out->write( itab ).
+
+    itab_reduce = REDUCE #( INIT it_reduce TYPE tt_table
+                                 count = 1
+                             FOR <line> IN itab WHERE ( col3 < 3 )
+                             LET key = <line>-col1 && <line>-col2 IN
+                            NEXT it_reduce = VALUE #( BASE it_reduce ( <line> ) )
+                                 count += 1
+                          ).
+
+    out->write( itab_reduce ).
   ENDMETHOD.
 
-  METHOD get_attribute.
-    r_result = attribute.
-  ENDMETHOD.
-
-  METHOD set_attribute.
-    attribute = i_attribute.
-  ENDMETHOD.
 
   METHOD check_primitive_code.
 
@@ -63,7 +107,7 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
     DATA(a2) = date_2 - date_1.
 
     out->write( TEXT-001 ).
-    out->write( 'How are you?'(002) ).
+    out->write( 'How are yo?'(002) ).
 
     DO 50 TIMES.
       " TODO: variable is assigned but never used (ABAP cleaner)
@@ -92,6 +136,7 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
     attribute = 2.
 
   ENDMETHOD.
+
 
   METHOD check_string_functions.
     DATA text TYPE string VALUE ` ##SAP BTP,   ABAP Environment  `.
@@ -131,62 +176,26 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
     out->write( |SEGMENT2         = {   segment(  val = text sep = ',' index = 2 ) } |  ).
   ENDMETHOD.
 
-  METHOD check_abap_sql_functions.
-    DATA source_currency TYPE c LENGTH 5 VALUE 'EUR'.
-    DATA target_currency TYPE c LENGTH 5 VALUE 'USD'.
 
-    DATA(today) = cl_abap_context_info=>get_system_date( ).
-
-    SELECT SINGLE
-      FROM zrp_i_product
-    FIELDS currency_conversion(
-             amount             = CAST( 1000 AS DEC( 15, 2 ) ),
-             source_currency    = @source_currency,
-             target_currency    = @target_currency,
-             exchange_rate_date = @today,
-             on_error           = @sql_currency_conversion=>c_on_error-set_to_null ) AS price,
-
-             left(      'Text', 1 )    AS left,
-             substring( 'Text', 1, 1 ) AS substring,
-
-             @( substring( val = 'Text' off = 0 len = 1 ) ) AS substring_abap
-
-      INTO @DATA(converted_price).
-
-    out->write( converted_price ).
+  METHOD class_constructor.
+    name = `Undefined`.
   ENDMETHOD.
 
-  METHOD check_internal_tables.
-    TYPES: BEGIN OF ts_table,
-             col1 TYPE c LENGTH 5,
-             col2 TYPE n LENGTH 5,
-             col3 TYPE i,
-           END OF ts_table.
-    TYPES: tt_table TYPE STANDARD TABLE OF ts_table WITH NON-UNIQUE KEY col1.
 
-    DATA itab TYPE tt_table.
-    DATA itab_reduce TYPE tt_table.
-    DATA itab_keys TYPE SORTED TABLE OF ts_table WITH NON-UNIQUE KEY col1 col2
-                                                 WITH NON-UNIQUE SORTED KEY sk_sorted COMPONENTS col2.
-
-    itab = VALUE #( ( col1 = '1' col2 = '11' col3 = 1 )
-                    ( col1 = '2' col2 = '22' col3 = 2 )
-                    ( col1 = '4' col2 = '44' col3 = 4 )
-                    ( col1 = '4' col2 = '44' col3 = 4 )
-                    ( col1 = '2' col2 = '22' col3 = 3 ) ).
-    SORT itab.
-    DELETE ADJACENT DUPLICATES FROM itab. "COMPARING ALL FIELDS.
-    out->write( itab ).
-
-    itab_reduce = REDUCE #( INIT it_reduce TYPE tt_table
-                                 count = 1
-                             FOR <line> IN itab WHERE ( col3 < 3 )
-                             LET key = <line>-col1 && <line>-col2 IN
-                            NEXT it_reduce = VALUE #( BASE it_reduce ( <line> ) )
-                                 count += 1
-                          ).
-
-    out->write( itab_reduce ).
+  METHOD get_attribute.
+    r_result = attribute.
   ENDMETHOD.
 
+
+  METHOD if_oo_adt_classrun~main.
+    check_primitive_code( out ).
+    "check_string_functions( out ).
+    "check_abap_sql_functions( out ).
+    "check_internal_tables( out ).
+  ENDMETHOD.
+
+
+  METHOD set_attribute.
+    attribute = i_attribute.
+  ENDMETHOD.
 ENDCLASS.
