@@ -10,6 +10,13 @@ CLASS zrp_cl_console_application DEFINITION
 
     CLASS-METHODS class_constructor.
 
+    CLASS-METHODS static_method
+      IMPORTING iv_1 TYPE string OPTIONAL
+                iv_2 TYPE string OPTIONAL
+                iv_3 TYPE string OPTIONAL
+                  PREFERRED PARAMETER iv_2
+      RAISING   cx_abap_invalid_value.
+
     "! <p class="shorttext synchronized" lang="en"><em>Get</em> attribute</p>
     "! @parameter r_result | <p class="shorttext synchronized" lang="en">Result</p>
     METHODS get_attribute RETURNING VALUE(r_result) TYPE i.
@@ -31,77 +38,28 @@ CLASS zrp_cl_console_application DEFINITION
 
 ENDCLASS.
 
-
-
-CLASS ZRP_CL_CONSOLE_APPLICATION IMPLEMENTATION.
-
-
-  METHOD check_abap_sql_functions.
-    DATA source_currency TYPE c LENGTH 5 VALUE 'EUR'.
-    DATA target_currency TYPE c LENGTH 5 VALUE 'USD'.
-
-    DATA(today) = cl_abap_context_info=>get_system_date( ).
-
-    SELECT SINGLE
-      FROM zrp_i_product
-    FIELDS currency_conversion(
-             amount             = CAST( 1000 AS DEC( 15, 2 ) ),
-             source_currency    = @source_currency,
-             target_currency    = @target_currency,
-             exchange_rate_date = @today,
-             on_error           = @sql_currency_conversion=>c_on_error-set_to_null ) AS price,
-
-             left(      'Text', 1 )    AS left,
-             substring( 'Text', 1, 1 ) AS substring,
-
-             @( substring( val = 'Text' off = 0 len = 1 ) ) AS substring_abap
-
-      INTO @DATA(converted_price).
-
-    out->write( converted_price ).
-  ENDMETHOD.
-
-
-  METHOD check_internal_tables.
-    TYPES: BEGIN OF ts_table,
-             col1 TYPE c LENGTH 5,
-             col2 TYPE n LENGTH 5,
-             col3 TYPE i,
-           END OF ts_table.
-    TYPES: tt_table TYPE STANDARD TABLE OF ts_table WITH NON-UNIQUE KEY col1.
-
-    DATA itab TYPE tt_table.
-    DATA itab_reduce TYPE tt_table.
-    DATA itab_keys TYPE SORTED TABLE OF ts_table WITH NON-UNIQUE KEY col1 col2
-                                                 WITH NON-UNIQUE SORTED KEY sk_sorted COMPONENTS col2.
-
-    itab = VALUE #( ( col1 = '1' col2 = '11' col3 = 1 )
-                    ( col1 = '2' col2 = '22' col3 = 2 )
-                    ( col1 = '4' col2 = '44' col3 = 4 )
-                    ( col1 = '4' col2 = '44' col3 = 4 )
-                    ( col1 = '2' col2 = '22' col3 = 3 ) ).
-    SORT itab.
-    DELETE ADJACENT DUPLICATES FROM itab. "COMPARING ALL FIELDS.
-    out->write( itab ).
-
-    itab_reduce = REDUCE #( INIT it_reduce TYPE tt_table
-                                 count = 1
-                             FOR <line> IN itab WHERE ( col3 < 3 )
-                             LET key = <line>-col1 && <line>-col2 IN
-                            NEXT it_reduce = VALUE #( BASE it_reduce ( <line> ) )
-                                 count += 1
-                          ).
-
-    out->write( itab_reduce ).
-  ENDMETHOD.
-
-
+CLASS zrp_cl_console_application IMPLEMENTATION.
   METHOD check_primitive_code.
+
+    TRY.
+        static_method( `Text` ).
+      CATCH cx_abap_invalid_value.
+        "handle exception
+
+    ENDTRY.
 
     " TODO: variable is assigned but never used (ABAP cleaner)
     DATA numbers TYPE TABLE OF i.
     DATA date_1 TYPE d VALUE '20250101'.
     DATA date_2 TYPE d VALUE '20250131'.
+
+    FIELD-SYMBOLS <fs1> TYPE string.
+    FIELD-SYMBOLS <fs2> TYPE string.
+
+    DATA(str) = `Text`.
+    ASSIGN str TO <fs1>.
+    ASSIGN <fs1> TO <fs2>.
+    <fs2> = `New Text`.
 
     DATA(a1) = 5 / 10.
     DATA(a2) = date_2 - date_1.
@@ -137,6 +95,63 @@ CLASS ZRP_CL_CONSOLE_APPLICATION IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD check_abap_sql_functions.
+    DATA source_currency TYPE c LENGTH 5 VALUE 'EUR'.
+    DATA target_currency TYPE c LENGTH 5 VALUE 'USD'.
+
+    DATA(today) = cl_abap_context_info=>get_system_date( ).
+
+    SELECT SINGLE
+      FROM zrp_i_product
+    FIELDS currency_conversion(
+             amount             = CAST( 1000 AS DEC( 15, 2 ) ),
+             source_currency    = @source_currency,
+             target_currency    = @target_currency,
+             exchange_rate_date = @today,
+             on_error           = @sql_currency_conversion=>c_on_error-set_to_null ) AS price,
+
+             left(      'Text', 1 )    AS left,
+             substring( 'Text', 1, 1 ) AS substring,
+
+             @( substring( val = 'Text' off = 0 len = 1 ) ) AS substring_abap
+
+      INTO @DATA(converted_price).
+
+    out->write( converted_price ).
+  ENDMETHOD.
+
+  METHOD check_internal_tables.
+    TYPES: BEGIN OF ts_table,
+             col1 TYPE c LENGTH 5,
+             col2 TYPE n LENGTH 5,
+             col3 TYPE i,
+           END OF ts_table.
+    TYPES: tt_table TYPE STANDARD TABLE OF ts_table WITH NON-UNIQUE KEY col1.
+
+    DATA itab TYPE tt_table.
+    DATA itab_reduce TYPE tt_table.
+    DATA itab_keys TYPE SORTED TABLE OF ts_table WITH NON-UNIQUE KEY col1 col2
+                                                 WITH NON-UNIQUE SORTED KEY sk_sorted COMPONENTS col2.
+
+    itab = VALUE #( ( col1 = '1' col2 = '11' col3 = 1 )
+                    ( col1 = '2' col2 = '22' col3 = 2 )
+                    ( col1 = '4' col2 = '44' col3 = 4 )
+                    ( col1 = '4' col2 = '44' col3 = 4 )
+                    ( col1 = '2' col2 = '22' col3 = 3 ) ).
+    SORT itab.
+    DELETE ADJACENT DUPLICATES FROM itab. "COMPARING ALL FIELDS.
+    out->write( itab ).
+
+    itab_reduce = REDUCE #( INIT it_reduce TYPE tt_table
+                                 count = 1
+                             FOR <line> IN itab WHERE ( col3 < 3 )
+                             LET key = <line>-col1 && <line>-col2 IN
+                            NEXT it_reduce = VALUE #( BASE it_reduce ( <line> ) )
+                                 count += 1
+                          ).
+
+    out->write( itab_reduce ).
+  ENDMETHOD.
 
   METHOD check_string_functions.
     DATA text TYPE string VALUE ` ##SAP BTP,   ABAP Environment  `.
@@ -172,20 +187,17 @@ CLASS ZRP_CL_CONSOLE_APPLICATION IMPLEMENTATION.
     out->write( |CONDENSE         = {   condense( val = text ) } | ).
     out->write( |REPEAT           = {   repeat(   val = text occ = 2 ) } | ).
 
-    out->write( |SEGMENT1         = {   segment(  val = text sep = ',' index = 1 ) } |  ).
-    out->write( |SEGMENT2         = {   segment(  val = text sep = ',' index = 2 ) } |  ).
+    out->write( |SEGMENT1         = {   segment(  val = text sep = ',' index = 1 ) } | ).
+    out->write( |SEGMENT2         = {   segment(  val = text sep = ',' index = 2 ) } | ).
   ENDMETHOD.
-
 
   METHOD class_constructor.
     name = `Undefined`.
   ENDMETHOD.
 
-
   METHOD get_attribute.
     r_result = attribute.
   ENDMETHOD.
-
 
   METHOD if_oo_adt_classrun~main.
     check_primitive_code( out ).
@@ -194,8 +206,11 @@ CLASS ZRP_CL_CONSOLE_APPLICATION IMPLEMENTATION.
     "check_internal_tables( out ).
   ENDMETHOD.
 
-
   METHOD set_attribute.
     attribute = i_attribute.
+  ENDMETHOD.
+
+  METHOD static_method.
+    DATA(zz) = iv_2.
   ENDMETHOD.
 ENDCLASS.

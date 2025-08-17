@@ -2,6 +2,7 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Product Groups'
 @Metadata.ignorePropagatedAnnotations: true
+
 @ObjectModel.usageType: { serviceQuality: #X, sizeCategory: #S, dataClass: #MIXED }
 @Search.searchable: true
 
@@ -12,7 +13,7 @@ define view entity ZRP_I_PRODUCT_GROUP
       @Search.defaultSearchElement: true
       @Search.ranking: #HIGH
   key pgid     as ProductGroupID,
-      
+
       @Semantics.text: true
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8

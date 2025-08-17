@@ -2,6 +2,7 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Product Markets'
 @Metadata.ignorePropagatedAnnotations: true
+
 @ObjectModel.usageType:{
     serviceQuality: #X,
     sizeCategory: #S,
@@ -10,15 +11,15 @@
 define view entity ZRP_I_PRODUCT_MARKET
   as select from zrp_d_prod_mrkt
 
-  association        to parent ZRP_I_PRODUCT   as _Product
+  association        to parent ZRP_I_PRODUCT as _Product
     on _Product.UUID = $projection.ProductUUID
 
-  composition [0..*] of ZRP_I_MARKET_ORDER     as _MarketOrder
+  composition [0..*] of ZRP_I_MARKET_ORDER   as _MarketOrder
 
-  association [0..1] to ZRP_I_MARKET           as _Market
+  association [0..1] to ZRP_I_MARKET         as _Market
     on _Market.MarketID = $projection.MarketID
 
-  association [1..1] to ZRP_I_PRODUCT_MARKET_V as _VirtualFields
+  association [1..1] to ZRP_V_PRODUCT_MARKET as _VirtualFields
     on  _VirtualFields.ProductUUID       = $projection.ProductUUID
     and _VirtualFields.ProductMarketUUID = $projection.ProductMarketUUID
 

@@ -2,6 +2,7 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Markets'
 @Metadata.ignorePropagatedAnnotations: true
+
 @ObjectModel.usageType:{
     serviceQuality: #X,
     sizeCategory: #S,

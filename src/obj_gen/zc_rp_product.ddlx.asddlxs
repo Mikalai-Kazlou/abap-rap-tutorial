@@ -22,7 +22,7 @@ annotate view ZC_RP_PRODUCT with
     position: 20
   } ]
   @UI.lineItem: [ {
-    position: 20
+    position: 20, criticality: 'Criticality'
   } ]
   @UI.selectionField: [ {
     position: 20
@@ -105,6 +105,9 @@ annotate view ZC_RP_PRODUCT with
     position: 90
   } ]
   Changedat;
+
+  @UI.hidden: true
+  Criticality;
 
   @UI.hidden: true
   Localchangedby;

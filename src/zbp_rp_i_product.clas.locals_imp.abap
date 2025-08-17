@@ -38,41 +38,6 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
 ENDCLASS.
 
-INTERFACE lif_phase_validator.
-  METHODS is_not_valid
-    IMPORTING product       TYPE ts_rr_product
-    CHANGING  reported      TYPE tt_re_product
-              failed        TYPE tt_fe_product
-    RETURNING VALUE(result) TYPE abap_bool.
-ENDINTERFACE.
-
-CLASS lcl_phase_validator DEFINITION.
-  PUBLIC SECTION.
-    CLASS-METHODS factory
-      IMPORTING phase            TYPE zrp_i_phase-phaseid
-      RETURNING VALUE(validator) TYPE REF TO lif_phase_validator.
-ENDCLASS.
-
-CLASS lcl_phase_validator_dev DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES lif_phase_validator.
-ENDCLASS.
-
-CLASS lcl_phase_validator_prd DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES lif_phase_validator.
-ENDCLASS.
-
-CLASS lcl_phase_validator_out DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES lif_phase_validator.
-ENDCLASS.
-
-CLASS lcl_phase_validator_default DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES lif_phase_validator.
-ENDCLASS.
-
 CLASS lhc_product IMPLEMENTATION.
   METHOD get_global_authorizations.
   ENDMETHOD.

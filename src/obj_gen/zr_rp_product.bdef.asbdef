@@ -2,6 +2,7 @@ managed implementation in class ZBP_R_RP_PRODUCT unique;
 strict ( 2 );
 with draft;
 extensible;
+
 define behavior for ZR_RP_PRODUCT alias Product
 persistent table zrpaproduct
 extensible
@@ -9,7 +10,6 @@ draft table zrpdproduct
 etag master Localchangedat
 lock master total etag Changedat
 authorization master ( global )
-
 {
   field ( readonly )
   Uuid,
@@ -54,5 +54,4 @@ authorization master ( global )
       Localchangedby = localchangedby;
       Localchangedat = localchangedat;
     }
-
 }

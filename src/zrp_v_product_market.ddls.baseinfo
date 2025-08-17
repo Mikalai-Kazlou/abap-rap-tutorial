@@ -3,8 +3,7 @@
 {
 "FROM":
 [
-"ZI_RP_PRODUCT",
-"ZR_RP_PRODUCT"
+"ZRP_D_PROD_MRKT"
 ],
 "ASSOCIATED":
 [],

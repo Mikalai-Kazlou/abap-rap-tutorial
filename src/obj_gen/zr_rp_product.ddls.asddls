@@ -3,31 +3,37 @@
 @EndUserText.label: '###GENERATED Core Data Service Entity'
 @ObjectModel.sapObjectNodeType.name: 'ZRPAPRODUCT'
 define root view entity ZR_RP_PRODUCT
-  as select from zrpaproduct as Product
+  as select from ZI_RP_PRODUCT as Product
+
+  association [1] to ZI_RP_PRODUCT as _Extended
+    on _Extended.Uuid = $projection.Uuid
 {
-  key uuid           as Uuid,
-      id             as Id,
-      name           as Name,
+  key Uuid           as Uuid,
+      Id             as Id,
+      Name           as Name,
       @Semantics.amount.currencyCode: 'Pricecurrency'
-      price          as Price,
+      Price          as Price,
       @Consumption.valueHelpDefinition: [ {
         entity.name: 'I_CurrencyStdVH',
         entity.element: 'Currency',
         useForValidation: true
       } ]
-      pricecurrency  as Pricecurrency,
-      taxrate        as Taxrate,
+      Pricecurrency  as Pricecurrency,
+      Taxrate        as Taxrate,
+
       @Semantics.user.createdBy: true
-      createdby      as Createdby,
+      Createdby      as Createdby,
       @Semantics.systemDateTime.createdAt: true
-      createdat      as Createdat,
+      Createdat      as Createdat,
       @Semantics.user.lastChangedBy: true
-      changedby      as Changedby,
+      Changedby      as Changedby,
       @Semantics.systemDateTime.lastChangedAt: true
-      changedat      as Changedat,
+      Changedat      as Changedat,
       @Semantics.user.localInstanceLastChangedBy: true
-      localchangedby as Localchangedby,
+      Localchangedby as Localchangedby,
       @Semantics.systemDateTime.localInstanceLastChangedAt: true
-      localchangedat as Localchangedat
+      Localchangedat as Localchangedat,
+
+      _Extended
 
 }

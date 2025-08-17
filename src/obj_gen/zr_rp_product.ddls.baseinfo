@@ -3,10 +3,12 @@
 {
 "FROM":
 [
-"ZRPAPRODUCT"
+"ZI_RP_PRODUCT"
 ],
 "ASSOCIATED":
-[],
+[
+"ZI_RP_PRODUCT"
+],
 "BASE":
 [],
 "ANNO_REF":

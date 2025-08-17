@@ -2,6 +2,7 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Currencies'
 @Metadata.ignorePropagatedAnnotations: true
+
 @ObjectModel.usageType:{
     serviceQuality: #X,
     sizeCategory: #S,
