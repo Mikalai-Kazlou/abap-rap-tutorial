@@ -4,6 +4,13 @@
 @Metadata.ignorePropagatedAnnotations: true
 @Search.searchable: true
 
+@AbapCatalog.extensibility: {
+  extensible: true,
+  allowNewDatasources: false,
+  dataSources: ['Product'],
+  allowNewCompositions: true
+}
+
 define root view entity ZRP_C_PRODUCT
   provider contract transactional_query
   as projection on ZRP_I_PRODUCT as Product

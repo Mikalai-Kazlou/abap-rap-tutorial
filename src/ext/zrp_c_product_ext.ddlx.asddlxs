@@ -9,6 +9,14 @@ annotate entity ZRP_C_PRODUCT with
       type: #FIELDGROUP_REFERENCE,
       targetQualifier: 'Translation',
       position: 15
+    },
+
+    { id: 'Review',
+      type: #LINEITEM_REFERENCE,
+      purpose: #STANDARD,
+      label: 'Review',
+      targetElement: 'zzProductReview',
+      position: 90
     }
   ]
 

@@ -2,5 +2,15 @@ extension for projection;
 
 extend behavior for Product
 {
+  use association zzProductReview { create; with draft; }
+
   use action zzGetPGNameTranslation;
+}
+
+define behavior for ZRP_C_PRODUCT_REVIEW alias zzProductReviews
+{
+  use association Product { with draft; }
+
+  use update;
+  use delete;
 }

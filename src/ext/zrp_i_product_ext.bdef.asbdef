@@ -3,6 +3,8 @@ extension;
 extend behavior for Product
 implementation in class zbp_rp_i_product_ext unique
 {
+  association zzProductReview { create; with draft; }
+
   field ( readonly ) zzProductGroupNameTranslated;
 
   determination zzSetPGNameTranslation on save { field zzTranslationCode; }
@@ -33,5 +35,34 @@ implementation in class zbp_rp_i_market_order_ext unique
       zzBusinessPartner      = zzbusinesspartner;
       zzBusinessPartnerEmail = zzbusinesspartneremail;
       zzBusinessPartnerPhone = zzbusinesspartnerphone;
+    }
+}
+
+define behavior for ZRP_I_PRODUCT_REVIEW alias zzProductReviews
+persistent table zrp_d_prod_rev
+draft table zrp_x_prod_rev
+lock dependent
+authorization dependent
+etag master LocalLastChangedAt
+{
+  association _Product { with draft; }
+
+  field ( numbering : managed, readonly ) ReviewUUID;
+  field ( readonly ) ProductUUID, Reviewer, LocalCreatedAt, LocalLastChangedAt;
+
+  update;
+  delete;
+
+  mapping for zrp_d_prod_rev
+    {
+      ProductUUID        = product_uuid;
+      ReviewUUID         = review_uuid;
+      Rating             = rating;
+      FreeTextComment    = free_text_comment;
+      HelpfulCount       = helpful_count;
+      HelpfulTotal       = helpful_total;
+      Reviewer           = reviewer;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedAt = local_last_changed_at;
     }
 }

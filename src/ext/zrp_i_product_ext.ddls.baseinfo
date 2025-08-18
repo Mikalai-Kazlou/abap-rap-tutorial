@@ -7,7 +7,9 @@
 "ZRP_D_PRODUCT"
 ],
 "ASSOCIATED":
-[],
+[
+"ZRP_I_PRODUCT_REVIEW"
+],
 "BASE":
 [],
 "ANNO_REF":

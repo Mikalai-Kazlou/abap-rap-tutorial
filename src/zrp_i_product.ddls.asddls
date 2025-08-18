@@ -2,7 +2,8 @@
 @AbapCatalog.extensibility: {
   extensible: true,
   allowNewDatasources: false,
-  dataSources: ['_Extension']
+  dataSources: ['_Extension'],
+  allowNewCompositions: true
 }
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Products'

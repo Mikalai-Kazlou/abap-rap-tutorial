@@ -27,7 +27,7 @@ extensible
 }
 
 
-define behavior for ZRP_C_PRODUCT_MARKET alias ProductMarket
+define behavior for ZRP_C_PRODUCT_MARKET alias ProductMarkets
 extensible
 {
   use association Product { with draft; }
@@ -43,7 +43,7 @@ extensible
 }
 
 
-define behavior for ZRP_C_MARKET_ORDER alias MarketOrder
+define behavior for ZRP_C_MARKET_ORDER alias MarketOrders
 extensible
 {
   use association Product { with draft; }
