@@ -6,10 +6,8 @@ CLASS zbp_rp_i_product_market DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF z
         rejected TYPE abap_bool VALUE abap_false,
       END OF market_statuses.
 
-    TYPES ts_rr_market TYPE STRUCTURE FOR READ RESULT zrp_i_product\\product\_productmarket.
-
     CLASS-METHODS is_market_finished
-      IMPORTING market        TYPE ts_rr_market
+      IMPORTING market        TYPE zrp_i_product_market
       RETURNING VALUE(result) TYPE abap_bool.
 
 ENDCLASS.

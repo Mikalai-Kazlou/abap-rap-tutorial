@@ -347,7 +347,7 @@ CLASS lcl_phase_validator_out IMPLEMENTATION.
            RESULT DATA(product_markets).
 
     LOOP AT product_markets ASSIGNING FIELD-SYMBOL(<product_market>).
-      IF NOT zbp_rp_i_product_market=>is_market_finished( <product_market> ).
+      IF NOT zbp_rp_i_product_market=>is_market_finished( CORRESPONDING #( <product_market> ) ).
         INSERT VALUE #( %tky = product-%tky ) INTO TABLE failed.
 
         INSERT LINES OF VALUE tt_re_product( %tky             = product-%tky
