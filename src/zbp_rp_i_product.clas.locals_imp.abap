@@ -1,4 +1,8 @@
-CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS ltcl_unit_tests DEFINITION DEFERRED FOR TESTING.
+
+CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler
+  FRIENDS ltcl_unit_tests.
+
   PRIVATE SECTION.
     METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST requested_authorizations FOR product RESULT result.
@@ -137,7 +141,6 @@ CLASS lhc_product IMPLEMENTATION.
     product_group_ids = VALUE #( FOR product IN products
                                  WHERE ( ProductGroupID IS NOT INITIAL )
                                        ( sign = 'I' option = 'EQ' low = product-ProductGroupID ) ).
-
     IF product_group_ids IS INITIAL.
       RETURN.
     ENDIF.
