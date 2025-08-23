@@ -6,17 +6,6 @@ CLASS zrp_cl_console_application DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
 
-    CLASS-DATA name TYPE string.
-
-    CLASS-METHODS class_constructor.
-
-    CLASS-METHODS static_method
-      IMPORTING iv_1 TYPE string OPTIONAL
-                iv_2 TYPE string OPTIONAL
-                iv_3 TYPE string OPTIONAL
-                  PREFERRED PARAMETER iv_2
-      RAISING   cx_abap_invalid_value.
-
     "! <p class="shorttext synchronized" lang="en"><em>Get</em> attribute</p>
     "! @parameter r_result | <p class="shorttext synchronized" lang="en">Result</p>
     METHODS get_attribute RETURNING VALUE(r_result) TYPE i.
@@ -25,47 +14,49 @@ CLASS zrp_cl_console_application DEFINITION
     "! You can add ABAP Doc for a method and its signature using a quick fix. Once you have declared the method, press Ctrl + 1<br/>
     "! to open the possible quick fixes, and choose Add ABAP Doc. The editor then generates the corresponding documentation.
     "! Link: {@link if_oo_adt_classrun}
-    "! @parameter i_attribute | <p class="shorttext synchronized" lang="en">Attribute value</p>
-    METHODS set_attribute IMPORTING i_attribute     TYPE i.
+    "! @parameter i_input | <p class="shorttext synchronized" lang="en">Input value</p>
+    METHODS set_attribute IMPORTING i_input TYPE i.
 
   PRIVATE SECTION.
-    DATA attribute TYPE i.
+    DATA out TYPE REF TO if_oo_adt_classrun_out.
 
-    METHODS check_string_functions   IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
-    METHODS check_abap_sql_functions IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
-    METHODS check_primitive_code     IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
-    METHODS check_internal_tables    IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
+    METHODS check_primitive_code.
+    METHODS check_string_functions.
+    METHODS check_abap_sql_functions.
+    METHODS check_internal_tables.
+    METHODS check_utclong.
+    METHODS check_conversions.
 
 ENDCLASS.
 
 CLASS zrp_cl_console_application IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    me->out = out.
+    out->write( 'Exercises:'(001) ).
+    out->write( `-----------------------------` ).
+
+    check_primitive_code( ).
+    out->write( `-----------------------------` ).
+
+    check_string_functions( ).
+    out->write( `-----------------------------` ).
+
+    check_abap_sql_functions( ).
+    out->write( `-----------------------------` ).
+
+    check_internal_tables( ).
+    out->write( `-----------------------------` ).
+
+    check_utclong( ).
+    out->write( `-----------------------------` ).
+
+    check_conversions( ).
+    out->write( `-----------------------------` ).
+
+  ENDMETHOD.
+
   METHOD check_primitive_code.
-
-    TRY.
-        static_method( `Text` ).
-      CATCH cx_abap_invalid_value.
-        "handle exception
-
-    ENDTRY.
-
-    " TODO: variable is assigned but never used (ABAP cleaner)
     DATA numbers TYPE TABLE OF i.
-    DATA date_1 TYPE d VALUE '20250101'.
-    DATA date_2 TYPE d VALUE '20250131'.
-
-    FIELD-SYMBOLS <fs1> TYPE string.
-    FIELD-SYMBOLS <fs2> TYPE string.
-
-    DATA(str) = `Text`.
-    ASSIGN str TO <fs1>.
-    ASSIGN <fs1> TO <fs2>.
-    <fs2> = `New Text`.
-
-    DATA(a1) = 5 / 10.
-    DATA(a2) = date_2 - date_1.
-
-    out->write( TEXT-001 ).
-    out->write( 'How are yo?'(002) ).
 
     DO 50 TIMES.
       " TODO: variable is assigned but never used (ABAP cleaner)
@@ -88,10 +79,12 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
       ENDIF.
     ENDDO.
 
-    SELECT * FROM zrp_i_product
-      INTO TABLE @DATA(products).
+    out->write( |23 DIV 4 = { 23 DIV 4 }| ).
+    out->write( |23 MOD 4 = { 23 MOD 4 }| ).
 
-    attribute = 2.
+    SELECT FROM zrp_i_product
+    FIELDS *
+      INTO TABLE @DATA(products).
 
   ENDMETHOD.
 
@@ -145,7 +138,8 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
     itab_reduce = REDUCE #( INIT it_reduce TYPE tt_table
                                  count = 1
                              FOR <line> IN itab WHERE ( col3 < 3 )
-                             LET key = <line>-col1 && <line>-col2 IN
+                                 LET key = <line>-col1 && <line>-col2
+                                 IN
                             NEXT it_reduce = VALUE #( BASE it_reduce ( <line> ) )
                                  count += 1
                           ).
@@ -191,26 +185,79 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
     out->write( |SEGMENT2         = {   segment(  val = text sep = ',' index = 2 ) } | ).
   ENDMETHOD.
 
-  METHOD class_constructor.
-    name = `Undefined`.
+  METHOD check_utclong.
+    DATA timestamp1 TYPE utclong.
+    DATA timestamp2 TYPE utclong.
+    DATA difference TYPE decfloat34.
+    DATA date_user TYPE d.
+    DATA time_user TYPE t.
+
+    timestamp1 = utclong_current( ).
+    out->write( |Current UTC time { timestamp1 }| ).
+
+    timestamp2 = utclong_add( val = timestamp1 days = 7 hours = 2 minutes = 56 ).
+    out->write( |Added 7 days to current UTC time { timestamp2 }| ).
+
+    difference = utclong_diff( high = timestamp2 low = timestamp1 ).
+    out->write( |Difference between timestamps in seconds: { difference }| ).
+
+    out->write( |Difference between timestamps in days: { difference / 3600 / 24 }| ).
+
+    TRY.
+        CONVERT UTCLONG utclong_current( )
+           INTO DATE date_user
+                TIME time_user
+                TIME ZONE cl_abap_context_info=>get_user_time_zone( ).
+      CATCH cx_abap_context_info_error.
+        out->write( `Conversion error!` ).
+    ENDTRY.
+
+    out->write( |UTC timestamp split into date (type D) and time (type T )| ).
+    out->write( |according to the user's time zone (cl_abap_context_info=>get_user_time_zone( ) ).| ).
+    out->write( |{ date_user DATE = USER }, { time_user TIME = USER }| ).
+
+    TRY.
+        CONVERT DATE cl_abap_context_info=>get_system_date( )
+                TIME cl_abap_context_info=>get_system_time( )
+                TIME ZONE cl_abap_context_info=>get_user_time_zone( )
+           INTO UTCLONG DATA(timestamp).
+      CATCH cx_abap_context_info_error.
+        out->write( `Conversion error!` ).
+    ENDTRY.
+
+    out->write( |Converted current UTC time { timestamp }| ).
+  ENDMETHOD.
+
+  METHOD check_conversions.
+    DATA date    TYPE d.
+    DATA numbers TYPE n LENGTH 10.
+    DATA chars   TYPE c LENGTH 10.
+
+    chars = '4F55HJ4K'.
+    numbers = chars. "0000004554 - only numbers in the result
+    out->write( numbers ).
+
+    DATA(str_date) = `01.01.2025`.
+    TRY.
+        date = EXACT #( |{ str_date+6(4) }{ str_date+3(2) }{ str_date(2) }| ).
+        out->write( date ).
+      CATCH cx_sy_conversion_error.
+        out->write( `Conversion error!` ).
+    ENDTRY.
+
+    TRY.
+        date = EXACT #( '20221232' ).
+      CATCH cx_sy_conversion_error.
+        out->write( |2022-12-32 is not a valid date. EXACT triggered an exception| ).
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD get_attribute.
-    r_result = attribute.
-  ENDMETHOD.
 
-  METHOD if_oo_adt_classrun~main.
-    check_primitive_code( out ).
-    "check_string_functions( out ).
-    "check_abap_sql_functions( out ).
-    "check_internal_tables( out ).
   ENDMETHOD.
 
   METHOD set_attribute.
-    attribute = i_attribute.
-  ENDMETHOD.
 
-  METHOD static_method.
-    DATA(zz) = iv_2.
   ENDMETHOD.
 ENDCLASS.

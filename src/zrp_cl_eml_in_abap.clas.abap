@@ -9,19 +9,27 @@ CLASS zrp_cl_eml_in_abap DEFINITION
   PRIVATE SECTION.
     DATA out TYPE REF TO if_oo_adt_classrun_out.
 
-    METHODS read.
+    METHODS read_all_fields.
+    METHODS read_particular_fields.
+
     METHODS create.
+    METHODS create_by_associations.
 
 ENDCLASS.
 
 CLASS zrp_cl_eml_in_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     me->out = out.
-    "read( ).
-    create( ).
+
+    "read_all_fields( ).
+    "read_particular_fields( ).
+
+    "create( ).
+    "create_by_associations( ).
+
   ENDMETHOD.
 
-  METHOD read.
+  METHOD read_all_fields.
     DATA input TYPE TABLE FOR READ IMPORT zrp_i_product.
 
     SELECT FROM zrp_i_product
@@ -37,16 +45,69 @@ CLASS zrp_cl_eml_in_abap IMPLEMENTATION.
              WITH input
            RESULT DATA(output).
 
-*     READ ENTITIES OF zrp_i_product
-*           ENTITY product
-*           FIELDS ( ProductGroupID Price )
-*             WITH input
-*           RESULT DATA(output).
+    out->write( output ).
+  ENDMETHOD.
+
+  METHOD read_particular_fields.
+    DATA input TYPE TABLE FOR READ IMPORT zrp_i_product.
+
+    SELECT FROM zrp_i_product
+    FIELDS uuid
+      INTO TABLE @DATA(products)
+        UP TO 5 ROWS.
+
+    input = VALUE #( FOR product IN products ( uuid = product-uuid ) ).
+
+    READ ENTITIES OF zrp_i_product
+          ENTITY product
+          FIELDS ( ProductGroupID Price )
+            WITH input
+          RESULT DATA(output).
 
     out->write( output ).
   ENDMETHOD.
 
   METHOD create.
+    TYPES tt_create_product TYPE TABLE FOR CREATE zrp_i_product\\product.
+
+    DATA(products) = VALUE tt_create_product( ( id                = 'New'
+                                                Name              = 'New Product'
+                                                ProductGroupID    = '1'
+                                                PhaseID           = 1
+                                                Price             = 100
+                                                PriceCurrency     = 'USD'
+                                                zzTranslationCode = 'RU' ) ).
+    MODIFY ENTITIES OF zrp_i_product
+             ENTITY product
+             CREATE
+             AUTO FILL CID
+
+             FIELDS ( id
+                      Name
+                      ProductGroupID
+                      PhaseID
+                      Price
+                      PriceCurrency
+                      zzTranslationCode ) WITH products
+
+             MAPPED DATA(mapped)
+             FAILED DATA(failed)
+           REPORTED DATA(reported).
+
+    COMMIT ENTITIES RESPONSE OF zrp_i_product
+             FAILED DATA(failed_commit)
+           REPORTED DATA(reported_commit).
+
+    LOOP AT reported_commit-product INTO DATA(product_commit).
+      out->write( product_commit-%msg->if_message~get_longtext( ) ).
+    ENDLOOP.
+    LOOP AT reported_commit-productmarkets INTO DATA(market_commit).
+      out->write( market_commit-%msg->if_message~get_longtext( ) ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD create_by_associations.
     TYPES tt_create_product TYPE TABLE FOR CREATE zrp_i_product\\product.
     TYPES tt_create_market  TYPE TABLE FOR CREATE zrp_i_product\\product\_productmarket.
 

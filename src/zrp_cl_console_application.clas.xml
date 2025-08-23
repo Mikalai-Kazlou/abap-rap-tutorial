@@ -15,13 +15,7 @@
     <item>
      <ID>I</ID>
      <KEY>001</KEY>
-     <ENTRY>Hello World!</ENTRY>
-     <LENGTH>30</LENGTH>
-    </item>
-    <item>
-     <ID>I</ID>
-     <KEY>002</KEY>
-     <ENTRY>How are yo?</ENTRY>
+     <ENTRY>Exercises:</ENTRY>
      <LENGTH>30</LENGTH>
     </item>
    </TPOOL>
@@ -48,9 +42,9 @@
     </SEOSUBCOTX>
     <SEOSUBCOTX>
      <CMPNAME>SET_ATTRIBUTE</CMPNAME>
-     <SCONAME>I_ATTRIBUTE</SCONAME>
+     <SCONAME>I_INPUT</SCONAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Attribute value</DESCRIPT>
+     <DESCRIPT>Input value</DESCRIPT>
     </SEOSUBCOTX>
    </DESCRIPTIONS_SUB>
   </asx:values>

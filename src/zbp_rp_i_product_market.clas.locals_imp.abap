@@ -1,4 +1,8 @@
-CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS ltcl_unit_tests DEFINITION DEFERRED FOR TESTING.
+
+CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler
+  FRIENDS ltcl_unit_tests.
+
   PRIVATE SECTION.
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR productmarkets RESULT result.
@@ -79,8 +83,9 @@ CLASS lhc_product_market IMPLEMENTATION.
              UPDATE
              FIELDS ( status )
                WITH VALUE #( FOR key IN keys
-                               ( %tky   = key-%tky
-                                 status = zbp_rp_i_product_market=>market_statuses-accepted ) )
+                             ( %tky   = key-%tky
+                               status = zbp_rp_i_product_market=>market_statuses-accepted ) )
+             MAPPED mapped
              FAILED failed
            REPORTED reported.
 
@@ -91,8 +96,8 @@ CLASS lhc_product_market IMPLEMENTATION.
            RESULT DATA(product_markets).
 
     result = VALUE #( FOR product_market IN product_markets
-                        ( %tky   = product_market-%tky
-                          %param = CORRESPONDING #( product_market ) ) ).
+                      ( %tky   = product_market-%tky
+                        %param = CORRESPONDING #( product_market ) ) ).
   ENDMETHOD.
 
   METHOD reject_market.
@@ -102,8 +107,9 @@ CLASS lhc_product_market IMPLEMENTATION.
              UPDATE
              FIELDS ( status )
                WITH VALUE #( FOR key IN keys
-                               ( %tky   = key-%tky
-                                 status = zbp_rp_i_product_market=>market_statuses-rejected ) )
+                             ( %tky   = key-%tky
+                               status = zbp_rp_i_product_market=>market_statuses-rejected ) )
+             MAPPED mapped
              FAILED failed
            REPORTED reported.
 
@@ -114,8 +120,8 @@ CLASS lhc_product_market IMPLEMENTATION.
            RESULT DATA(product_markets).
 
     result = VALUE #( FOR product_market IN product_markets
-                        ( %tky   = product_market-%tky
-                          %param = CORRESPONDING #( product_market ) ) ).
+                      ( %tky   = product_market-%tky
+                        %param = CORRESPONDING #( product_market ) ) ).
   ENDMETHOD.
 
   METHOD set_iso_code.
@@ -129,7 +135,7 @@ CLASS lhc_product_market IMPLEMENTATION.
            RESULT DATA(product_markets).
 
     market_range = VALUE #( FOR <product_market> IN product_markets
-                                sign = 'I' option = 'EQ' ( low = <product_market>-MarketID ) ).
+                            sign = 'I' option = 'EQ' ( low = <product_market>-MarketID ) ).
     SORT market_range.
     DELETE ADJACENT DUPLICATES FROM market_range.
 
