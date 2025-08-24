@@ -27,31 +27,34 @@ CLASS zrp_cl_console_application DEFINITION
     METHODS check_utclong.
     METHODS check_conversions.
 
+    METHODS print_separator.
+
 ENDCLASS.
 
 CLASS zrp_cl_console_application IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     me->out = out.
+
     out->write( 'Exercises:'(001) ).
-    out->write( `-----------------------------` ).
+    print_separator( ).
 
     check_primitive_code( ).
-    out->write( `-----------------------------` ).
+    print_separator( ).
 
     check_string_functions( ).
-    out->write( `-----------------------------` ).
+    print_separator( ).
 
     check_abap_sql_functions( ).
-    out->write( `-----------------------------` ).
+    print_separator( ).
 
     check_internal_tables( ).
-    out->write( `-----------------------------` ).
+    print_separator( ).
 
     check_utclong( ).
-    out->write( `-----------------------------` ).
+    print_separator( ).
 
     check_conversions( ).
-    out->write( `-----------------------------` ).
+    print_separator( ).
 
   ENDMETHOD.
 
@@ -81,11 +84,26 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
 
     out->write( |23 DIV 4 = { 23 DIV 4 }| ).
     out->write( |23 MOD 4 = { 23 MOD 4 }| ).
+    print_separator( ).
 
     SELECT FROM zrp_i_product
     FIELDS *
       INTO TABLE @DATA(products).
 
+    TYPES:
+      BEGIN OF ts_average_price,
+        price_sum TYPE zrp_i_product-price,
+        price_avg TYPE zrp_i_product-price,
+      END OF ts_average_price.
+
+    DATA average_price TYPE ts_average_price.
+    average_price = REDUCE #( INIT avg_price TYPE ts_average_price
+                                   count = 1
+                               FOR product IN products
+                              NEXT avg_price-price_sum = avg_price-price_sum + product-price
+                                   avg_price-price_avg = avg_price-price_sum / count
+                                   count += 1 ).
+    out->write( average_price ).
   ENDMETHOD.
 
   METHOD check_abap_sql_functions.
@@ -103,9 +121,8 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
              exchange_rate_date = @today,
              on_error           = @sql_currency_conversion=>c_on_error-set_to_null ) AS price,
 
-             left(      'Text', 1 )    AS left,
-             substring( 'Text', 1, 1 ) AS substring,
-
+             left( 'Text', 1 )                              AS left_sql,
+             substring( 'Text', 1, 1 )                      AS substring_sql,
              @( substring( val = 'Text' off = 0 len = 1 ) ) AS substring_abap
 
       INTO @DATA(converted_price).
@@ -118,77 +135,84 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
              col1 TYPE c LENGTH 5,
              col2 TYPE n LENGTH 5,
              col3 TYPE i,
+             col4 TYPE i,
            END OF ts_table.
     TYPES: tt_table TYPE STANDARD TABLE OF ts_table WITH NON-UNIQUE KEY col1.
 
     DATA itab TYPE tt_table.
-    DATA itab_reduce TYPE tt_table.
+    DATA itab_search TYPE tt_table.
     DATA itab_keys TYPE SORTED TABLE OF ts_table WITH NON-UNIQUE KEY col1 col2
-                                                 WITH NON-UNIQUE SORTED KEY sk_sorted COMPONENTS col2.
+                                                 WITH NON-UNIQUE SORTED KEY sk_sorted COMPONENTS col2
+                                                 WITH     UNIQUE HASHED KEY sk_hashed COMPONENTS col4.
 
-    itab = VALUE #( ( col1 = '1' col2 = '11' col3 = 1 )
-                    ( col1 = '2' col2 = '22' col3 = 2 )
-                    ( col1 = '4' col2 = '44' col3 = 4 )
-                    ( col1 = '4' col2 = '44' col3 = 4 )
-                    ( col1 = '2' col2 = '22' col3 = 3 ) ).
+    itab = VALUE #( ( col1 = '1' col2 = '11' col3 = 1 col4 = 10 )
+                    ( col1 = '2' col2 = '22' col3 = 2 col4 = 20 )
+                    ( col1 = '4' col2 = '44' col3 = 4 col4 = 30 )
+                    ( col1 = '4' col2 = '44' col3 = 4 col4 = 40 )
+                    ( col1 = '2' col2 = '22' col3 = 3 col4 = 50 ) ).
     SORT itab.
     DELETE ADJACENT DUPLICATES FROM itab. "COMPARING ALL FIELDS.
     out->write( itab ).
+    print_separator( ).
 
-    itab_reduce = REDUCE #( INIT it_reduce TYPE tt_table
-                                 count = 1
-                             FOR <line> IN itab WHERE ( col3 < 3 )
-                                 LET key = <line>-col1 && <line>-col2
-                                 IN
-                            NEXT it_reduce = VALUE #( BASE it_reduce ( <line> ) )
-                                 count += 1
-                          ).
+    itab_keys = itab.
+    IF line_exists( itab_keys[ KEY sk_hashed COMPONENTS col4 = 30 ] ).
+      out->write( `The line is found` ).
+    ENDIF.
+    print_separator( ).
 
-    out->write( itab_reduce ).
+    itab_search = VALUE #( FOR <key> IN itab_keys
+                           USING KEY sk_sorted
+                           WHERE ( col2 = '44' )
+                           ( <key> ) ).
+
+    out->write( itab_search ).
   ENDMETHOD.
 
   METHOD check_string_functions.
     DATA text TYPE string VALUE ` ##SAP BTP,   ABAP Environment  `.
+    out->write( |INITIAL              = { text } | ).
 
 * Change Case of characters
 **********************************************************************
-    out->write( |TO_UPPER         = {   to_upper(  text ) } | ).
-    out->write( |TO_LOWER         = {   to_lower(  text ) } | ).
-    out->write( |TO_MIXED         = {   to_mixed(  text ) } | ).
-    out->write( |FROM_MIXED       = { from_mixed(  text ) } | ).
+    out->write( |TO_UPPER             = {   to_upper( text ) }| ).
+    out->write( |TO_LOWER             = {   to_lower( text ) }| ).
+    out->write( |TO_MIXED             = {   to_mixed( text ) }| ).
+    out->write( |FROM_MIXED           = { from_mixed( text ) }| ).
 
 
 * Change order of characters
 **********************************************************************
-    out->write( |REVERSE             = {  reverse( text ) } | ).
-    out->write( |SHIFT_LEFT  (places)= {  shift_left(  val = text places   = 3  ) } | ).
-    out->write( |SHIFT_RIGHT (places)= {  shift_right( val = text places   = 3  ) } | ).
-    out->write( |SHIFT_LEFT  (circ)  = {  shift_left(  val = text circular = 3  ) } | ).
-    out->write( |SHIFT_RIGHT (circ)  = {  shift_right( val = text circular = 3  ) } | ).
+    out->write( |REVERSE              = { reverse( text ) }| ).
+    out->write( |SHIFT_LEFT  (places) = { shift_left(  val = text places   = 3 ) }| ).
+    out->write( |SHIFT_RIGHT (places) = { shift_right( val = text places   = 3 ) }| ).
+    out->write( |SHIFT_LEFT  (circ)   = { shift_left(  val = text circular = 3 ) }| ).
+    out->write( |SHIFT_RIGHT (circ)   = { shift_right( val = text circular = 3 ) }| ).
 
 
 * Extract a Substring
 **********************************************************************
-    out->write( |SUBSTRING       = {  substring(        val = text off = 4 len = 10 ) } | ).
-    out->write( |SUBSTRING_FROM  = {  substring_from(   val = text sub = 'ABAP'     ) } | ).
-    out->write( |SUBSTRING_AFTER = {  substring_after(  val = text sub = 'ABAP'     ) } | ).
-    out->write( |SUBSTRING_TO    = {  substring_to(     val = text sub = 'ABAP'     ) } | ).
-    out->write( |SUBSTRING_BEFORE= {  substring_before( val = text sub = 'ABAP'     ) } | ).
+    out->write( |SUBSTRING            = { substring(        val = text off = 4 len = 10 ) }| ).
+    out->write( |SUBSTRING_FROM       = { substring_from(   val = text sub = 'ABAP'     ) }| ).
+    out->write( |SUBSTRING_AFTER      = { substring_after(  val = text sub = 'ABAP'     ) }| ).
+    out->write( |SUBSTRING_TO         = { substring_to(     val = text sub = 'ABAP'     ) }| ).
+    out->write( |SUBSTRING_BEFORE     = { substring_before( val = text sub = 'ABAP'     ) }| ).
 
 
 * Condense, REPEAT and Segment
 **********************************************************************
-    out->write( |CONDENSE         = {   condense( val = text ) } | ).
-    out->write( |REPEAT           = {   repeat(   val = text occ = 2 ) } | ).
+    out->write( |CONDENSE             = { condense( val = text ) }| ).
+    out->write( |REPEAT               = { repeat(   val = text occ = 2 ) }| ).
 
-    out->write( |SEGMENT1         = {   segment(  val = text sep = ',' index = 1 ) } | ).
-    out->write( |SEGMENT2         = {   segment(  val = text sep = ',' index = 2 ) } | ).
+    out->write( |SEGMENT1             = { segment(  val = text sep = ',' index = 1 ) }| ).
+    out->write( |SEGMENT2             = { segment(  val = text sep = ',' index = 2 ) }| ).
   ENDMETHOD.
 
   METHOD check_utclong.
     DATA timestamp1 TYPE utclong.
     DATA timestamp2 TYPE utclong.
     DATA difference TYPE decfloat34.
+
     DATA date_user TYPE d.
     DATA time_user TYPE t.
 
@@ -200,7 +224,6 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
 
     difference = utclong_diff( high = timestamp2 low = timestamp1 ).
     out->write( |Difference between timestamps in seconds: { difference }| ).
-
     out->write( |Difference between timestamps in days: { difference / 3600 / 24 }| ).
 
     TRY.
@@ -250,14 +273,15 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
       CATCH cx_sy_conversion_error.
         out->write( |2022-12-32 is not a valid date. EXACT triggered an exception| ).
     ENDTRY.
-
   ENDMETHOD.
 
   METHOD get_attribute.
-
   ENDMETHOD.
 
   METHOD set_attribute.
+  ENDMETHOD.
 
+  METHOD print_separator.
+    out->write( `-----------------------------` ).
   ENDMETHOD.
 ENDCLASS.

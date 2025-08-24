@@ -1,4 +1,4 @@
-@AccessControl.authorizationCheck: #NOT_REQUIRED
+@AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Product Markets'
 @Metadata.allowExtensions: true
 @Metadata.ignorePropagatedAnnotations: true

@@ -1,0 +1,10 @@
+@EndUserText.label: 'Product Market'
+@MappingRole: true
+define role ZRP_C_PRODUCT_MARKET {
+  grant
+    select
+      on
+        ZRP_C_PRODUCT_MARKET
+          where
+            inheriting conditions from entity ZRP_I_PRODUCT_MARKET;
+}
