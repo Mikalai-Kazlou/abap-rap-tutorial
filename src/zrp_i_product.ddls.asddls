@@ -30,6 +30,7 @@ define root view entity ZRP_I_PRODUCT
     on _Extension.UUID = $projection.UUID
 
 {
+      /* start suppress warning shlporigin_not_inherited */
   key produuid       as UUID,
       prodid         as ID,
       prodname       as Name,
@@ -48,6 +49,8 @@ define root view entity ZRP_I_PRODUCT
       price          as Price,
       pricecurrency  as PriceCurrency,
       taxrate        as TaxRate,
+      /* end suppress warning shlporigin_not_inherited */
+
       @Semantics.user.createdBy: true
       createdby      as CreatedBy,
       @Semantics.systemDateTime.createdAt: true

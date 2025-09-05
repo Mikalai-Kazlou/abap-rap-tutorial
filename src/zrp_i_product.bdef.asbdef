@@ -23,12 +23,13 @@ extensible
 
   field ( numbering : managed, readonly ) UUID;
   field ( readonly ) CreatedBy, CreatedOn, ChangedBy, ChangedOn;
-  field ( mandatory ) ID, Name, ProductGroupID, Price, PriceCurrency;
+  field ( features : instance ) ID, Name, ProductGroupID, Height, Depth, Width, SizeUOM, Price, PriceCurrency, TaxRate;
 
   determination SetInitialPhase on save { create; }
 
   validation ValidateProductID on save { field ID; }
   validation ValidateProductGroup on save { field ProductGroupID; }
+  validation ValidateMandatoryFields on save { create; update; }
 
   create;
   update;
@@ -38,6 +39,7 @@ extensible
   {
     validation ValidateProductID;
     validation ValidateProductGroup;
+    validation ValidateMandatoryFields;
 
     validation ProductMarkets~ValidateMarketID;
     validation ProductMarkets~ValidateStartDate;

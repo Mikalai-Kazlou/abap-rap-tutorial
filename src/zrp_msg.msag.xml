@@ -98,6 +98,12 @@
      <MSGNR>014</MSGNR>
      <TEXT>Business Partner ID &apos;&amp;1&apos; is invalid</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZRP_MSG</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>The object cannot be saved as mandatory field is initial</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

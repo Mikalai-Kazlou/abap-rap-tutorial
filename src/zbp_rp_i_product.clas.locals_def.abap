@@ -10,7 +10,15 @@ TYPES ts_rr_product TYPE STRUCTURE FOR READ RESULT zrp_i_product\\product.
 
 TYPES tt_rr_product TYPE TABLE FOR READ RESULT     zrp_i_product\\product.
 TYPES tt_re_product TYPE TABLE FOR REPORTED EARLY  zrp_i_product\\product.
+TYPES tt_rl_product TYPE TABLE FOR REPORTED LATE   zrp_i_product\\product.
 TYPES tt_fe_product TYPE TABLE FOR FAILED EARLY    zrp_i_product\\product.
+
+TYPES:
+  BEGIN OF ts_field_settings,
+    field TYPE string,
+    phase TYPE zrp_i_phase-phaseid,
+    state TYPE abp_behv_field_ctrl,
+  END OF ts_field_settings.
 
 INTERFACE lif_phase_validator.
   METHODS is_not_valid

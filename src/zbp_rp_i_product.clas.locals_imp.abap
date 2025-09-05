@@ -10,6 +10,12 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR product RESULT result.
 
+    METHODS get_instance_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR product RESULT result.
+
+    METHODS validate_mandatory_fields FOR VALIDATE ON SAVE
+      IMPORTING keys FOR product~validatemandatoryfields.
+
     METHODS set_initial_phase FOR DETERMINE ON SAVE
       IMPORTING keys FOR product~setinitialphase.
 
@@ -40,6 +46,11 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler
                 failed        TYPE tt_fe_product
       RETURNING VALUE(result) TYPE abap_bool.
 
+    METHODS validate_mandatory_field
+      IMPORTING product  TYPE ts_rr_product
+                field    TYPE string
+      CHANGING  reported TYPE tt_rl_product.
+
 ENDCLASS.
 
 CLASS lhc_product IMPLEMENTATION.
@@ -47,6 +58,130 @@ CLASS lhc_product IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_instance_authorizations.
+  ENDMETHOD.
+
+  METHOD get_instance_features.
+    DATA fields TYPE STANDARD TABLE OF string.
+    DATA field_settings TYPE SORTED TABLE OF ts_field_settings WITH UNIQUE KEY field phase.
+
+    field_settings = VALUE #( ( field = `ID`             phase = phases-planning    state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `Name`           phase = phases-planning    state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `ProductGroupID` phase = phases-planning    state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `Height`         phase = phases-planning    state = if_abap_behv=>fc-f-unrestricted )
+                              ( field = `Height`         phase = phases-development state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `Depth`          phase = phases-planning    state = if_abap_behv=>fc-f-unrestricted )
+                              ( field = `Depth`          phase = phases-development state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `Width`          phase = phases-planning    state = if_abap_behv=>fc-f-unrestricted )
+                              ( field = `Width`          phase = phases-development state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `SizeUOM`        phase = phases-planning    state = if_abap_behv=>fc-f-unrestricted )
+                              ( field = `SizeUOM`        phase = phases-development state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `Price`          phase = phases-planning    state = if_abap_behv=>fc-f-unrestricted )
+                              ( field = `Price`          phase = phases-development state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `PriceCurrency`  phase = phases-planning    state = if_abap_behv=>fc-f-unrestricted )
+                              ( field = `PriceCurrency`  phase = phases-development state = if_abap_behv=>fc-f-mandatory    )
+                              ( field = `TaxRate`        phase = phases-planning    state = if_abap_behv=>fc-f-unrestricted )
+                              ( field = `TaxRate`        phase = phases-development state = if_abap_behv=>fc-f-mandatory    ) ).
+
+    fields = VALUE #( FOR row IN field_settings ( row-field ) ).
+
+    SORT fields.
+    DELETE ADJACENT DUPLICATES FROM fields.
+
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY product
+           FIELDS ( phaseid )
+             WITH CORRESPONDING #( keys )
+           RESULT FINAL(products).
+
+    LOOP AT products ASSIGNING FIELD-SYMBOL(<product>).
+      INSERT VALUE #( %tky = <product>-%tky ) INTO TABLE result ASSIGNING FIELD-SYMBOL(<result>).
+
+      LOOP AT fields ASSIGNING FIELD-SYMBOL(<field>).
+        ASSIGN COMPONENT |%features-%field-{ <field> }| OF STRUCTURE <result> TO FIELD-SYMBOL(<field_state>).
+
+        IF <field_state> IS ASSIGNED.
+          <field_state> = VALUE #( field_settings[ field = <field> phase = <product>-PhaseID ]-state DEFAULT if_abap_behv=>fc-f-read_only ).
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validate_mandatory_fields.
+    READ ENTITIES OF zrp_i_product IN LOCAL MODE
+           ENTITY product
+              ALL FIELDS
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(products).
+
+    LOOP AT products INTO DATA(product).
+      " Clear state messages that might exist
+      INSERT VALUE #( %tky        = product-%tky
+                      %state_area = 'validateMandatoryFields' ) INTO TABLE reported-product.
+
+      CASE product-PhaseID.
+        WHEN phases-planning.
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `ID`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `Name`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `ProductGroupID`
+                                    CHANGING  reported = reported-product ).
+        WHEN phases-development.
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `Height`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `Depth`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `Width`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `SizeUOM`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `Price`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `PriceCurrency`
+                                    CHANGING  reported = reported-product ).
+
+          validate_mandatory_field( EXPORTING product  = product
+                                              field    = `TaxRate`
+                                    CHANGING  reported = reported-product ).
+      ENDCASE.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validate_mandatory_field.
+    ASSIGN COMPONENT field OF STRUCTURE product TO FIELD-SYMBOL(<field>).
+    CHECK <field> IS ASSIGNED.
+
+    IF <field> IS INITIAL.
+      DATA(msg) = new_message( id       = 'ZRP_MSG'
+                               number   = '015'
+                               severity = if_abap_behv_message=>severity-error ).
+
+      INSERT VALUE #( %tky        = product-%tky
+                      %state_area = 'validateMandatoryFields'
+                      %msg        = msg ) INTO TABLE reported ASSIGNING FIELD-SYMBOL(<reported>).
+
+      ASSIGN COMPONENT |%element-{ field }| OF STRUCTURE <reported> TO FIELD-SYMBOL(<element>).
+
+      IF <element> IS ASSIGNED.
+        <element> = if_abap_behv=>mk-on.
+      ENDIF.
+    ENDIF.
   ENDMETHOD.
 
   METHOD set_initial_phase.

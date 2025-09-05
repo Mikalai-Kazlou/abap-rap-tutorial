@@ -6,15 +6,29 @@ CLASS zrp_cl_console_application DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
 
-    "! <p class="shorttext synchronized" lang="en"><em>Get</em> attribute</p>
-    "! @parameter r_result | <p class="shorttext synchronized" lang="en">Result</p>
+    "! <p class="shorttext synchronized" lang="en">Get attribute</p>
+    "!
+    "! You can add ABAP Doc for a method and its signature using a quick fix. Once you have declared the method, press <strong>Ctrl + 1</strong><br/>
+    "! to open the possible quick fixes, and choose Add ABAP Doc. The editor then generates the corresponding documentation.<br/>
+    "! <h2>Links to:</h2>
+    "! <ul>
+    "!  <li>interface: {@link if_oo_adt_classrun}</li>
+    "!  <li>method: {@link .METH:print_separator}</li>
+    "!  <li>data: {@link .DATA:out}</li>
+    "! </ul>
+    "!
+    "! @parameter r_result | <p class="shorttext" lang="en">Returning value</p>
+    "!
     METHODS get_attribute RETURNING VALUE(r_result) TYPE i.
 
-    "! <p class="shorttext synchronized" lang="en"><em>Set</em> attribute</p>
-    "! You can add ABAP Doc for a method and its signature using a quick fix. Once you have declared the method, press Ctrl + 1<br/>
-    "! to open the possible quick fixes, and choose Add ABAP Doc. The editor then generates the corresponding documentation.
+    "! <p class="shorttext synchronized" lang="en">Set attribute</p>
+    "!
+    "! You can add ABAP Doc for a method and its signature using a quick fix. Once you have declared the method, press <strong>Ctrl + 1</strong><br/>
+    "! to open the possible quick fixes, and choose Add ABAP Doc. The editor then generates the corresponding documentation.<br/>
     "! Link: {@link if_oo_adt_classrun}
-    "! @parameter i_input | <p class="shorttext synchronized" lang="en">Input value</p>
+    "!
+    "! @parameter i_input | <p class="shorttext" lang="en">Input value</p>
+    "!
     METHODS set_attribute IMPORTING i_input TYPE i.
 
   PRIVATE SECTION.
