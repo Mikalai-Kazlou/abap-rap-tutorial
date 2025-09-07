@@ -1,12 +1,13 @@
 @EndUserText.label: 'Products'
 @AbapCatalog.extensibility.extensible: true
 define service ZRP_UI_PRODUCT {
-  expose ZRP_C_PRODUCT        as Products;
-  expose ZRP_C_PRODUCT_MARKET as ProductMarkets;
-  expose ZRP_C_MARKET_ORDER   as MarketOrders;
-  expose ZRP_I_PRODUCT_GROUP  as ProductGroups;
-  expose ZRP_I_PHASE          as Phases;
-  expose ZRP_I_MARKET         as Markets;
-  expose ZRP_I_UOM            as UoMs;
-  expose ZRP_I_CURRENCY       as Currencies;
+  expose ZRP_C_PRODUCT            as Products;
+  expose ZRP_C_PRODUCT_MARKET     as ProductMarkets;
+  expose ZRP_C_MARKET_ORDER       as MarketOrders;
+  expose ZRP_I_MARKET_ORDER_CHART as MarketOrdersByDateChart;
+  expose ZRP_I_PRODUCT_GROUP      as ProductGroups;
+  expose ZRP_I_PHASE              as Phases;
+  expose ZRP_I_MARKET             as Markets;
+  expose ZRP_I_UOM                as UoMs;
+  expose ZRP_I_CURRENCY           as Currencies;
 }

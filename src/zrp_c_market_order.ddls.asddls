@@ -14,8 +14,10 @@ define view entity ZRP_C_MARKET_ORDER
       Quantity,
       CalendarYear,
       DeliveryDate,
+
       @Semantics.amount.currencyCode: 'AmountCurrency'
       NetAmount,
+
       @Semantics.amount.currencyCode: 'AmountCurrency'
       GrossAmount,
       AmountCurrency,

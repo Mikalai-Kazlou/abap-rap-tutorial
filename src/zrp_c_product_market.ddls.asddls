@@ -35,5 +35,7 @@ define view entity ZRP_C_PRODUCT_MARKET
 
       /* Associations */
       _Product                         as Product      : redirected to parent ZRP_C_PRODUCT,
-      _MarketOrder                     as MarketOrders : redirected to composition child ZRP_C_MARKET_ORDER
+      _MarketOrder                     as MarketOrders : redirected to composition child ZRP_C_MARKET_ORDER,
+
+      _ByDeliveryDateChart             as ByDeliveryDateChart
 }
