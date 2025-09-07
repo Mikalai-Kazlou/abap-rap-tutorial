@@ -22,6 +22,14 @@ define view entity ZRP_C_PRODUCT_MARKET
       StartDate,
       EndDate,
 
+      _Totals.TotalOrders              as TotalOrders,
+      _Totals.TotalQuantity            as TotalQuantity,
+      @Semantics.amount.currencyCode: 'Currency'
+      _Totals.TotalNetAmount           as TotalNetAmount,
+      @Semantics.amount.currencyCode: 'Currency'
+      _Totals.TotalGrossAmount         as TotalGrossAmount,
+      _Totals.AmountCurrency           as Currency,
+
       _VirtualFields.StatusCriticality as StatusCriticality,
 
       CreatedBy,

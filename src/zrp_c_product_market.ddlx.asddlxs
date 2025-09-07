@@ -103,19 +103,35 @@ annotate entity ZRP_C_PRODUCT_MARKET with
   @UI.lineItem: [ { position: 50 } ]
   EndDate;
 
-  @UI.identification: [ { position: 60 } ]
+  @EndUserText.label: 'Total Orders'
   @UI.lineItem: [ { position: 60 } ]
+  TotalOrders;
+
+  @EndUserText.label: 'Total Quantity'
+  @UI.lineItem: [ { position: 70 } ]
+  TotalQuantity;
+
+  @EndUserText.label: 'Total Net Amount'
+  @UI.lineItem: [ { position: 80 } ]
+  TotalNetAmount;
+
+  @EndUserText.label: 'Total Gross Amount'
+  @UI.lineItem: [ { position: 90 } ]
+  TotalGrossAmount;
+
+  @UI.identification: [ { position: 60 } ]
+  @UI.lineItem: [ { position: 100 } ]
   CreatedBy;
 
   @UI.identification: [ { position: 70 } ]
-  @UI.lineItem: [ { position: 70 } ]
+  @UI.lineItem: [ { position: 110 } ]
   CreatedOn;
 
   @UI.identification: [ { position: 80 } ]
-  @UI.lineItem: [ { position: 80 } ]
+  @UI.lineItem: [ { position: 120 } ]
   ChangedBy;
 
   @UI.identification: [ { position: 90 } ]
-  @UI.lineItem: [ { position: 90 } ]
+  @UI.lineItem: [ { position: 130 } ]
   ChangedOn;
 }

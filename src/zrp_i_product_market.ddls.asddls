@@ -23,6 +23,10 @@ define view entity ZRP_I_PRODUCT_MARKET
     on  _VirtualFields.ProductUUID       = $projection.ProductUUID
     and _VirtualFields.ProductMarketUUID = $projection.ProductMarketUUID
 
+  association [0..1] to ZRP_I_MARKET_ORDER_TOTAL as _Totals
+    on  _Totals.ProductUUID       = $projection.ProductUUID
+    and _Totals.ProductMarketUUID = $projection.ProductMarketUUID
+
   association [0..*] to ZRP_I_MARKET_ORDER_CHART as _ByDeliveryDateChart
     on  _ByDeliveryDateChart.ProductUUID       = $projection.ProductUUID
     and _ByDeliveryDateChart.ProductMarketUUID = $projection.ProductMarketUUID
@@ -53,6 +57,7 @@ define view entity ZRP_I_PRODUCT_MARKET
 
       _Market,
       _VirtualFields,
+      _Totals,
 
       _ByDeliveryDateChart
 }
