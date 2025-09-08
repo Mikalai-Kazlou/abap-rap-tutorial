@@ -74,5 +74,7 @@ define root view entity ZRP_C_PRODUCT
 
       _ProductGroup                  as ProductGroup,
       _Currency                      as Currency,
-      _Phase                         as Phase
+      _Phase                         as Phase,
+
+      _ByMarketChart                 as ByMarketChart
 }

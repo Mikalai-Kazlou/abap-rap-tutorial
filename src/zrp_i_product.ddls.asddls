@@ -12,21 +12,24 @@
 define root view entity ZRP_I_PRODUCT
   as select from zrp_d_product
 
-  composition [0..*] of ZRP_I_PRODUCT_MARKET as _ProductMarket
+  composition [0..*] of ZRP_I_PRODUCT_MARKET     as _ProductMarket
 
-  association [0..1] to ZRP_I_PRODUCT_GROUP  as _ProductGroup
+  association [0..1] to ZRP_I_PRODUCT_GROUP      as _ProductGroup
     on $projection.ProductGroupID = _ProductGroup.ProductGroupID
 
-  association [0..1] to ZRP_I_CURRENCY       as _Currency
+  association [0..1] to ZRP_I_CURRENCY           as _Currency
     on $projection.PriceCurrency = _Currency.Currency
 
-  association [0..1] to ZRP_I_UOM            as _SizeUOM
+  association [0..1] to ZRP_I_UOM                as _SizeUOM
     on $projection.SizeUOM = _SizeUOM.UoM
 
-  association [0..1] to ZRP_I_PHASE          as _Phase
+  association [0..1] to ZRP_I_PHASE              as _Phase
     on $projection.PhaseID = _Phase.PhaseID
 
-  association [1..1] to ZRP_E_PRODUCT        as _Extension
+  association [0..*] to ZRP_I_MARKET_ORDER_CHART as _ByMarketChart
+    on _ByMarketChart.ProductUUID = $projection.UUID
+
+  association [1..1] to ZRP_E_PRODUCT            as _Extension
     on _Extension.UUID = $projection.UUID
 
 {
@@ -69,6 +72,8 @@ define root view entity ZRP_I_PRODUCT
       _Currency,
       _SizeUOM,
       _Phase,
+
+      _ByMarketChart,
 
       _Extension
 }

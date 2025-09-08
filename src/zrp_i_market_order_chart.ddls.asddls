@@ -13,7 +13,7 @@
 
   { qualifier: 'OrderQuantityChart',
     title: 'Order Quantity Chart',
-    description: 'The chart shows quantity of orders for each delivery date',
+    description: 'The chart shows order quantity for each delivery date',
     chartType: #BAR,
     dimensions: [ 'DeliveryDate' ],
     measures: [ 'Quantity' ],
@@ -22,42 +22,66 @@
   },
   { qualifier: 'OrderAmountChart',
     title: 'Order Amount Chart',
-    description: 'The chart shows amount of orders for each delivery date',
+    description: 'The chart shows order amounts for each delivery date',
     chartType: #BAR,
     dimensions: [ 'DeliveryDate' ],
     measures: [ 'NetAmount', 'GrossAmount' ],
     dimensionAttributes: [ { dimension: 'DeliveryDate', role: #CATEGORY } ],
     measureAttributes: [ { measure: 'NetAmount',   role: #AXIS_1 },
                          { measure: 'GrossAmount', role: #AXIS_2 } ]
+  },
+  { qualifier: 'MarketQuantityChart',
+    title: 'Market Amount Chart',
+    description: 'The chart shows order quantity for each market',
+    chartType: #DONUT,
+    dimensions: [ 'ProductMarketUUID' ],
+    measures: [ 'Quantity' ],
+    dimensionAttributes: [ { dimension: 'ProductMarketUUID', role: #CATEGORY } ],
+    measureAttributes: [ { measure: 'Quantity', role: #AXIS_1 }  ]
+  },
+  { qualifier: 'MarketAmountChart',
+    title: 'Market Amount Chart',
+    description: 'The chart shows order amounts for each market',
+    chartType: #BAR,
+    dimensions: [ 'ProductMarketUUID' ],
+    measures: [ 'NetAmount', 'GrossAmount' ],
+    dimensionAttributes: [ { dimension: 'ProductMarketUUID', role: #CATEGORY } ],
+    measureAttributes: [ { measure: 'NetAmount',   role: #AXIS_1 },
+                         { measure: 'GrossAmount', role: #AXIS_2 } ]
   }
 ]
 
 define view entity ZRP_I_MARKET_ORDER_CHART
-  as select from ZRP_I_MARKET_ORDER
+  as select from ZRP_I_MARKET_ORDER_CONVERTED
 {
       @UI.hidden: true
   key ProductUUID,
-      @UI.hidden: true
+
+      @EndUserText.label: 'Market'
+      @ObjectModel.text.element: ['MarketName']
+      @UI.textArrangement: #TEXT_ONLY
   key ProductMarketUUID,
 
-      @EndUserText.label: 'Market Order ID'
+      @EndUserText.label: 'Market Order'
       @ObjectModel.text.element: ['OrderID']
       @UI.textArrangement: #TEXT_ONLY
   key OrderUUID,
 
       OrderID,
       DeliveryDate,
+      MarketName,
 
       @Aggregation.default: #SUM
       Quantity,
 
       @Aggregation.default: #SUM
-      @Semantics.amount.currencyCode: 'AmountCurrency'
+      @Semantics.amount.currencyCode: 'OrderCurrency'
       NetAmount,
 
       @Aggregation.default: #SUM
-      @Semantics.amount.currencyCode: 'AmountCurrency'
+      @Semantics.amount.currencyCode: 'OrderCurrency'
       GrossAmount,
 
-      AmountCurrency
+      @UI.hidden: true
+      OrderCurrency
 }

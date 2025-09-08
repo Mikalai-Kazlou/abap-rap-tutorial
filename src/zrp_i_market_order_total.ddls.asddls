@@ -9,28 +9,28 @@
   dataClass: #MIXED
 }
 define view entity ZRP_I_MARKET_ORDER_TOTAL
-  as select from ZRP_I_MARKET_ORDER
+  as select from ZRP_I_MARKET_ORDER_CONVERTED
 {
   key ProductUUID,
   key ProductMarketUUID,
 
       @EndUserText.label: 'Total Orders'
-      count( distinct OrderUUID )        as TotalOrders,
+      count( distinct OrderUUID ) as TotalOrders,
 
       @EndUserText.label: 'Total Quantity'
-      cast( sum(Quantity) as abap.int4 ) as TotalQuantity,
+      sum(Quantity)               as TotalQuantity,
 
       @EndUserText.label: 'Total Net Amount'
-      @Semantics.amount.currencyCode: 'AmountCurrency'
-      sum(NetAmount)                     as TotalNetAmount,
+      @Semantics.amount.currencyCode: 'Currency'
+      sum(NetAmountConverted)     as TotalNetAmount,
 
       @EndUserText.label: 'Total Gross Amount'
-      @Semantics.amount.currencyCode: 'AmountCurrency'
-      sum(GrossAmount)                   as TotalGrossAmount,
+      @Semantics.amount.currencyCode: 'Currency'
+      sum(GrossAmountConverted)   as TotalGrossAmount,
 
-      AmountCurrency
+      MarketCurrency              as Currency
 }
 group by
   ProductUUID,
   ProductMarketUUID,
-  AmountCurrency
+  MarketCurrency

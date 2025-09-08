@@ -23,7 +23,9 @@ define view entity ZRP_I_MARKET
       @Search.fuzzinessThreshold: 0.8
       @Search.ranking: #HIGH
       mrktname as MarketName,
+
       langcode as Language,
+      currency as Currency,
 
       @UI.hidden: true
       imageurl as ImageUrl

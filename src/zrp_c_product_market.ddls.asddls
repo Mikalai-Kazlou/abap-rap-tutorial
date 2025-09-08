@@ -15,6 +15,7 @@ define view entity ZRP_C_PRODUCT_MARKET
       MarketID,
       @Semantics.text: true
       _Market.MarketName               as MarketName,
+      _Market.Currency                 as Currency,
       _Market.ImageUrl                 as MarketImageUrl,
 
       ISOCode,
@@ -28,7 +29,6 @@ define view entity ZRP_C_PRODUCT_MARKET
       _Totals.TotalNetAmount           as TotalNetAmount,
       @Semantics.amount.currencyCode: 'Currency'
       _Totals.TotalGrossAmount         as TotalGrossAmount,
-      _Totals.AmountCurrency           as Currency,
 
       _VirtualFields.StatusCriticality as StatusCriticality,
 

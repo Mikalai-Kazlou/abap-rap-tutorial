@@ -77,6 +77,11 @@ annotate entity ZRP_C_PRODUCT_MARKET with
   @UI.lineItem: [ { position: 20 } ]
   ISOCode;
 
+  @EndUserText.label: 'Market Currency'
+  @UI.identification: [ { position: 25 } ]
+  @UI.lineItem: [ { position: 25 } ]
+  Currency;
+
   @EndUserText.label: 'Is Accepted?'
   @UI.identification: [
     { position: 30, criticality: 'StatusCriticality' },

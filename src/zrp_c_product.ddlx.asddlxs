@@ -80,6 +80,24 @@ annotate view ZRP_C_PRODUCT with
       id: 'ProductMarkets',
       targetElement: 'ProductMarkets',
       position: 30
+    },
+
+    { id: 'MarketQuantityChart',
+      type: #CHART_REFERENCE,
+      purpose: #STANDARD,
+      label: 'Market Quantity Chart',
+      targetQualifier: 'MarketQuantityChart',
+      targetElement: 'ByMarketChart',
+      position: 40
+    },
+
+    { id: 'MarketAmountChart',
+      type: #CHART_REFERENCE,
+      purpose: #STANDARD,
+      label: 'Market Amount Chart',
+      targetQualifier: 'MarketAmountChart',
+      targetElement: 'ByMarketChart',
+      position: 50
     }
   ]
 
