@@ -19,6 +19,9 @@ define root view entity ZRP_C_PRODUCT
   key UUID,
 
       @Search.defaultSearchElement: true
+      @Consumption.semanticObject: 'ProductAnalysisSO'
+      @Consumption.semanticObjectMapping.additionalBinding: [ { element: 'UUID', localElement: 'UUID' } ]
+      @ObjectModel.foreignKey.association: 'ProductAnalysis'
       ID,
 
       @Search.defaultSearchElement: true
@@ -76,5 +79,6 @@ define root view entity ZRP_C_PRODUCT
       _Currency                      as Currency,
       _Phase                         as Phase,
 
-      _ByMarketChart                 as ByMarketChart
+      _ByMarketChart                 as ByMarketChart,
+      _ProductAnalysis               as ProductAnalysis
 }

@@ -9,6 +9,8 @@
   dataClass: #MIXED
 }
 
+// Useful link: https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/c7f12219d533404f8fad96aa68fa4ba6.html
+
 @UI.chart: [
 
   { qualifier: 'OrderQuantityChart',
