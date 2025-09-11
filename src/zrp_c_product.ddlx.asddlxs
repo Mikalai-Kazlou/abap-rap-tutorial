@@ -141,17 +141,25 @@ annotate view ZRP_C_PRODUCT with
   @UI.hidden: true
   PhaseText;
 
-  @UI.fieldGroup: [ { qualifier: 'Dimensions', position: 10 } ]
-  @UI.lineItem: [ { position: 50 } ]
+  @UI.fieldGroup: [ { position: 10, qualifier: 'Dimensions' },
+                    { position: 10, qualifier: 'AllMeasures', value: 'Height' } ]
   Height;
 
-  @UI.fieldGroup: [ { qualifier: 'Dimensions', position: 20 } ]
-  @UI.lineItem: [ { position: 60 } ]
+  @UI.fieldGroup: [ { position: 20, qualifier: 'Dimensions' },
+                    { position: 20, qualifier: 'AllMeasures', value: 'Depth' } ]
   Depth;
 
-  @UI.fieldGroup: [ { qualifier: 'Dimensions', position: 30 } ]
-  @UI.lineItem: [ { position: 70 } ]
+  @UI.fieldGroup: [ { position: 30, qualifier: 'Dimensions' },
+                    { position: 30, qualifier: 'AllMeasures', value: 'Width' } ]
   Width;
+
+  @UI.lineItem: [{
+    position: 50,
+    label: 'Size (HxDxW)',
+    type: #AS_FIELDGROUP,
+    valueQualifier: 'AllMeasures'
+  }]
+  Measures;
 
   @EndUserText.label: 'Size UoM'
   SizeUOM;
@@ -170,19 +178,36 @@ annotate view ZRP_C_PRODUCT with
   @UI.lineItem: [ { position: 110 } ]
   TaxRate;
 
+  @UI.dataPoint: {
+    title: 'Income Progress',
+    qualifier: 'IncomePercentage',
+    targetValue: 50,
+    visualization: #PROGRESS,
+    criticality: 'IncomePercentageCriticality'
+  }
+  @UI.lineItem: [{
+    position: 120,
+    label: 'Income Percentage KPI',
+    type: #AS_DATAPOINT
+  }]
+  IncomePercentage;
+
+  @UI.hidden: true
+  IncomePercentageCriticality;
+
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 10 } ]
-  @UI.lineItem: [ { position: 120 } ]
+  @UI.lineItem: [ { position: 900, importance: #LOW } ]
   CreatedBy;
 
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 20 } ]
-  @UI.lineItem: [ { position: 130 } ]
+  @UI.lineItem: [ { position: 910, importance: #LOW } ]
   CreatedOn;
 
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 30 } ]
-  @UI.lineItem: [ { position: 140 } ]
+  @UI.lineItem: [ { position: 920 } ]
   ChangedBy;
 
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 40 } ]
-  @UI.lineItem: [ { position: 150 } ]
+  @UI.lineItem: [ { position: 930 } ]
   ChangedOn;
 }

@@ -50,6 +50,9 @@ define view entity ZRP_I_PRODUCT_ANALYSIS
                           qualifier: 'SalesAnalytics' } ]
       MarketList,
 
+      @UI.hidden: true
+      PhaseID,
+
       @UI.fieldGroup: [ { position: 40,
                           label: 'Market Quantity',
                           qualifier: 'SalesAnalytics' } ]
@@ -77,8 +80,18 @@ define view entity ZRP_I_PRODUCT_ANALYSIS
       @Semantics.amount.currencyCode: 'Currency'
       TotalGrossAmount,
 
+      @Semantics.amount.currencyCode: 'Currency'
+      TotalGrossAmount - TotalNetAmount                    as Income,
+
       Currency,
 
-      @UI.hidden: true
-      PhaseID
+      cast(
+        cast( $projection.Income as abap.fltp ) / cast( TotalGrossAmount as abap.fltp ) * 100.0
+      as abap.dec( 5, 2 ) )                                as IncomePercentage,
+
+      case
+        when $projection.IncomePercentage <  20 then 1
+        when $projection.IncomePercentage <  30 then 2
+        when $projection.IncomePercentage >= 30 then 3
+                                                else 0 end as IncomePercentageCriticality
 }

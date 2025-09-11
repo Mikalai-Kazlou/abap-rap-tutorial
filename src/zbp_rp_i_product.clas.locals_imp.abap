@@ -46,9 +46,9 @@ CLASS lhc_product DEFINITION INHERITING FROM cl_abap_behavior_handler
                 failed        TYPE tt_fe_product
       RETURNING VALUE(result) TYPE abap_bool.
 
-    METHODS validate_mandatory_field
+    METHODS validate_product_fields
       IMPORTING product  TYPE ts_rr_product
-                field    TYPE string
+                fields   TYPE tt_fields
       CHANGING  reported TYPE tt_rl_product.
 
 ENDCLASS.
@@ -61,7 +61,7 @@ CLASS lhc_product IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_instance_features.
-    DATA fields TYPE STANDARD TABLE OF string.
+    DATA fields TYPE tt_fields.
     DATA field_settings TYPE SORTED TABLE OF ts_field_settings WITH UNIQUE KEY field phase.
 
     field_settings = VALUE #( ( field = `ID`             phase = phases-planning    state = if_abap_behv=>fc-f-mandatory    )
@@ -107,6 +107,8 @@ CLASS lhc_product IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validate_mandatory_fields.
+    DATA fields TYPE tt_fields.
+
     READ ENTITIES OF zrp_i_product IN LOCAL MODE
            ENTITY product
               ALL FIELDS
@@ -120,68 +122,47 @@ CLASS lhc_product IMPLEMENTATION.
 
       CASE product-PhaseID.
         WHEN phases-planning.
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `ID`
-                                    CHANGING  reported = reported-product ).
+          fields = VALUE #( ( `ID`             )
+                            ( `Name`           )
+                            ( `ProductGroupID` ) ).
 
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `Name`
-                                    CHANGING  reported = reported-product ).
-
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `ProductGroupID`
-                                    CHANGING  reported = reported-product ).
         WHEN phases-development.
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `Height`
-                                    CHANGING  reported = reported-product ).
-
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `Depth`
-                                    CHANGING  reported = reported-product ).
-
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `Width`
-                                    CHANGING  reported = reported-product ).
-
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `SizeUOM`
-                                    CHANGING  reported = reported-product ).
-
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `Price`
-                                    CHANGING  reported = reported-product ).
-
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `PriceCurrency`
-                                    CHANGING  reported = reported-product ).
-
-          validate_mandatory_field( EXPORTING product  = product
-                                              field    = `TaxRate`
-                                    CHANGING  reported = reported-product ).
+          fields = VALUE #( ( `Height`        )
+                            ( `Depth`         )
+                            ( `Width`         )
+                            ( `SizeUOM`       )
+                            ( `Price`         )
+                            ( `PriceCurrency` )
+                            ( `TaxRate`       ) ).
       ENDCASE.
+
+      validate_product_fields( EXPORTING product  = product
+                                         fields   = fields
+                               CHANGING  reported = reported-product ).
     ENDLOOP.
   ENDMETHOD.
 
-  METHOD validate_mandatory_field.
-    ASSIGN COMPONENT field OF STRUCTURE product TO FIELD-SYMBOL(<field>).
-    CHECK <field> IS ASSIGNED.
+  METHOD validate_product_fields.
+    LOOP AT fields INTO DATA(field).
+      ASSIGN COMPONENT field OF STRUCTURE product TO FIELD-SYMBOL(<field>).
+      IF <field> IS ASSIGNED.
+        IF <field> IS INITIAL.
+          DATA(msg) = new_message( id       = 'ZRP_MSG'
+                                   number   = '015'
+                                   severity = if_abap_behv_message=>severity-error ).
 
-    IF <field> IS INITIAL.
-      DATA(msg) = new_message( id       = 'ZRP_MSG'
-                               number   = '015'
-                               severity = if_abap_behv_message=>severity-error ).
+          INSERT VALUE #( %tky        = product-%tky
+                          %state_area = 'validateMandatoryFields'
+                          %msg        = msg ) INTO TABLE reported ASSIGNING FIELD-SYMBOL(<reported>).
 
-      INSERT VALUE #( %tky        = product-%tky
-                      %state_area = 'validateMandatoryFields'
-                      %msg        = msg ) INTO TABLE reported ASSIGNING FIELD-SYMBOL(<reported>).
+          ASSIGN COMPONENT |%element-{ field }| OF STRUCTURE <reported> TO FIELD-SYMBOL(<element>).
 
-      ASSIGN COMPONENT |%element-{ field }| OF STRUCTURE <reported> TO FIELD-SYMBOL(<element>).
-
-      IF <element> IS ASSIGNED.
-        <element> = if_abap_behv=>mk-on.
+          IF <element> IS ASSIGNED.
+            <element> = if_abap_behv=>mk-on.
+          ENDIF.
+        ENDIF.
       ENDIF.
-    ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD set_initial_phase.
