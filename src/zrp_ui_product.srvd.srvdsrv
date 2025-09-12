@@ -11,4 +11,5 @@ define service ZRP_UI_PRODUCT {
   expose ZRP_I_MARKET             as Markets;
   expose ZRP_I_UOM                as UoMs;
   expose ZRP_I_CURRENCY           as Currencies;
+  expose ZRP_I_USER               as Users;
 }

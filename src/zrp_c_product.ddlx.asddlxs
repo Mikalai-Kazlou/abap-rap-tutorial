@@ -33,6 +33,11 @@ annotate view ZRP_C_PRODUCT with
       purpose: #HEADER,
       position: 40
     },
+    { targetQualifier: 'IncomePercentage',
+      type: #DATAPOINT_REFERENCE,
+      purpose: #HEADER,
+      position: 50
+    },
 
     { id: 'GeneralData',
       label: 'General data',
@@ -179,7 +184,7 @@ annotate view ZRP_C_PRODUCT with
   TaxRate;
 
   @UI.dataPoint: {
-    title: 'Income Progress',
+    title: 'Income Percentage KPI',
     qualifier: 'IncomePercentage',
     targetValue: 50,
     visualization: #PROGRESS,
@@ -195,19 +200,63 @@ annotate view ZRP_C_PRODUCT with
   @UI.hidden: true
   IncomePercentageCriticality;
 
-  @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 10 } ]
-  @UI.lineItem: [ { position: 900, importance: #LOW } ]
+  @UI.fieldGroup: [{
+    position: 10,
+    qualifier: 'TechnicalData'
+  }]
+  @UI.lineItem: [{
+    position: 900,
+    importance: #LOW
+  }]
   CreatedBy;
+
+  @UI.fieldGroup: [{
+    position: 15,
+    qualifier: 'TechnicalData',
+    type: #AS_CONTACT,
+    value: 'CreatedByContact',
+    label: 'Created By'
+  }]
+  @UI.lineItem: [{
+    position: 900,
+    type: #AS_CONTACT,
+    value: 'CreatedByContact',
+    label: 'Created By',
+    importance: #LOW
+  }]
+  CreatedByFullName;
 
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 20 } ]
   @UI.lineItem: [ { position: 910, importance: #LOW } ]
   CreatedOn;
 
-  @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 30 } ]
-  @UI.lineItem: [ { position: 920 } ]
+  @UI.fieldGroup: [{
+    position: 30,
+    qualifier: 'TechnicalData'
+  }]
+  @UI.lineItem: [{
+    position: 920,
+    importance: #LOW
+  }]
   ChangedBy;
 
+  @UI.fieldGroup: [{
+    position: 30,
+    qualifier: 'TechnicalData',
+    type: #AS_CONTACT,
+    value: 'ChangedByContact',
+    label: 'Changed By'
+  }]
+  @UI.lineItem: [{
+    position: 920,
+    type: #AS_CONTACT,
+    value: 'ChangedByContact',
+    label: 'Changed By',
+    importance: #LOW
+  }]
+  ChangedByFullName;
+
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 40 } ]
-  @UI.lineItem: [ { position: 930 } ]
+  @UI.lineItem: [ { position: 930, importance: #LOW } ]
   ChangedOn;
 }

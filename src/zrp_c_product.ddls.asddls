@@ -68,6 +68,9 @@ define root view entity ZRP_C_PRODUCT
       _ProductAnalysis.IncomePercentage,
       _ProductAnalysis.IncomePercentageCriticality,
 
+      _CreatedByContact.FullName     as CreatedByFullName,
+      _ChangedByContact.FullName     as ChangedByFullName,
+
       CreatedBy,
       @Semantics.dateTime: true
       CreatedOn,
@@ -83,6 +86,9 @@ define root view entity ZRP_C_PRODUCT
       _ProductGroup                  as ProductGroup,
       _Currency                      as Currency,
       _Phase                         as Phase,
+
+      _CreatedByContact              as CreatedByContact,
+      _ChangedByContact              as ChangedByContact,
 
       _ByMarketChart                 as ByMarketChart,
       _ProductAnalysis               as ProductAnalysis

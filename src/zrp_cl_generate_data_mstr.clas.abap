@@ -11,7 +11,8 @@ CLASS zrp_cl_generate_data_mstr IMPLEMENTATION.
     DATA lt_prod_grs TYPE TABLE OF zrp_d_prod_group.
     DATA lt_phases   TYPE TABLE OF zrp_d_phase.
     DATA lt_markets  TYPE TABLE OF zrp_d_market.
-    DATA lt_uom      TYPE TABLE OF zrp_d_uom.
+    DATA lt_uoms     TYPE TABLE OF zrp_d_uom.
+    DATA lt_users    TYPE TABLE OF zrp_d_user.
 
     " PRODUCT GROUPS
     lt_prod_grs = VALUE #(
@@ -120,8 +121,8 @@ CLASS zrp_cl_generate_data_mstr IMPLEMENTATION.
     out->write( sy-dbcnt ).
     out->write( 'Markets data inserted successfully!' ).
 
-    " UOM
-    lt_uom = VALUE #( dimensionid = 'LENGTH'
+    " UOMs
+    lt_uoms = VALUE #( dimensionid = 'LENGTH'
                       ( msehi = 'CM'  isocode = 'CMT' )
                       ( msehi = 'DM'  isocode = 'DMT' )
                       ( msehi = 'FT'  isocode = 'FOT' )
@@ -137,11 +138,33 @@ CLASS zrp_cl_generate_data_mstr IMPLEMENTATION.
     " Delete the possible entries in the database table - in case it was already filled
     DELETE FROM zrp_d_uom.
     " Insert the new table entries
-    INSERT zrp_d_uom FROM TABLE @lt_uom.
+    INSERT zrp_d_uom FROM TABLE @lt_uoms.
 
     " Check the result
-    SELECT * FROM zrp_d_uom INTO TABLE @lt_uom.
+    SELECT * FROM zrp_d_uom INTO TABLE @lt_uoms.
     out->write( sy-dbcnt ).
-    out->write( 'UOM data inserted successfully!' ).
+    out->write( 'UOMs data inserted successfully!' ).
+
+    " Users
+    lt_users = VALUE #( ( id        = cl_abap_context_info=>get_user_technical_name( )
+                          firstname = 'Mathilde'
+                          lastname  = 'Benz'
+                          country   = 'ES'
+                          street    = 'Josep Pla, No2. Planta 13'
+                          city      = 'Barcelona'
+                          postcode  = '08019'
+                          photourl  = 'https://dummyjson.com/image/500x500/4B9BE1/FFFFFF?text=Mathilde Benz'
+                          phone     = '+32 93195326'
+                          email     = 'Mathilde.Benz@mail.example.com' ) ).
+
+    " Delete the possible entries in the database table - in case it was already filled
+    DELETE FROM zrp_d_user.
+    " Insert the new table entries
+    INSERT zrp_d_user FROM TABLE @lt_users.
+
+    " Check the result
+    SELECT * FROM zrp_d_user INTO TABLE @lt_users.
+    out->write( sy-dbcnt ).
+    out->write( 'Users data inserted successfully!' ).
   ENDMETHOD.
 ENDCLASS.

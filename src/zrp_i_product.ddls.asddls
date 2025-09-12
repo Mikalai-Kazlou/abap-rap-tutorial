@@ -26,6 +26,12 @@ define root view entity ZRP_I_PRODUCT
   association [0..1] to ZRP_I_PHASE              as _Phase
     on $projection.PhaseID = _Phase.PhaseID
 
+  association [0..1] to ZRP_I_USER               as _CreatedByContact
+    on $projection.CreatedBy = _CreatedByContact.ID
+
+  association [0..1] to ZRP_I_USER               as _ChangedByContact
+    on $projection.ChangedBy = _ChangedByContact.ID
+
   association [1..1] to ZRP_V_PRODUCT            as _VirtualFields
     on _VirtualFields.UUID = $projection.UUID
 
@@ -79,7 +85,10 @@ define root view entity ZRP_I_PRODUCT
       _Currency,
       _SizeUOM,
       _Phase,
-      
+
+      _CreatedByContact,
+      _ChangedByContact,
+
       _VirtualFields,
       _ByMarketChart,
       _ProductAnalysis,
