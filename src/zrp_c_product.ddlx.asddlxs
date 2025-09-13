@@ -1,4 +1,5 @@
 @Metadata.layer: #CORE
+
 @UI.headerInfo: { typeName: 'Product',
                   typeNamePlural: 'Products',
                   imageUrl: 'ProductGroupImageUrl',
@@ -6,8 +7,18 @@
 
 @UI.presentationVariant: [ { sortOrder: [ { by: 'ProductGroupName', direction: #ASC },
                                           { by: 'ID', direction: #ASC } ] } ]
-
 @UI.lineItem: [{criticality: 'PhaseID'}]
+
+@UI.chart: [{ qualifier: 'BulletChart',
+              title: 'Bullet Micro Chart',
+              description: 'Micro Chart of Net Amount In Gross Amount',
+              chartType: #BULLET,
+              measures: ['NetAmountInGrossAmount'],
+              measureAttributes: [{ measure: 'NetAmountInGrossAmount',
+                                    role: #AXIS_1,
+                                    asDataPoint: true
+                                 }]
+           }]
 
 annotate view ZRP_C_PRODUCT with
 {
@@ -79,10 +90,10 @@ annotate view ZRP_C_PRODUCT with
       position: 20
     },
 
-    { type: #LINEITEM_REFERENCE,
+    { id: 'ProductMarkets',
+      type: #LINEITEM_REFERENCE,
       purpose: #STANDARD,
       label: 'Product Markets',
-      id: 'ProductMarkets',
       targetElement: 'ProductMarkets',
       position: 30
     },
@@ -106,14 +117,29 @@ annotate view ZRP_C_PRODUCT with
     }
   ]
 
+  @UI.identification: [{
+    type: #FOR_ACTION,
+    dataAction: 'MoveToNextPhase',
+    label: 'Next Phase'
+  }]
+
+  @UI.lineItem: [{
+    type: #FOR_ACTION,
+    dataAction: 'CopyProduct',
+    label: 'Copy'
+  },
+  { type: #FOR_ACTION,
+    dataAction: 'MoveToNextPhase',
+    label: 'Next Phase'
+  }]
+
   @UI.hidden: true
   UUID;
 
   @EndUserText.label: 'Product ID'
   @UI.dataPoint: { title: 'Product ID', qualifier: 'ProductID' }
   @UI.fieldGroup: [ { qualifier: 'Product', position: 20 } ]
-  @UI.lineItem: [ { position: 10 },
-                  { type: #FOR_ACTION, dataAction: 'CopyProduct', label: 'Copy' } ]
+  @UI.lineItem: [ { position: 10 } ]
   @UI.selectionField: [ { position: 10 } ]
   ID;
 
@@ -137,9 +163,7 @@ annotate view ZRP_C_PRODUCT with
   @EndUserText.label: 'Phase'
   @UI.dataPoint: { title: 'Phase', qualifier: 'Phase', criticality: 'PhaseID' }
   @UI.fieldGroup: [ { qualifier: 'Product', position: 10, criticality: 'PhaseID' } ]
-  @UI.identification: [ { type: #FOR_ACTION, dataAction: 'MoveToNextPhase', label: 'Next Phase' } ]
-  @UI.lineItem: [ { position: 40, criticality: 'PhaseID' },
-                  { type: #FOR_ACTION, dataAction: 'MoveToNextPhase', label: 'Next Phase' } ]
+  @UI.lineItem: [ { position: 40, criticality: 'PhaseID' } ]
   @UI.selectionField: [ { position: 40 } ]
   PhaseID;
 
@@ -164,7 +188,6 @@ annotate view ZRP_C_PRODUCT with
     type: #AS_FIELDGROUP,
     valueQualifier: 'AllMeasures'
   }]
-  Measures;
 
   @EndUserText.label: 'Size UoM'
   SizeUOM;
@@ -200,45 +223,49 @@ annotate view ZRP_C_PRODUCT with
   @UI.hidden: true
   IncomePercentageCriticality;
 
-  @UI.fieldGroup: [{
-    position: 10,
-    qualifier: 'TechnicalData'
-  }]
+  @UI.dataPoint: {
+    title: 'Net Amount In Gross Amount',
+    qualifier: 'NetAmountInGrossAmount',
+    targetValue: 70,
+    maximumValue: 100,
+    minimumValue: 0,
+    criticalityCalculation: { improvementDirection: #MINIMIZE,
+                              deviationRangeHighValue: 85,
+                              toleranceRangeHighValue: 82,
+                              toleranceRangeLowValue: 0
+                            }
+  }
+
   @UI.lineItem: [{
-    position: 900,
-    importance: #LOW
+    position: 130,
+    type: #AS_CHART,
+    label: 'Net Amount In Gross Amount',
+    valueQualifier: 'BulletChart',
+    importance: #HIGH
   }]
-  CreatedBy;
+
+  @EndUserText.label: 'Net Amount In Gross Amount'
+  NetAmountInGrossAmount;
 
   @UI.fieldGroup: [{
-    position: 15,
+    position: 10,
     qualifier: 'TechnicalData',
     type: #AS_CONTACT,
     value: 'CreatedByContact',
     label: 'Created By'
   }]
   @UI.lineItem: [{
-    position: 900,
+    position: 910,
     type: #AS_CONTACT,
     value: 'CreatedByContact',
     label: 'Created By',
     importance: #LOW
   }]
-  CreatedByFullName;
+  CreatedBy;
 
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 20 } ]
-  @UI.lineItem: [ { position: 910, importance: #LOW } ]
+  @UI.lineItem: [ { position: 920, importance: #LOW } ]
   CreatedOn;
-
-  @UI.fieldGroup: [{
-    position: 30,
-    qualifier: 'TechnicalData'
-  }]
-  @UI.lineItem: [{
-    position: 920,
-    importance: #LOW
-  }]
-  ChangedBy;
 
   @UI.fieldGroup: [{
     position: 30,
@@ -248,15 +275,18 @@ annotate view ZRP_C_PRODUCT with
     label: 'Changed By'
   }]
   @UI.lineItem: [{
-    position: 920,
+    position: 930,
     type: #AS_CONTACT,
     value: 'ChangedByContact',
     label: 'Changed By',
     importance: #LOW
   }]
-  ChangedByFullName;
+  ChangedBy;
 
   @UI.fieldGroup: [ { qualifier: 'TechnicalData', position: 40 } ]
-  @UI.lineItem: [ { position: 930, importance: #LOW } ]
+  @UI.lineItem: [ { position: 940, importance: #LOW } ]
   ChangedOn;
+
+  @UI.hidden: true
+  LocalChangedOn;
 }

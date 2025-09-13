@@ -50,8 +50,6 @@ define root view entity ZRP_C_PRODUCT
       @Semantics.quantity.unitOfMeasure: 'SizeUOM'
       Width,
 
-      _VirtualFields.Measures        as Measures,
-
       @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_UOM', element: 'UoM' } } ]
       @Semantics.unitOfMeasure: true
       SizeUOM,
@@ -67,9 +65,7 @@ define root view entity ZRP_C_PRODUCT
 
       _ProductAnalysis.IncomePercentage,
       _ProductAnalysis.IncomePercentageCriticality,
-
-      _CreatedByContact.FullName     as CreatedByFullName,
-      _ChangedByContact.FullName     as ChangedByFullName,
+      _ProductAnalysis.NetAmountInGrossAmount,
 
       CreatedBy,
       @Semantics.dateTime: true

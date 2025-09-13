@@ -32,9 +32,6 @@ define root view entity ZRP_I_PRODUCT
   association [0..1] to ZRP_I_USER               as _ChangedByContact
     on $projection.ChangedBy = _ChangedByContact.ID
 
-  association [1..1] to ZRP_V_PRODUCT            as _VirtualFields
-    on _VirtualFields.UUID = $projection.UUID
-
   association [0..*] to ZRP_I_MARKET_ORDER_CHART as _ByMarketChart
     on _ByMarketChart.ProductUUID = $projection.UUID
 
@@ -89,7 +86,6 @@ define root view entity ZRP_I_PRODUCT
       _CreatedByContact,
       _ChangedByContact,
 
-      _VirtualFields,
       _ByMarketChart,
       _ProductAnalysis,
 
