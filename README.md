@@ -5,3 +5,4 @@
 - Service Description - [link](http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso)
 - Service WSDL - [link](http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL) (download is required)
 - Name of Service Consumption Model - `ZRP_SC_COUNTRY_INFO`
+- Prefix - `ZRP_SC_`
