@@ -20,9 +20,12 @@ define view entity ZRP_I_PHASE
 
 {
       @ObjectModel.text.element: ['PhaseText']
+      @UI.textArrangement: #TEXT_ONLY
   key phaseid                                         as PhaseID,
+
+      @UI.hidden: true
       phase                                           as Phase,
-      
+
       @Semantics.text: true
       _DomainFixedValues( p_domain_name: 'ZRP_PHASE' )
                             [1: language = 'E' ].text as PhaseText

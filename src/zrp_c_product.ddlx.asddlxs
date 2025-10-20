@@ -3,10 +3,11 @@
 @UI.headerInfo: { typeName: 'Product',
                   typeNamePlural: 'Products',
                   imageUrl: 'ProductGroupImageUrl',
-                  title: { type: #STANDARD, label: 'Product', value: 'Name' } }
+                  title: { type: #STANDARD, label: 'Product', value: 'Name' },
+                  description: { type: #STANDARD, value: 'ID' } }
 
-@UI.presentationVariant: [ { sortOrder: [ { by: 'ProductGroupName', direction: #ASC },
-                                          { by: 'ID', direction: #ASC } ] } ]
+@UI.presentationVariant: [{ sortOrder: [{ by: 'ProductGroupName', direction: #ASC },
+                                        { by: 'ID', direction: #ASC }] }]
 @UI.lineItem: [{criticality: 'PhaseID'}]
 
 @UI.chart: [{ qualifier: 'BulletChart',
@@ -48,6 +49,11 @@ annotate view ZRP_C_PRODUCT with
       type: #DATAPOINT_REFERENCE,
       purpose: #HEADER,
       position: 50
+    },
+    { targetQualifier: 'BulletChart',
+      type: #CHART_REFERENCE,
+      purpose: #HEADER,
+      position: 60
     },
 
     { id: 'GeneralData',
@@ -152,6 +158,7 @@ annotate view ZRP_C_PRODUCT with
   @UI.fieldGroup: [ { qualifier: 'Product', position: 40 } ]
   @UI.lineItem: [ { position: 30 } ]
   @UI.selectionField: [ { position: 30 } ]
+  @UI.textArrangement: #TEXT_ONLY
   ProductGroupID;
 
   @UI.hidden: true
@@ -165,6 +172,7 @@ annotate view ZRP_C_PRODUCT with
   @UI.fieldGroup: [ { qualifier: 'Product', position: 10, criticality: 'PhaseID' } ]
   @UI.lineItem: [ { position: 40, criticality: 'PhaseID' } ]
   @UI.selectionField: [ { position: 40 } ]
+  @UI.textArrangement: #TEXT_ONLY
   PhaseID;
 
   @UI.hidden: true
