@@ -1,0 +1,5 @@
+@EndUserText.label: 'Overview Page'
+define service ZRP_UI_OVP {
+  expose ZRP_C_OVP_MARKET_ORDER_FILTERS as GlobalFilters;
+  expose ZRP_C_OVP_MARKET_ORDER_CARDS   as Cards;
+}
