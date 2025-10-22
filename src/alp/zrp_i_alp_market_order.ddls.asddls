@@ -13,10 +13,10 @@
 define view entity ZRP_I_ALP_MARKET_ORDER
   as select from zrp_d_mrkt_order
 
-  association [1..1] to ZRP_I_ALP_PRODUCT    as _Product
+  association [1..1] to ZRP_I_ALP_PRODUCT        as _Product
     on _Product.UUID = $projection.ProductUUID
 
-  association [1..1] to ZRP_I_PRODUCT_MARKET as _ProductMarket
+  association [1..1] to ZRP_I_ALP_PRODUCT_MARKET as _ProductMarket
     on  _ProductMarket.ProductUUID       = $projection.ProductUUID
     and _ProductMarket.ProductMarketUUID = $projection.ProductMarketUUID
 

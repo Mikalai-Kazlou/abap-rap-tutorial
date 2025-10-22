@@ -85,8 +85,8 @@
 
       -- Main Chart
     { qualifier: 'MainChart',
-      sortOrder: [ { by: 'Orderid', direction: #ASC } ],
-      groupBy: [ 'ProductGroupName', 'MarketName', 'Orderid' ],
+      sortOrder: [ { by: 'OrderID', direction: #ASC } ],
+      groupBy: [ 'ProductGroupName', 'MarketName', 'OrderID' ],
       visualizations: [ { type: #AS_CHART,    qualifier: 'ChartMainChart' },
                         { type: #AS_LINEITEM, qualifier: 'LineMainChart'  } ] }
   ]
@@ -153,7 +153,7 @@ define view entity ZRP_C_ALP_MARKET_ORDER
         { id: 'HeaderOrderid',
           purpose: #HEADER,
           type: #DATAPOINT_REFERENCE,
-          targetQualifier: 'Orderid',
+          targetQualifier: 'OrderID',
           position: 10
         },
         { id: 'HeaderProduct',
@@ -195,7 +195,7 @@ define view entity ZRP_C_ALP_MARKET_ORDER
       @UI.hidden: true
   key OrderUUID,
 
-      @UI.dataPoint: { title: 'Order ID', qualifier: 'Orderid' }
+      @UI.dataPoint: { title: 'Order ID', qualifier: 'OrderID' }
       @UI.fieldGroup: [ { position: 10, qualifier: 'BasicData' } ]
       @UI.identification: [ { position: 10 } ]
       @UI.lineItem: [ { qualifier: 'LineMainChart', position: 30 } ]

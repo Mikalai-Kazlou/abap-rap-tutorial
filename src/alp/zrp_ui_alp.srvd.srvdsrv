@@ -1,0 +1,13 @@
+@EndUserText.label: 'Analytical List Page'
+define service ZRP_UI_ALP {
+  expose ZRP_C_ALP_MARKET_ORDER   as ALPMarketOrder;
+  expose ZRP_I_ALP_MARKET_ORDER   as BaseCDS;
+  expose ZRP_I_ALP_PRODUCT        as Product;
+  expose ZRP_I_ALP_PRODUCT_GROUP  as ProductGroup;
+  expose ZRP_I_ALP_PHASE          as Phase;
+  expose ZRP_I_ALP_PRODUCT_MARKET as ProductMarket;
+  expose ZRP_I_ALP_MARKET         as Market;
+  expose ZRP_I_PRODUCT_GROUP      as vhProductGroup;
+  expose ZRP_I_MARKET             as vhMarket;
+  expose ZRP_I_PHASE              as vhPhase;
+}
