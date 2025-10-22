@@ -1,0 +1,315 @@
+@AbapCatalog.viewEnhancementCategory: [ #NONE ]
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'ALP for Market Orders'
+@Metadata.ignorePropagatedAnnotations: false
+
+@UI.chart:
+[   -- KPI
+  { qualifier: 'ChartGrossIncomeByCountry',
+    chartType: #DONUT,
+    dimensions: [ 'MarketName' ],
+    measures: [ 'GrossIncom' ],
+    dimensionAttributes: [ { dimension: 'MarketName', role: #CATEGORY } ],
+    measureAttributes: [ { measure: 'GrossIncom', role: #AXIS_1 } ] },
+
+  { qualifier: 'ChartGrossAmountByCountry',
+    chartType: #BAR,
+    dimensions: [ 'MarketName' ],
+    measures: [ 'Grossamount' ],
+    dimensionAttributes: [ { dimension: 'MarketName', role: #CATEGORY } ],
+    measureAttributes: [ { measure: 'Grossamount', role: #AXIS_1 } ] },
+
+    -- Visual Filters
+  { qualifier: 'ChartFilterCntrByGrossIncom',
+    chartType: #LINE,
+    dimensions: [ 'MarketName' ],
+    measures: [ 'GrossIncom' ],
+    dimensionAttributes: [ { dimension: 'MarketName', role: #CATEGORY } ],
+    measureAttributes: [ { measure: 'GrossIncom', role: #AXIS_1 } ] },
+
+  { qualifier: 'ChartFilterProdByOrdQuantity',
+    chartType: #DONUT,
+    dimensions: [ 'ProductGroupName' ],
+    measures: [ 'OrderCount' ],
+    dimensionAttributes: [ { dimension: 'ProductGroupName', role: #CATEGORY } ],
+    measureAttributes: [ { measure: 'OrderCount', role: #AXIS_1 } ] },
+
+    -- Main Chart
+  { qualifier: 'ChartMainChart',
+    chartType: #BAR_STACKED,
+    dimensions: [ 'ProductGroupName', 'MarketName' ],
+    measures: [ 'Netamount', 'GrossIncom' ],
+    dimensionAttributes: [ { dimension: 'MarketName',       role: #CATEGORY },
+                           { dimension: 'ProductGroupName', role: #CATEGORY } ],
+    measureAttributes: [ { measure: 'Netamount',  role: #AXIS_1 },
+                         { measure: 'GrossIncom', role: #AXIS_1 } ] }
+]
+
+@UI.presentationVariant:
+  [   -- KPI
+    { qualifier: 'KPIGrossIncomeByCountryAvg',
+      text: 'Average Gross Income by Countries',
+      visualizations: [ { type: #AS_CHART,     qualifier: 'ChartGrossIncomeByCountry' },
+                        { type: #AS_DATAPOINT, qualifier: 'GrossIncomAvg'             } ] },
+
+    { qualifier: 'KPIGrossIncomeByCountryMax',
+      text: 'Maximum Gross Income by Countries',
+      visualizations: [ { type: #AS_CHART,     qualifier: 'ChartGrossIncomeByCountry' },
+                        { type: #AS_DATAPOINT, qualifier: 'GrossIncomMax'             } ] },
+
+    { qualifier: 'KPIGrossIncomeByCountryMin',
+      text: 'Minimum Gross Income by Countries',
+      visualizations: [ { type: #AS_CHART,     qualifier: 'ChartGrossIncomeByCountry' },
+                        { type: #AS_DATAPOINT, qualifier: 'GrossIncomMin'             } ] },
+
+    { qualifier: 'KPIGrossIncomeByCountry',
+      text: 'Total Gross Income by Countries',
+      visualizations: [ { type: #AS_CHART,     qualifier: 'ChartGrossIncomeByCountry' },
+                        { type: #AS_DATAPOINT, qualifier: 'GrossIncom'                } ] },
+
+    { qualifier: 'KPIGrossAmountByCountry',
+      text: 'Gross Amount By Countries',
+      visualizations: [ { type: #AS_CHART,     qualifier: 'ChartGrossAmountByCountry' },
+                        { type: #AS_DATAPOINT, qualifier: 'Grossamount'               } ] },
+
+      -- Visual Filters
+    { qualifier: 'FilterCntrByGrossIncom',
+      text: 'Market by Gross Income',
+      visualizations: [ { type: #AS_CHART,     qualifier: 'ChartFilterCntrByGrossIncom' },
+                        { type: #AS_DATAPOINT, qualifier: 'GrossIncom'                  } ] },
+
+    { qualifier: 'FilterProdByOrdQuantity',
+      text: 'Product by Gross Income Percentage',
+      visualizations: [ { type: #AS_CHART,     qualifier: 'ChartFilterProdByOrdQuantity' },
+                        { type: #AS_DATAPOINT, qualifier: 'ProductCount'                 } ] },
+
+      -- Main Chart
+    { qualifier: 'MainChart',
+      sortOrder: [ { by: 'Orderid', direction: #ASC } ],
+      groupBy: [ 'ProductGroupName', 'MarketName', 'Orderid' ],
+      visualizations: [ { type: #AS_CHART,    qualifier: 'ChartMainChart' },
+                        { type: #AS_LINEITEM, qualifier: 'LineMainChart'  } ] }
+  ]
+
+@UI.selectionPresentationVariant:
+  [   -- KPI
+    { qualifier: 'KPIGrossIncomeByCountryAvg',
+      selectionVariantQualifier: 'KPIGrossIncomeByCountryAvg',
+      presentationVariantQualifier: 'KPIGrossIncomeByCountryAvg' },
+
+    { qualifier: 'KPIGrossIncomeByCountryMax',
+      selectionVariantQualifier: 'KPIGrossIncomeByCountryMax',
+      presentationVariantQualifier: 'KPIGrossIncomeByCountryMax' },
+
+    { qualifier: 'KPIGrossIncomeByCountryMin',
+      selectionVariantQualifier: 'KPIGrossIncomeByCountryMin',
+      presentationVariantQualifier: 'KPIGrossIncomeByCountryMin' },
+
+    { qualifier: 'KPIGrossIncomeByCountry',
+      selectionVariantQualifier: 'KPIGrossIncomeByCountry',
+      presentationVariantQualifier: 'KPIGrossIncomeByCountry' },
+
+    { qualifier: 'KPIGrossAmountByCountry',
+      selectionVariantQualifier: 'KPIGrossAmountByCountry',
+      presentationVariantQualifier: 'KPIGrossAmountByCountry' },
+
+      -- Visual Filters
+    { qualifier: 'FilterCntrByGrossIncom',
+      selectionVariantQualifier: 'FilterCntrByGrossIncom',
+      presentationVariantQualifier: 'FilterCntrByGrossIncom' },
+
+    { qualifier: 'FilterProdByOrdQuantity',
+      selectionVariantQualifier: 'FilterProdByOrdQuantity',
+      presentationVariantQualifier: 'FilterProdByOrdQuantity' },
+
+      -- Main Chart
+    { qualifier: 'MainChart',
+      selectionVariantQualifier: 'MainChart',
+      presentationVariantQualifier: 'MainChart' }
+  ]
+
+@UI.selectionVariant:
+  [   -- KPI
+    { qualifier: 'KPIGrossIncomeByCountryAvg', text: 'Average Gross Income by Countries' },
+    { qualifier: 'KPIGrossIncomeByCountryMax', text: 'Maximum Gross Income by Countries' },
+    { qualifier: 'KPIGrossIncomeByCountryMin', text: 'Minimum Gross Income by Countries' },
+    { qualifier: 'KPIGrossIncomeByCountry',    text: 'Total Gross Income by Countries'   },
+    { qualifier: 'KPIGrossAmountByCountry',    text: 'Gross Amount By Countries'         },
+
+      -- Visual Filters
+    { qualifier: 'FilterCntrByGrossIncom',  text: 'Market by Gross Income'             },
+    { qualifier: 'FilterProdByOrdQuantity', text: 'Product by Gross Income Percentage' },
+
+      -- Main Chart
+    { qualifier: 'MainChart', text: 'Main Chart' }
+  ]
+
+define view entity ZRP_C_ALP_MARKET_ORDER
+  as select from ZRP_I_ALP_MARKET_ORDER
+
+{
+      @UI.facet: [
+        // Header Facet Annotations
+        { id: 'HeaderOrderid',
+          purpose: #HEADER,
+          type: #DATAPOINT_REFERENCE,
+          targetQualifier: 'Orderid',
+          position: 10
+        },
+        { id: 'HeaderProduct',
+          purpose: #HEADER,
+          type: #DATAPOINT_REFERENCE,
+          targetQualifier: 'Product',
+          position: 20
+        },
+
+        // Object Page Tabs
+        { id: 'GeneralInformation', type: #COLLECTION, label: 'General Information', position: 10 },
+        { id: 'FinanceInformation', type: #COLLECTION, label: 'Finance Information', position: 20 },
+
+        // Field Groups
+        { id: 'BasicData',
+          purpose: #STANDARD,
+          parentId: 'GeneralInformation',
+          type: #FIELDGROUP_REFERENCE,
+          label: 'General Information',
+          position: 10,
+          targetQualifier: 'BasicData'
+        },
+        { id: 'FinInfo',
+          purpose: #STANDARD,
+          parentId: 'FinanceInformation',
+          type: #FIELDGROUP_REFERENCE,
+          label: 'Finance Information',
+          position: 20,
+          targetQualifier: 'FinInfo'
+        }
+      ]
+
+      @UI.hidden: true
+  key ProductUUID,
+
+      @UI.hidden: true
+  key ProductMarketUUID,
+
+      @UI.hidden: true
+  key OrderUUID,
+
+      @UI.dataPoint: { title: 'Order ID', qualifier: 'Orderid' }
+      @UI.fieldGroup: [ { position: 10, qualifier: 'BasicData' } ]
+      @UI.identification: [ { position: 10 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 30 } ]
+      OrderID,
+
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PRODUCT_GROUP', element: 'ProductGroupName' } } ]
+      @EndUserText.label: 'Product Group'
+      @UI.dataPoint: { title: 'Product', qualifier: 'Product' }
+      @UI.fieldGroup: [ { position: 20, qualifier: 'BasicData' } ]
+      @UI.identification: [ { position: 20 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 10 } ]
+      @UI.selectionField: [ { position: 10 } ]
+      ProductGroupName,
+
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_MARKET', element: 'MarketName' } } ]
+      @EndUserText.label: 'Market (Country)'
+      @UI.fieldGroup: [ { position: 30, qualifier: 'BasicData' } ]
+      @UI.identification: [ { position: 30 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 20 } ]
+      @UI.selectionField: [ { position: 20 } ]
+      MarketName,
+
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PHASE', element: 'PhaseText' } } ]
+      @UI.fieldGroup: [ { position: 40, qualifier: 'BasicData' } ]
+      @UI.identification: [ { position: 40 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 40 } ]
+      @UI.selectionField: [ { position: 40 } ]
+      PhaseName,
+
+      @Consumption.filter: { selectionType: #INTERVAL, multipleSelections: false }
+      @UI.fieldGroup: [ { position: 50, qualifier: 'BasicData' } ]
+      @UI.identification: [ { position: 50 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 50 } ]
+      @UI.selectionField: [ { position: 50 } ]
+      DeliveryDate,
+
+      @UI.fieldGroup: [ { position: 10, qualifier: 'FinInfo' } ]
+      @UI.identification: [ { position: 60 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 60 } ]
+      Quantity,
+
+      @Aggregation.default: #SUM
+      @UI.fieldGroup: [ { position: 20, qualifier: 'FinInfo' } ]
+      @UI.identification: [ { position: 70 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 70 } ]
+      NetAmount,
+
+      @Aggregation.default: #SUM
+      // KPI Gross Amount by Country
+      @UI.dataPoint: { valueFormat.numberOfFractionalDigits: 2,
+                       criticalityCalculation: { improvementDirection: #MAXIMIZE,
+                                                 deviationRangeLowValue: 14000000,
+                                                 toleranceRangeLowValue: 15000000 },
+                       trendCalculation: { referenceValue: 'KPITargGrossAmount', downDifference: 0, upDifference: 0 } }
+      @UI.fieldGroup: [ { position: 30, qualifier: 'FinInfo' } ]
+      @UI.identification: [ { position: 80 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 80 } ]
+      GrossAmount,
+
+      @Aggregation.default: #SUM
+      @EndUserText.label: 'Orders Quantity'
+      OrderCount,
+
+      @Aggregation.default: #SUM
+      // KPI Total Gross Income by Countries
+      @UI.dataPoint: { valueFormat.numberOfFractionalDigits: 2,
+                       criticalityCalculation: { improvementDirection: #MAXIMIZE,
+                                                 deviationRangeLowValue: 7500000,
+                                                 toleranceRangeLowValue: 8000000 },
+                       trendCalculation: { referenceValue: 'KPITargGrossIncome', downDifference: 0, upDifference: 0 } }
+      @UI.fieldGroup: [ { position: 40, qualifier: 'FinInfo' } ]
+      @UI.identification: [ { position: 90 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 90 } ]
+      GrossIncom,
+
+      @Aggregation.default: #AVG
+      @EndUserText.label: 'Average Gross Income'
+      // KPI Chart Gross Income by Country
+      @UI.dataPoint: { title: 'Average Gross Income',
+                       valueFormat: { numberOfFractionalDigits: 2, scaleFactor: 1000000 },
+                       criticalityCalculation: { improvementDirection: #MAXIMIZE,
+                                                 toleranceRangeLowValue: 550000,
+                                                 deviationRangeLowValue: 500000 } }
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 110 } ]
+      GrossIncomAvg,
+
+      @Aggregation.default: #MAX
+      @EndUserText.label: 'Maximum Gross Income'
+      // KPI Chart Max Gross Income by Country
+      @UI.dataPoint: { title: 'Maximum',
+                       valueFormat: { numberOfFractionalDigits: 2, scaleFactor: 1000000 },
+                       criticalityCalculation: { improvementDirection: #MAXIMIZE,
+                                                 toleranceRangeLowValue: 6000000,
+                                                 deviationRangeLowValue: 5000000 } }
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 120 } ]
+      GrossIncomMax,
+
+      @Aggregation.default: #MIN
+      @EndUserText.label: 'Minimum Gross Income'
+      // KPI Chart Min Gross Income by Country
+      @UI.dataPoint: { title: 'Minimum',
+                       valueFormat: { numberOfFractionalDigits: 2, scaleFactor: 1000000 },
+                       criticalityCalculation: { improvementDirection: #MAXIMIZE,
+                                                 toleranceRangeLowValue: 200000,
+                                                 deviationRangeLowValue: 150000 } }
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 100 } ]
+      GrossIncomMin,
+
+      KPITargGrossAmount,
+      KPITargGrossIncome,
+
+      AmountCurrency,
+
+      /* Associations */
+      _Product,
+      _ProductMarket
+}
