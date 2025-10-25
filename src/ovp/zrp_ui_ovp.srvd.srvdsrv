@@ -1,10 +1,15 @@
 @EndUserText.label: 'Overview Page'
 define service ZRP_UI_OVP {
-  expose ZRP_I_PRODUCT                  as Products;
-  expose ZRP_I_PRODUCT_MARKET           as ProductMarkets;
-  expose ZRP_I_MARKET_ORDER             as MarketOrders;
-  expose ZRP_I_PRODUCT_GROUP            as ProductGroups;
-  expose ZRP_I_PHASE                    as Phases;
   expose ZRP_C_OVP_MARKET_ORDER_FILTERS as GlobalFilters;
   expose ZRP_C_OVP_MARKET_ORDER_CARDS   as Cards;
+  expose ZRP_I_OVP_MARKET_ORDER         as MarketOrders;
+  expose ZRP_I_OVP_PRODUCT_GROUP        as ProductGroups;
+  expose ZRP_I_OVP_PRODUCT              as Products;
+  expose ZRP_I_OVP_PRODUCT_MARKET       as ProductMarkets;
+  expose ZRP_I_OVP_MARKET               as Markets;
+  expose ZRP_I_OVP_PHASE                as Phases;
+  expose ZRP_I_PRODUCT_GROUP            as vhProductGroup;
+  expose ZRP_I_PRODUCT                  as vhProduct;
+  expose ZRP_I_MARKET                   as vhMarket;
+  expose ZRP_I_PHASE                    as vhPhase;
 }

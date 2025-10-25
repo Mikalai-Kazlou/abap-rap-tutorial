@@ -1,32 +1,69 @@
 @AbapCatalog.viewEnhancementCategory: [#NONE]
 @AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'OVP: Market Orders'
+@EndUserText.label: 'Market Orders'
 @Metadata.ignorePropagatedAnnotations: true
 
 define view entity ZRP_I_OVP_MARKET_ORDER
-  as select from ZRP_I_MARKET_ORDER
+  as select from zrp_d_mrkt_order
+
+  association [1..1] to ZRP_I_OVP_PRODUCT        as _Product
+    on _Product.UUID = $projection.ProductUUID
+
+  association [1..1] to ZRP_I_OVP_PRODUCT_MARKET as _ProductMarket
+    on  _ProductMarket.ProductUUID       = $projection.ProductUUID
+    and _ProductMarket.ProductMarketUUID = $projection.ProductMarketUUID
+
 {
-  key ProductUUID,
-  key ProductMarketUUID,
-  key OrderUUID,
+  key produuid                                as ProductUUID,
+  key mrktuuid                                as ProductMarketUUID,
+  key orderuuid                               as OrderUUID,
+      orderid                                 as OrderID,
 
-      _Product.ID             as ProductID,
-      _Product.ProductGroupID as ProductGroupID,
-      _Product.PhaseID        as PhaseID,
-      _ProductMarket.MarketID as MarketID,
-      OrderID,
+      _Product._ProductGroup.ProductGroupName as ProductGroupName,
+      _Product.Name                           as ProductName,
+      _ProductMarket._Market.MarketName       as MarketName,
+      _Product._Phase.PhaseText               as PhaseName,
 
-      DeliveryDate,
+      calendaryear                            as CalendarYear,
+      deliverydate                            as DeliveryDate,
+      quantity                                as Quantity,
+      @Semantics.amount.currencyCode: 'AmountCurrency'
+      netamount                               as NetAmount,
+      @Semantics.amount.currencyCode: 'AmountCurrency'
+      grossamount                             as GrossAmount,
+      amountcurr                              as AmountCurrency,
 
-      Quantity,
-      @Semantics.amount.currencyCode: 'Currency'
-      NetAmount,
-      @Semantics.amount.currencyCode: 'Currency'
-      GrossAmount,
-      AmountCurrency          as Currency,
+      cast( 1 as abap.int4 )                  as CountByCountry,
+      cast( 1 as abap.int4 )                  as CountByProductGroup,
 
-      zzBusinessPartner       as BusinessPartner,
+      @Semantics.amount.currencyCode: 'AmountCurrency'
+      @EndUserText.label: 'Gross Incom'
+      grossamount - netamount                 as GrossIncom,
 
+      @Semantics.quantity.unitOfMeasure:'Percentage'
+      cast(
+        cast( $projection.GrossIncom as abap.fltp ) * 100.0 / cast( $projection.NetAmount as abap.fltp )
+      as abap.quan( 5, 2 ) )                  as GrossIncomPercentage,
+
+      @Semantics.quantity.unitOfMeasure:'Percentage'
+      cast(
+        cast( $projection.GrossIncom as abap.fltp ) * 100.0 / cast( $projection.NetAmount as abap.fltp )
+      as abap.quan( 5, 2 ) )                  as GrossIncomPercentageList,
+
+      @Semantics.quantity.unitOfMeasure:'Percentage'
+      cast(
+        cast( $projection.GrossIncom as abap.fltp ) * 100.0 / cast( $projection.NetAmount as abap.fltp )
+      as abap.quan( 5, 2 ) )                  as GrIncPercKPI,
+
+      cast('%' as abap.unit(3))               as Percentage,
+
+      @Semantics.quantity.unitOfMeasure:'Percentage'
+      cast( 30 as abap.quan( 5, 2 ) )         as TargetGrossIncomPercentage,
+
+      @Semantics.quantity.unitOfMeasure:'Percentage'
+      cast( 50 as abap.quan( 5, 2 ) )         as TargetGrIncPercKPI,
+
+      /* Associations */
       _Product,
       _ProductMarket
 }

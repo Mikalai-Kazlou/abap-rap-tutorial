@@ -1,28 +1,39 @@
-@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AbapCatalog.viewEnhancementCategory: [ #NONE ]
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'OVP: Global Filters'
 @Metadata.ignorePropagatedAnnotations: true
 
 define view entity ZRP_C_OVP_MARKET_ORDER_FILTERS
   as select from ZRP_I_OVP_MARKET_ORDER
+
 {
-      @UI.selectionField: [{ position: 10 }]
-      @Consumption.valueHelpDefinition: [{ entity: { name: 'ZRP_I_PRODUCT_GROUP', element: 'ProductGroupID' } }]
-  key ProductGroupID,
+      @UI.hidden: true
+  key ProductUUID,
 
-      @UI.selectionField: [{ position: 20 }]
-      @Consumption.valueHelpDefinition: [{ entity: { name: 'ZRP_I_PRODUCT', element: 'ID' } }]
-  key ProductID,
+      @UI.hidden: true
+  key ProductMarketUUID,
 
-      @UI.selectionField: [{ position: 30 }]
-      @Consumption.valueHelpDefinition: [{ entity: { name: 'ZRP_I_PRODUCT_MARKET', element: 'MarketID' } }]
-  key MarketID,
+      @UI.hidden: true
+  key OrderUUID,
 
-      @UI.selectionField: [{ position: 40 }]
-      @Consumption.filter: { multipleSelections: false, selectionType: #INTERVAL }
-  key DeliveryDate,
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PRODUCT', element: 'Name' } } ]
+      @UI.selectionField: [ { position: 10 } ]
+      ProductName,
 
-      @UI.selectionField: [{ position: 50 }]
-      @Consumption.valueHelpDefinition: [{ entity: { name: 'ZRP_I_PHASE', element: 'PhaseID' } }]
-  key PhaseID
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_MARKET', element: 'MarketName' } } ]
+      @UI.selectionField: [ { position: 20 } ]
+      MarketName,
+
+      @Consumption.filter: { selectionType: #INTERVAL, multipleSelections: false }
+      @UI.selectionField: [ { position: 30 } ]
+      DeliveryDate,
+
+      @UI.selectionField: [ { position: 40 } ]
+      @Semantics.amount.currencyCode: 'AmountCurrency'
+      GrossIncom,
+      AmountCurrency,
+
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PHASE', element: 'PhaseText' } } ]
+      @UI.selectionField: [ { position: 50 } ]
+      PhaseName
 }
