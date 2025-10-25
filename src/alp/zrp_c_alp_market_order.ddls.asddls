@@ -15,9 +15,9 @@
   { qualifier: 'ChartGrossAmountByCountry',
     chartType: #BAR,
     dimensions: [ 'MarketName' ],
-    measures: [ 'Grossamount' ],
+    measures: [ 'GrossAmount' ],
     dimensionAttributes: [ { dimension: 'MarketName', role: #CATEGORY } ],
-    measureAttributes: [ { measure: 'Grossamount', role: #AXIS_1 } ] },
+    measureAttributes: [ { measure: 'GrossAmount', role: #AXIS_1 } ] },
 
     -- Visual Filters
   { qualifier: 'ChartFilterCntrByGrossIncom',
@@ -38,10 +38,10 @@
   { qualifier: 'ChartMainChart',
     chartType: #BAR_STACKED,
     dimensions: [ 'ProductGroupName', 'MarketName' ],
-    measures: [ 'Netamount', 'GrossIncom' ],
+    measures: [ 'NetAmount', 'GrossIncom' ],
     dimensionAttributes: [ { dimension: 'MarketName',       role: #CATEGORY },
                            { dimension: 'ProductGroupName', role: #CATEGORY } ],
-    measureAttributes: [ { measure: 'Netamount',  role: #AXIS_1 },
+    measureAttributes: [ { measure: 'NetAmount',  role: #AXIS_1 },
                          { measure: 'GrossIncom', role: #AXIS_1 } ] }
 ]
 
@@ -70,7 +70,7 @@
     { qualifier: 'KPIGrossAmountByCountry',
       text: 'Gross Amount By Countries',
       visualizations: [ { type: #AS_CHART,     qualifier: 'ChartGrossAmountByCountry' },
-                        { type: #AS_DATAPOINT, qualifier: 'Grossamount'               } ] },
+                        { type: #AS_DATAPOINT, qualifier: 'GrossAmount'               } ] },
 
       -- Visual Filters
     { qualifier: 'FilterCntrByGrossIncom',
@@ -86,7 +86,7 @@
       -- Main Chart
     { qualifier: 'MainChart',
       sortOrder: [ { by: 'OrderID', direction: #ASC } ],
-      groupBy: [ 'ProductGroupName', 'MarketName', 'OrderID' ],
+      groupBy: [ 'ProductGroupName', 'ProductName', 'MarketName', 'OrderID' ],
       visualizations: [ { type: #AS_CHART,    qualifier: 'ChartMainChart' },
                         { type: #AS_LINEITEM, qualifier: 'LineMainChart'  } ] }
   ]
@@ -203,12 +203,20 @@ define view entity ZRP_C_ALP_MARKET_ORDER
 
       @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PRODUCT_GROUP', element: 'ProductGroupName' } } ]
       @EndUserText.label: 'Product Group'
-      @UI.dataPoint: { title: 'Product', qualifier: 'Product' }
+      @UI.dataPoint: { title: 'Product Group', qualifier: 'ProductGroup' }
       @UI.fieldGroup: [ { position: 20, qualifier: 'BasicData' } ]
       @UI.identification: [ { position: 20 } ]
       @UI.lineItem: [ { qualifier: 'LineMainChart', position: 10 } ]
       @UI.selectionField: [ { position: 10 } ]
       ProductGroupName,
+
+      @EndUserText.label: 'Product'
+      @UI.dataPoint: { title: 'Product', qualifier: 'Product' }
+      @UI.fieldGroup: [ { position: 25, qualifier: 'BasicData' } ]
+      @UI.identification: [ { position: 25 } ]
+      @UI.lineItem: [ { qualifier: 'LineMainChart', position: 15 } ]
+      @UI.selectionField: [ { position: 15 } ]
+      ProductName,
 
       @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_MARKET', element: 'MarketName' } } ]
       @EndUserText.label: 'Market (Country)'
@@ -223,6 +231,7 @@ define view entity ZRP_C_ALP_MARKET_ORDER
       @UI.identification: [ { position: 40 } ]
       @UI.lineItem: [ { qualifier: 'LineMainChart', position: 40 } ]
       @UI.selectionField: [ { position: 40 } ]
+      @EndUserText.label: 'Phase'
       PhaseName,
 
       @Consumption.filter: { selectionType: #INTERVAL, multipleSelections: false }
@@ -235,6 +244,7 @@ define view entity ZRP_C_ALP_MARKET_ORDER
       @UI.fieldGroup: [ { position: 10, qualifier: 'FinInfo' } ]
       @UI.identification: [ { position: 60 } ]
       @UI.lineItem: [ { qualifier: 'LineMainChart', position: 60 } ]
+      @Aggregation.default: #SUM
       Quantity,
 
       @Aggregation.default: #SUM
@@ -304,7 +314,10 @@ define view entity ZRP_C_ALP_MARKET_ORDER
       @UI.lineItem: [ { qualifier: 'LineMainChart', position: 100 } ]
       GrossIncomMin,
 
+      @UI.hidden: true
       KPITargGrossAmount,
+
+      @UI.hidden: true
       KPITargGrossIncome,
 
       AmountCurrency,

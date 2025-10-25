@@ -26,8 +26,9 @@ define view entity ZRP_I_ALP_MARKET_ORDER
   key orderuuid                               as OrderUUID,
       orderid                                 as OrderID,
 
-      _Product._ProductGroup.ProductGroupName as ProductGroupName, // ProductName
-      _ProductMarket._Market.MarketName       as MarketName,       // CountryName
+      _Product._ProductGroup.ProductGroupName as ProductGroupName,
+      _Product.Name                           as ProductName,
+      _ProductMarket._Market.MarketName       as MarketName,
       _Product._Phase.PhaseText               as PhaseName,
 
       calendaryear                            as CalendarYear,
@@ -39,7 +40,7 @@ define view entity ZRP_I_ALP_MARKET_ORDER
       grossamount                             as GrossAmount,
       amountcurr                              as AmountCurrency,
 
-      1                                       as OrderCount,       // ProductCount
+      cast( 1 as abap.int4 )                  as OrderCount,
 
       @Semantics.amount.currencyCode: 'AmountCurrency'
       @EndUserText.label: 'Gross Incom'

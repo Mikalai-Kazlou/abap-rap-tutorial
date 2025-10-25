@@ -23,6 +23,7 @@ define view entity ZRP_I_ALP_PHASE
 {
       @ObjectModel.text.element: ['PhaseText']
       @UI.textArrangement: #TEXT_ONLY
+      @EndUserText.label: 'Phase'
   key phaseid                                         as PhaseID,
 
       @UI.hidden: true
