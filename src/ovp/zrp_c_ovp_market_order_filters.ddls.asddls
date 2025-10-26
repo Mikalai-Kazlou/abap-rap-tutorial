@@ -1,7 +1,7 @@
 @AbapCatalog.viewEnhancementCategory: [ #NONE ]
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'OVP: Global Filters'
-@Metadata.ignorePropagatedAnnotations: true
+@Metadata.ignorePropagatedAnnotations: false
 
 define view entity ZRP_C_OVP_MARKET_ORDER_FILTERS
   as select from ZRP_I_OVP_MARKET_ORDER

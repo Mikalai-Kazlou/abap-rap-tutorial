@@ -22,6 +22,8 @@ define view entity ZRP_I_OVP_MARKET_ORDER
       _Product._ProductGroup.ProductGroupName as ProductGroupName,
       _Product.Name                           as ProductName,
       _ProductMarket._Market.MarketName       as MarketName,
+
+      @EndUserText.label: 'Phase'
       _Product._Phase.PhaseText               as PhaseName,
 
       calendaryear                            as CalendarYear,

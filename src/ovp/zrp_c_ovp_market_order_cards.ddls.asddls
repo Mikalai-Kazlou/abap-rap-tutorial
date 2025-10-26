@@ -7,7 +7,7 @@
     -- Chart Total Quantity of Orders:
     ---- by Country
 [ { qualifier: 'OrdQuanByCountry',
-   title: 'By Countrys',
+   title: 'By Countries',
    chartType: #COLUMN,
    dimensions: [ 'MarketName' ],
    measures: [ 'CountByCountry' ],
@@ -115,7 +115,7 @@ define view entity ZRP_C_OVP_MARKET_ORDER_CARDS
       MarketName,
 
       @Aggregation.default: #SUM
-      @EndUserText.label: 'Quantity by Countrys'
+      @EndUserText.label: 'Quantity by Countries'
       @UI.dataPoint: { qualifier: 'dpOrdQuanByCountry',
                        criticalityCalculation: { improvementDirection: #MAXIMIZE,
                                                  deviationRangeLowValue: 10,
