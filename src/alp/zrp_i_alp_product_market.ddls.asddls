@@ -18,14 +18,13 @@ define view entity ZRP_I_ALP_PRODUCT_MARKET
     on _Market.MarketID = $projection.MarketID
 
 {
-  key produuid           as ProductUUID,
-  key mrktuuid           as ProductMarketUUID,
-      mrktid             as MarketID,
-      _Market.MarketName as MarketName,
-      isocode            as ISOCode,
-      status             as Status,
-      startdate          as StartDate,
-      enddate            as EndDate,
+  key produuid  as ProductUUID,
+  key mrktuuid  as ProductMarketUUID,
+      mrktid    as MarketID,
+      isocode   as ISOCode,
+      status    as Status,
+      startdate as StartDate,
+      enddate   as EndDate,
 
       /* Associations */
       _Market

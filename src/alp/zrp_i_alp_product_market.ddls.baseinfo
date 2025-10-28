@@ -3,7 +3,6 @@
 {
 "FROM":
 [
-"ZRP_I_ALP_MARKET",
 "ZRP_D_PROD_MRKT"
 ],
 "ASSOCIATED":
