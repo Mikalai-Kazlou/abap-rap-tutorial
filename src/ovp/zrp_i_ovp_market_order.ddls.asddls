@@ -22,8 +22,6 @@ define view entity ZRP_I_OVP_MARKET_ORDER
       _Product._ProductGroup.ProductGroupName as ProductGroupName,
       _Product.Name                           as ProductName,
       _ProductMarket._Market.MarketName       as MarketName,
-
-      @EndUserText.label: 'Phase'
       _Product._Phase.PhaseText               as PhaseName,
 
       calendaryear                            as CalendarYear,
@@ -39,7 +37,6 @@ define view entity ZRP_I_OVP_MARKET_ORDER
       cast( 1 as abap.int4 )                  as CountByProductGroup,
 
       @Semantics.amount.currencyCode: 'AmountCurrency'
-      @EndUserText.label: 'Gross Incom'
       grossamount - netamount                 as GrossIncom,
 
       @Semantics.quantity.unitOfMeasure:'Percentage'
@@ -55,15 +52,15 @@ define view entity ZRP_I_OVP_MARKET_ORDER
       @Semantics.quantity.unitOfMeasure:'Percentage'
       cast(
         cast( $projection.GrossIncom as abap.fltp ) * 100.0 / cast( $projection.NetAmount as abap.fltp )
-      as abap.quan( 5, 2 ) )                  as GrIncPercKPI,
-
-      cast('%' as abap.unit(3))               as Percentage,
+      as abap.quan( 5, 2 ) )                  as GrossIncomPercentageKPI,
 
       @Semantics.quantity.unitOfMeasure:'Percentage'
       cast( 30 as abap.quan( 5, 2 ) )         as TargetGrossIncomPercentage,
 
       @Semantics.quantity.unitOfMeasure:'Percentage'
-      cast( 50 as abap.quan( 5, 2 ) )         as TargetGrIncPercKPI,
+      cast( 50 as abap.quan( 5, 2 ) )         as TargetGrossIncomPercentageKPI,
+
+      cast('%' as abap.unit(3))               as Percentage,
 
       /* Associations */
       _Product,

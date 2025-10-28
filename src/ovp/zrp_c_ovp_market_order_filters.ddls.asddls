@@ -16,11 +16,13 @@ define view entity ZRP_C_OVP_MARKET_ORDER_FILTERS
       @UI.hidden: true
   key OrderUUID,
 
-      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PRODUCT', element: 'Name' } } ]
+      @EndUserText.label: 'Product'
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PRODUCT_VH', element: 'Name' } } ]
       @UI.selectionField: [ { position: 10 } ]
       ProductName,
 
-      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_MARKET', element: 'MarketName' } } ]
+      @EndUserText.label: 'Market'
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_MARKET_VH', element: 'MarketName' } } ]
       @UI.selectionField: [ { position: 20 } ]
       MarketName,
 
@@ -28,12 +30,15 @@ define view entity ZRP_C_OVP_MARKET_ORDER_FILTERS
       @UI.selectionField: [ { position: 30 } ]
       DeliveryDate,
 
+      @EndUserText.label: 'Gross Incom'
       @UI.selectionField: [ { position: 40 } ]
-      @Semantics.amount.currencyCode: 'AmountCurrency'
       GrossIncom,
+
+      @UI.selectionField: [ { position: 50 } ]
       AmountCurrency,
 
+      @EndUserText.label: 'Phase'
       @Consumption.valueHelpDefinition: [ { entity: { name: 'ZRP_I_PHASE', element: 'PhaseText' } } ]
-      @UI.selectionField: [ { position: 50 } ]
+      @UI.selectionField: [ { position: 60 } ]
       PhaseName
 }

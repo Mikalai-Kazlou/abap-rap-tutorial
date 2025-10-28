@@ -8,8 +8,7 @@ define service ZRP_UI_OVP {
   expose ZRP_I_OVP_PRODUCT_MARKET       as ProductMarkets;
   expose ZRP_I_OVP_MARKET               as Markets;
   expose ZRP_I_OVP_PHASE                as Phases;
-  expose ZRP_I_PRODUCT_GROUP            as vhProductGroup;
-  expose ZRP_I_PRODUCT                  as vhProduct;
-  expose ZRP_I_MARKET                   as vhMarket;
+  expose ZRP_I_PRODUCT_VH               as vhProduct;
+  expose ZRP_I_MARKET_VH                as vhMarket;
   expose ZRP_I_PHASE                    as vhPhase;
 }
