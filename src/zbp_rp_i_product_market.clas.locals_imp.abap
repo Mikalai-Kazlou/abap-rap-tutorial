@@ -19,7 +19,7 @@ CLASS lhc_product_market DEFINITION INHERITING FROM cl_abap_behavior_handler
     METHODS reject_market FOR MODIFY
       IMPORTING keys FOR ACTION productmarkets~rejectmarket RESULT result.
 
-    METHODS set_iso_code FOR DETERMINE ON SAVE
+    METHODS set_iso_code FOR DETERMINE ON MODIFY
       IMPORTING keys FOR productmarkets~setisocode.
 
     METHODS validate_market_id FOR VALIDATE ON SAVE

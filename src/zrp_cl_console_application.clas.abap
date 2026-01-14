@@ -34,6 +34,7 @@ CLASS zrp_cl_console_application DEFINITION
   PRIVATE SECTION.
     DATA out TYPE REF TO if_oo_adt_classrun_out.
 
+    METHODS check_soap_service.
     METHODS check_primitive_code.
     METHODS check_string_functions.
     METHODS check_abap_sql_functions.
@@ -50,6 +51,9 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
     me->out = out.
 
     out->write( 'Exercises:'(001) ).
+    print_separator( ).
+
+    check_soap_service( ).
     print_separator( ).
 
     check_primitive_code( ).
@@ -70,6 +74,23 @@ CLASS zrp_cl_console_application IMPLEMENTATION.
     check_conversions( ).
     print_separator( ).
 
+  ENDMETHOD.
+
+  METHOD check_soap_service.
+    TRY.
+        DATA(destination) = cl_soap_destination_provider=>create_by_url( i_url = `http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso` ).
+
+        DATA(proxy) = NEW zrp_sc_co_country_info_service( destination = destination ).
+        proxy->country_isocode( EXPORTING input  = VALUE #( s_country_name = 'Japan' )
+                                IMPORTING output = DATA(response) ).
+
+        DATA(iso_code) = response-country_isocode_result.
+        out->write( iso_code ).
+
+      CATCH cx_ai_system_fault
+            cx_soap_destination_error INTO DATA(exception).
+        DATA(message) = exception->if_message~get_text( ).
+    ENDTRY.
   ENDMETHOD.
 
   METHOD check_primitive_code.

@@ -96,7 +96,7 @@ extensible
   field ( readonly ) ProductUUID, ISOCode, CreatedBy, CreatedOn, ChangedBy, ChangedOn;
   field ( mandatory ) MarketID, StartDate;
 
-  determination SetISOCode on save { create; update; }
+  determination SetISOCode on modify { field MarketID; }
 
   validation ValidateMarketID on save { field MarketID; }
   validation ValidateStartDate on save { field StartDate; }
@@ -108,6 +108,11 @@ extensible
 
   action ( features : instance ) AcceptMarket result [1] $self;
   action ( features : instance ) RejectMarket result [1] $self;
+
+  side effects
+  {
+    field MarketID affects field ISOCode;
+  }
 
   mapping for zrp_d_prod_mrkt corresponding extensible
     {

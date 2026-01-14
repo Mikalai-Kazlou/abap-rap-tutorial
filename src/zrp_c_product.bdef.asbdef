@@ -40,6 +40,11 @@ extensible
 
   use action AcceptMarket;
   use action RejectMarket;
+
+  side effects
+  {
+    field MarketID affects field Currency;
+  }
 }
 
 
