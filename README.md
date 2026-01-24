@@ -13,7 +13,7 @@
 - Activate the Service Consumption Model
 
 ## Restore OData Service Consumption Model
-- Create a user in ES5 as described in the [blog](https://community.sap.com/t5/technology-blog-posts-by-sap/new-sap-gateway-demo-system-available/ba-p/13353480)
-- Download the `$metadata` file of the OData service: [link](https://sapes5.sapdevcenter.com/sap/opu/odata/sap/ZE2E100_SOL_2_SRV/$metadata)
+- Create a user in [api.sap.com](https://api.sap.com)
+- Download the `$metadata` file of the `BUSINESS_PARTNER_A2X` OData service: [link](https://api.sap.com/api/API_BUSINESS_PARTNER/overview)
 - Create Service Consumption Model with the name `ZRP_SC_BUSINESS_PARTNER` using the downloaded metadata file
 - Activate the Service Consumption Model
