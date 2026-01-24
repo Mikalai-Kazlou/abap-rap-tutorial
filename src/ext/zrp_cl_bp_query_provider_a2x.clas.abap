@@ -1,10 +1,21 @@
-CLASS zrp_cl_bp_query_provider DEFINITION
+CLASS zrp_cl_bp_query_provider_a2x DEFINITION
   PUBLIC FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
     INTERFACES if_rap_query_provider.
+
+    TYPES:
+      BEGIN OF ts_business_data.
+        INCLUDE TYPE zrp_sc_business_partner_a2x=>tys_a_business_partner_type.
+    TYPES:
+        to_address_independent_ema TYPE zrp_sc_business_partner_a2x=>tyt_a_bpaddress_independent__2,
+        to_address_independent_pho TYPE zrp_sc_business_partner_a2x=>tyt_a_bpaddress_independent__5.
+    TYPES:
+      END OF ts_business_data.
+
+    TYPES: tt_business_data TYPE TABLE OF ts_business_data WITH EMPTY KEY.
 
     CLASS-METHODS get_business_partner_list
       IMPORTING
@@ -15,12 +26,12 @@ CLASS zrp_cl_bp_query_provider DEFINITION
         is_data_requested  TYPE abap_bool DEFAULT abap_true
         is_count_requested TYPE abap_bool DEFAULT abap_true
       EXPORTING
-        business_data      TYPE zrp_sc_business_partner=>tyt_sepm_i_business_partner_et
+        business_data      TYPE tt_business_data
         count              TYPE int8.
 
 ENDCLASS.
 
-CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
+CLASS zrp_cl_bp_query_provider_a2x IMPLEMENTATION.
   METHOD get_business_partner_list.
     DATA proxy_model_key  TYPE /iwbep/if_cp_runtime_types=>ty_s_proxy_model_key.
     DATA filter TYPE REF TO /iwbep/if_cp_filter_node.
@@ -30,9 +41,8 @@ CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
         DATA(destination) = cl_http_destination_provider=>create_by_url( i_url = sc_service_url ).
 
         DATA(http_client) = cl_web_http_client_manager=>create_by_http_destination( destination ).
-        http_client->get_http_request( )->set_authorization_basic(
-            i_username = cl_web_http_utility=>decode_base64( sc_ucode && `=` )
-            i_password = cl_web_http_utility=>decode_base64( sc_pcode && `+` ) ).
+        http_client->get_http_request( )->set_header_field( i_name  = 'APIKey'
+                                                            i_value = cl_web_http_utility=>decode_base64( sc_apikey && `=` ) ).
 
         proxy_model_key = VALUE #( proxy_model_id      = sc_proxy_model_id
                                    proxy_model_version = '0001'
@@ -42,7 +52,11 @@ CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
                                                                                   io_http_client           = http_client
                                                                                   iv_relative_service_root = sc_service_root ).
 
-        DATA(request) = client_proxy->create_resource_for_entity_set( 'SEPM_I_BUSINESS_PARTNER_E' )->create_request_for_read( ).
+        DATA(request) = client_proxy->create_resource_for_entity_set( 'A_BUSINESS_PARTNER' )->create_request_for_read( ).
+
+        DATA(lr_root_node) = request->create_expand_node( ).
+        lr_root_node->add_expand( iv_expand_property_path = 'TO_ADDRESS_INDEPENDENT_EMA' ).
+        lr_root_node->add_expand( iv_expand_property_path = 'TO_ADDRESS_INDEPENDENT_PHO' ).
 
         " Set filter
         DATA(filter_factory) = request->create_filter_factory( ).
@@ -139,11 +153,18 @@ CLASS zrp_cl_bp_query_provider IMPLEMENTATION.
             business_data      = DATA(business_data)
             count              = DATA(count) ).
 
-        IF io_request->is_total_numb_of_rec_requested(  ).
+        IF io_request->is_total_numb_of_rec_requested( ).
           io_response->set_total_number_of_records( count ).
         ENDIF.
-        IF io_request->is_data_requested(  ).
-          io_response->set_data( business_data ).
+
+        IF io_request->is_data_requested( ).
+          LOOP AT business_data ASSIGNING FIELD-SYMBOL(<bd>).
+            INSERT VALUE #( business_partner = <bd>-business_partner
+                            company_name     = <bd>-business_partner_name
+                            email_address    = VALUE #( <bd>-to_address_independent_ema[ 1 ]-email_address OPTIONAL )
+                            phone_number     = VALUE #( <bd>-to_address_independent_pho[ 1 ]-international_phone_number OPTIONAL ) ) INTO TABLE BPs.
+          ENDLOOP.
+          io_response->set_data( BPs ).
         ENDIF.
       CATCH cx_root INTO DATA(exception).
         DATA(exception_message) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).

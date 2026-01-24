@@ -1,5 +1,5 @@
 @EndUserText.label: 'Business Partner (Custom Entity)'
-@ObjectModel.query.implementedBy: 'ABAP:ZRP_CL_BP_QUERY_PROVIDER'
+@ObjectModel.query.implementedBy: 'ABAP:ZRP_CL_BP_QUERY_PROVIDER_A2X'
 define custom entity ZRP_I_BUSINESS_PARTNER_C
 {
   key business_partner : zrp_business_partner_id;
